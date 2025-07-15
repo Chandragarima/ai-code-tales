@@ -52,10 +52,10 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				'tech-glow': 'hsl(var(--tech-glow))',
-				'tech-grid': 'hsl(var(--tech-grid))',
-				'gallery-border': 'hsl(var(--gallery-border))',
-				'hover-glow': 'hsl(var(--hover-glow))',
+				'elegant-accent': 'hsl(var(--elegant-accent))',
+				'subtle-border': 'hsl(var(--subtle-border))',
+				'card-hover': 'hsl(var(--card-hover))',
+				'text-elegant': 'hsl(var(--text-elegant))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -74,50 +74,33 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
 				},
-				'tech-glow': {
+				'elegant-glow': {
 					'0%, 100%': {
-						boxShadow: '0 0 20px hsl(var(--tech-glow) / 0.5)'
+						boxShadow: '0 0 20px hsl(var(--elegant-accent) / 0.1)'
 					},
 					'50%': {
-						boxShadow: '0 0 40px hsl(var(--tech-glow) / 0.8)'
-					}
-				},
-				'gradient-shift': {
-					'0%, 100%': {
-						backgroundPosition: '0% 50%'
-					},
-					'50%': {
-						backgroundPosition: '100% 50%'
+						boxShadow: '0 0 40px hsl(var(--elegant-accent) / 0.2)'
 					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'tech-glow': 'tech-glow 3s ease-in-out infinite',
-				'gradient-shift': 'gradient-shift 5s ease-in-out infinite'
+				'elegant-glow': 'elegant-glow 4s ease-in-out infinite'
 			},
 			backgroundImage: {
-				'artistic-gradient': 'linear-gradient(135deg, hsl(var(--artistic-gradient-start)), hsl(var(--artistic-gradient-end)))',
-				'tech-grid': 'radial-gradient(circle at 1px 1px, hsl(var(--tech-grid)) 1px, transparent 0)'
+				'elegant-gradient': 'linear-gradient(135deg, hsl(var(--gradient-elegant-start)), hsl(var(--gradient-elegant-end)))',
+				'subtle-grid': 'radial-gradient(circle at 1px 1px, hsl(var(--subtle-border)) 1px, transparent 0)'
 			},
 			backgroundSize: {
-				'grid': '40px 40px'
+				'grid': '60px 60px'
 			}
 		}
 	},

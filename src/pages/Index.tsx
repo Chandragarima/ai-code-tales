@@ -7,33 +7,33 @@ const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background bg-tech-grid bg-grid">
+    <div className="min-h-screen bg-background bg-subtle-grid bg-grid">
       {/* Hero Section */}
-      <div className="container mx-auto px-6 py-20">
-        <div className="text-center max-w-4xl mx-auto mb-16">
-          <Badge className="mb-6 bg-artistic-gradient text-primary-foreground px-4 py-2 text-sm">
+      <div className="container mx-auto px-6 py-24">
+        <div className="text-center max-w-5xl mx-auto mb-20">
+          <Badge className="mb-8 bg-elegant-gradient text-background px-6 py-2 text-base font-light">
             Where AI meets artistry
           </Badge>
           
-          <h1 className="text-7xl font-bold mb-8 bg-artistic-gradient bg-clip-text text-transparent leading-tight">
+          <h1 className="text-8xl font-extralight mb-12 bg-elegant-gradient bg-clip-text text-transparent leading-tight tracking-tight">
             Bespoke Gallery
           </h1>
           
-          <p className="text-2xl text-muted-foreground mb-4 leading-relaxed">
+          <p className="text-2xl text-text-elegant mb-6 leading-relaxed font-light">
             A curated collection of AI-built applications where 
-            <span className="text-accent font-medium"> every project has a story</span>
+            <span className="text-elegant-accent font-normal"> every project has a story</span>
           </p>
           
-          <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
+          <p className="text-lg text-text-elegant mb-16 max-w-3xl mx-auto font-light leading-relaxed">
             Beyond features and functionality—discover the human journey behind each creation. 
             From midnight inspiration to deployed reality.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Button 
               onClick={() => navigate('/gallery')}
               size="lg"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg animate-tech-glow"
+              className="bg-elegant-accent hover:bg-elegant-accent/90 text-background px-10 py-4 text-lg font-light"
             >
               <Sparkles className="mr-2 h-5 w-5" />
               Explore Stories
@@ -42,7 +42,7 @@ const Index = () => {
               variant="outline" 
               size="lg"
               onClick={() => navigate('/submit')}
-              className="border-gallery-border hover:border-tech-glow/50 px-8 py-4 text-lg"
+              className="border-subtle-border hover:border-elegant-accent/30 px-10 py-4 text-lg font-light"
             >
               Share Your Journey
             </Button>

@@ -94,53 +94,53 @@ export default function Submit() {
   };
 
   return (
-    <div className="min-h-screen bg-background bg-tech-grid bg-grid">
-      <div className="container mx-auto px-6 py-12 max-w-3xl">
+    <div className="min-h-screen bg-background bg-subtle-grid bg-grid">
+      <div className="container mx-auto px-6 py-16 max-w-4xl">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-12">
           <Button 
             variant="ghost" 
             onClick={() => navigate("/")}
-            className="mb-4 text-muted-foreground hover:text-foreground"
+            className="mb-6 text-text-elegant hover:text-foreground font-light"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Gallery
           </Button>
           
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4 bg-artistic-gradient bg-clip-text text-transparent">
+            <h1 className="text-5xl font-light mb-6 bg-elegant-gradient bg-clip-text text-transparent">
               Share Your Story
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-text-elegant text-lg font-light leading-relaxed">
               Tell us about your AI-powered creation and the journey behind it
             </p>
           </div>
         </div>
 
-        <Card className="border-gallery-border bg-card/50 backdrop-blur-sm">
+        <Card className="border-subtle-border bg-card backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-foreground">
-              <Sparkles className="h-5 w-5 text-tech-glow" />
+            <CardTitle className="flex items-center gap-3 text-foreground font-light text-xl">
+              <Sparkles className="h-6 w-6 text-elegant-accent" />
               Project Submission
             </CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 
                 {/* Basic Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project Name</FormLabel>
+                        <FormLabel className="font-light">Project Name</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="My Amazing AI App" 
                             {...field} 
-                            className="border-gallery-border focus:border-tech-glow"
+                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
                           />
                         </FormControl>
                         <FormMessage />
@@ -153,12 +153,12 @@ export default function Submit() {
                     name="link"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project URL</FormLabel>
+                        <FormLabel className="font-light">Project URL</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="https://myapp.com" 
                             {...field} 
-                            className="border-gallery-border focus:border-tech-glow"
+                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
                           />
                         </FormControl>
                         <FormMessage />
@@ -172,15 +172,15 @@ export default function Submit() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Brief Description</FormLabel>
+                      <FormLabel className="font-light">Brief Description</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="A one-line description of what your app does..."
-                          className="border-gallery-border focus:border-tech-glow min-h-[80px]"
+                          className="border-subtle-border focus:border-elegant-accent/50 min-h-[80px] font-light"
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription>
+                      <FormDescription className="font-light text-text-elegant">
                         Keep it concise - this appears on your gallery card
                       </FormDescription>
                       <FormMessage />
@@ -194,15 +194,15 @@ export default function Submit() {
                   name="story"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Your Story (Required)</FormLabel>
+                      <FormLabel className="font-light">Your Story (Required)</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Why did you build this? What problem were you solving? What was your 'aha' moment?..."
-                          className="border-gallery-border focus:border-tech-glow min-h-[120px]"
+                          className="border-subtle-border focus:border-elegant-accent/50 min-h-[120px] font-light"
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription>
+                      <FormDescription className="font-light text-text-elegant">
                         Share the 'why' behind your project - this is what makes it special
                       </FormDescription>
                       <FormMessage />
@@ -215,15 +215,15 @@ export default function Submit() {
                   name="deeperStory"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Deeper Story (Optional)</FormLabel>
+                      <FormLabel className="font-light">Deeper Story (Optional)</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Share more details about your build process, challenges faced, iterations, learnings..."
-                          className="border-gallery-border focus:border-tech-glow min-h-[160px]"
+                          className="border-subtle-border focus:border-elegant-accent/50 min-h-[160px] font-light"
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription>
+                      <FormDescription className="font-light text-text-elegant">
                         For those who want to dive deeper into your journey
                       </FormDescription>
                       <FormMessage />
@@ -237,9 +237,9 @@ export default function Submit() {
                   name="tools"
                   render={() => (
                     <FormItem>
-                      <FormLabel>AI Tools Used</FormLabel>
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      <FormLabel className="font-light">AI Tools Used</FormLabel>
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                           {aiTools.map((tool) => (
                             <Button
                               key={tool}
@@ -252,8 +252,8 @@ export default function Submit() {
                                   : addTool(tool)
                               }
                               className={selectedTools.includes(tool) 
-                                ? "bg-tech-glow text-primary-foreground" 
-                                : "border-gallery-border hover:border-tech-glow/50"
+                                ? "bg-elegant-accent text-background font-light" 
+                                : "border-subtle-border hover:border-elegant-accent/30 font-light"
                               }
                             >
                               {tool}
@@ -262,12 +262,12 @@ export default function Submit() {
                         </div>
                         
                         {/* Custom Tool Input */}
-                        <div className="flex gap-2">
+                        <div className="flex gap-3">
                           <Input
                             placeholder="Add custom tool..."
                             value={customTool}
                             onChange={(e) => setCustomTool(e.target.value)}
-                            className="border-gallery-border focus:border-tech-glow"
+                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
                                 e.preventDefault();
@@ -279,7 +279,7 @@ export default function Submit() {
                             type="button" 
                             onClick={addCustomTool}
                             variant="outline"
-                            className="border-gallery-border hover:border-tech-glow/50"
+                            className="border-subtle-border hover:border-elegant-accent/30 font-light"
                           >
                             Add
                           </Button>
@@ -292,7 +292,7 @@ export default function Submit() {
                               <Badge 
                                 key={tool} 
                                 variant="secondary"
-                                className="bg-secondary/50 text-secondary-foreground flex items-center gap-1"
+                                className="bg-secondary/30 text-secondary-foreground flex items-center gap-1 font-light"
                               >
                                 {tool}
                                 <X 
@@ -310,18 +310,18 @@ export default function Submit() {
                 />
 
                 {/* Creator Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="creatorName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Your Name</FormLabel>
+                        <FormLabel className="font-light">Your Name</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="John Doe" 
                             {...field} 
-                            className="border-gallery-border focus:border-tech-glow"
+                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
                           />
                         </FormControl>
                         <FormMessage />
@@ -334,16 +334,16 @@ export default function Submit() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel className="font-light">Email</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="john@example.com" 
                             type="email"
                             {...field} 
-                            className="border-gallery-border focus:border-tech-glow"
+                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
                           />
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="font-light text-text-elegant">
                           For review updates only
                         </FormDescription>
                         <FormMessage />
@@ -357,18 +357,18 @@ export default function Submit() {
                   control={form.control}
                   name="allowsContact"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-gallery-border p-4">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-subtle-border p-6">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>
+                      <div className="space-y-2 leading-none">
+                        <FormLabel className="font-light">
                           Allow others to connect with me
                         </FormLabel>
-                        <FormDescription>
+                        <FormDescription className="font-light text-text-elegant leading-relaxed">
                           Show a "Connect with Creator" button on your project. Others can reach out for collaboration, questions, or hiring opportunities.
                         </FormDescription>
                       </div>
@@ -377,10 +377,10 @@ export default function Submit() {
                 />
 
                 {/* Submit */}
-                <div className="flex gap-4 pt-6">
+                <div className="flex gap-6 pt-8">
                   <Button 
                     type="submit" 
-                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground animate-tech-glow"
+                    className="flex-1 bg-elegant-accent hover:bg-elegant-accent/90 text-background font-light py-3"
                   >
                     Submit for Review
                   </Button>
@@ -388,7 +388,7 @@ export default function Submit() {
                     type="button" 
                     variant="outline" 
                     onClick={() => navigate("/")}
-                    className="border-gallery-border hover:border-tech-glow/50"
+                    className="border-subtle-border hover:border-elegant-accent/30 font-light py-3"
                   >
                     Cancel
                   </Button>

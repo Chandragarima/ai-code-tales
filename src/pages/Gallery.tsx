@@ -75,46 +75,49 @@ export default function Gallery() {
   };
 
   return (
-    <div className="min-h-screen bg-background bg-tech-grid bg-grid">
-      <div className="container mx-auto px-6 py-12">
+    <div className="min-h-screen bg-background bg-subtle-grid bg-grid">
+      <div className="container mx-auto px-6 py-16">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-6xl font-bold mb-6 bg-artistic-gradient bg-clip-text text-transparent">
-            Bespoke Gallery
+        <div className="text-center mb-20">
+          <h1 className="text-7xl font-light mb-8 bg-elegant-gradient bg-clip-text text-transparent">
+            Gallery
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Where every AI-built project has a story worth telling
+          <p className="text-xl text-text-elegant mb-12 max-w-2xl mx-auto font-light">
+            Curated stories behind exceptional AI-built applications
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-6 justify-center">
             <Button 
               onClick={() => navigate('/submit')}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg animate-tech-glow"
+              className="bg-elegant-accent text-background hover:bg-elegant-accent/90 px-8 py-3 text-lg font-light"
             >
               Share Your Story
             </Button>
-            <Button variant="outline" className="border-gallery-border px-8 py-3 text-lg">
+            <Button 
+              variant="outline" 
+              className="border-subtle-border hover:border-elegant-accent/30 px-8 py-3 text-lg font-light"
+            >
               Discover More
             </Button>
           </div>
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {mockProjects.map((project) => (
             <Card 
               key={project.id}
-              className="group relative overflow-hidden border-gallery-border hover:border-tech-glow/50 transition-all duration-300 hover:shadow-lg hover:shadow-tech-glow/20 bg-card/50 backdrop-blur-sm"
+              className="group relative overflow-hidden border-subtle-border hover:border-elegant-accent/20 transition-all duration-500 hover:shadow-xl hover:shadow-elegant-accent/5 bg-card backdrop-blur-sm"
             >
-              <CardContent className="p-6">
+              <CardContent className="p-8">
                 {/* Project Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-foreground group-hover:text-tech-glow transition-colors">
+                <div className="flex items-start justify-between mb-6">
+                  <h3 className="text-2xl font-light text-foreground group-hover:text-elegant-accent transition-colors">
                     {project.name}
                   </h3>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     onClick={() => window.open(project.link, '_blank')}
                   >
                     <ExternalLink className="h-4 w-4" />
@@ -122,24 +125,24 @@ export default function Gallery() {
                 </div>
 
                 {/* Description */}
-                <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                <p className="text-text-elegant mb-6 text-base leading-relaxed font-light">
                   {project.description}
                 </p>
 
                 {/* Story Preview */}
-                <div className="mb-4 p-3 bg-muted/30 rounded-lg border-l-2 border-accent">
-                  <p className="text-sm italic text-muted-foreground">
+                <div className="mb-6 p-4 bg-muted/20 rounded-lg border-l-4 border-elegant-accent/30">
+                  <p className="text-base italic text-text-elegant font-light leading-relaxed">
                     "{project.story}"
                   </p>
                 </div>
 
                 {/* Tools */}
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex flex-wrap gap-2 mb-6">
                   {project.tools.map((tool) => (
                     <Badge 
                       key={tool} 
                       variant="secondary"
-                      className="text-xs bg-secondary/50 hover:bg-secondary/70 transition-colors"
+                      className="text-sm bg-secondary/30 hover:bg-secondary/50 transition-colors font-light px-3 py-1"
                     >
                       {tool}
                     </Badge>
@@ -147,23 +150,27 @@ export default function Gallery() {
                 </div>
 
                 {/* Creator & Contact */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-artistic-gradient rounded-full flex items-center justify-center text-primary-foreground text-sm font-semibold">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-elegant-gradient rounded-full flex items-center justify-center text-background text-sm font-medium">
                       {project.creator.name.split(' ').map(n => n[0]).join('')}
                     </div>
-                    <span className="text-sm text-muted-foreground">{project.creator.name}</span>
+                    <span className="text-base text-text-elegant font-light">{project.creator.name}</span>
                   </div>
                   {project.creator.allowsContact && (
-                    <Button variant="ghost" size="sm" className="text-xs">
-                      <MessageCircle className="h-3 w-3 mr-1" />
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-sm font-light hover:bg-card-hover transition-colors"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
                       Connect
                     </Button>
                   )}
                 </div>
 
                 {/* Reactions */}
-                <div className="flex items-center gap-3 pt-4 border-t border-gallery-border">
+                <div className="flex items-center gap-4 pt-6 border-t border-subtle-border">
                   {Object.entries(project.reactions).map(([type, count]) => {
                     const Icon = getReactionIcon(type);
                     const isActive = userReactions[project.id] === type;
@@ -173,12 +180,12 @@ export default function Gallery() {
                         key={type}
                         variant="ghost"
                         size="sm"
-                        className={`flex items-center gap-1 text-xs ${
-                          isActive ? 'text-tech-glow' : 'text-muted-foreground hover:text-foreground'
+                        className={`flex items-center gap-2 text-sm font-light transition-colors ${
+                          isActive ? 'text-elegant-accent' : 'text-text-elegant hover:text-foreground'
                         }`}
                         onClick={() => handleReaction(project.id, type)}
                       >
-                        <Icon className={`h-3 w-3 ${isActive ? 'fill-current' : ''}`} />
+                        <Icon className={`h-4 w-4 ${isActive ? 'fill-current' : ''}`} />
                         {count + (isActive ? 1 : 0)}
                       </Button>
                     );
@@ -190,8 +197,11 @@ export default function Gallery() {
         </div>
 
         {/* Load More */}
-        <div className="text-center mt-12">
-          <Button variant="outline" className="border-gallery-border hover:border-tech-glow/50">
+        <div className="text-center mt-16">
+          <Button 
+            variant="outline" 
+            className="border-subtle-border hover:border-elegant-accent/30 font-light px-8 py-3"
+          >
             Load More Stories
           </Button>
         </div>
