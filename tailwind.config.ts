@@ -52,6 +52,10 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				'tech-glow': 'hsl(var(--tech-glow))',
+				'tech-grid': 'hsl(var(--tech-grid))',
+				'gallery-border': 'hsl(var(--gallery-border))',
+				'hover-glow': 'hsl(var(--hover-glow))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -84,11 +88,36 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'tech-glow': {
+					'0%, 100%': {
+						boxShadow: '0 0 20px hsl(var(--tech-glow) / 0.5)'
+					},
+					'50%': {
+						boxShadow: '0 0 40px hsl(var(--tech-glow) / 0.8)'
+					}
+				},
+				'gradient-shift': {
+					'0%, 100%': {
+						backgroundPosition: '0% 50%'
+					},
+					'50%': {
+						backgroundPosition: '100% 50%'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'tech-glow': 'tech-glow 3s ease-in-out infinite',
+				'gradient-shift': 'gradient-shift 5s ease-in-out infinite'
+			},
+			backgroundImage: {
+				'artistic-gradient': 'linear-gradient(135deg, hsl(var(--artistic-gradient-start)), hsl(var(--artistic-gradient-end)))',
+				'tech-grid': 'radial-gradient(circle at 1px 1px, hsl(var(--tech-grid)) 1px, transparent 0)'
+			},
+			backgroundSize: {
+				'grid': '40px 40px'
 			}
 		}
 	},
