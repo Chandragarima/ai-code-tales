@@ -63,7 +63,7 @@ export const Navbar = () => {
 
           {/* Desktop Auth Section */}
           <div className="hidden md:flex items-center space-x-4">
-            {user && profile ? (
+            {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
@@ -72,25 +72,21 @@ export const Navbar = () => {
                   >
                     <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
                       <span className="text-xs font-medium text-white">
-                        {profile.username.slice(0, 2).toUpperCase()}
+                        {profile?.username ? profile.username.slice(0, 2).toUpperCase() : user.email?.slice(0, 2).toUpperCase()}
                       </span>
                     </div>
-                    <span className="font-light">{profile.username}</span>
+                    <span className="font-light">{profile?.username || user.email}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5">
-                    <p className="text-sm font-medium">{profile.username}</p>
+                    <p className="text-sm font-medium">{profile?.username || user.email}</p>
                     <p className="text-xs text-muted-foreground">{user.email}</p>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/profile')}>
                     <User className="mr-2 h-4 w-4" />
                     Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/settings')}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
@@ -100,21 +96,12 @@ export const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate('/auth')}
-                  className="font-light"
-                >
-                  Sign In
-                </Button>
-                <Button
-                  onClick={() => navigate('/auth')}
-                  className="bg-primary hover:bg-primary/90 font-light"
-                >
-                  Get Started
-                </Button>
-              </div>
+              <Button
+                onClick={() => navigate('/auth')}
+                className="bg-primary hover:bg-primary/90 font-light"
+              >
+                Sign In
+              </Button>
             )}
           </div>
 
@@ -156,16 +143,16 @@ export const Navbar = () => {
               ))}
               
               <div className="border-t border-border/50 mt-4 pt-4">
-                {user && profile ? (
+                {user ? (
                   <div className="space-y-2">
                     <div className="flex items-center px-3 py-2 space-x-3">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
                         <span className="text-xs font-medium text-white">
-                          {profile.username.slice(0, 2).toUpperCase()}
+                          {profile?.username ? profile.username.slice(0, 2).toUpperCase() : user.email?.slice(0, 2).toUpperCase()}
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium">{profile.username}</p>
+                        <p className="text-sm font-medium">{profile?.username || user.email}</p>
                         <p className="text-xs text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
@@ -180,15 +167,6 @@ export const Navbar = () => {
                     </button>
                     <button
                       onClick={() => {
-                        navigate('/settings');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-3 py-2 rounded-md font-light text-foreground/70 hover:text-foreground hover:bg-muted/50"
-                    >
-                      Settings
-                    </button>
-                    <button
-                      onClick={() => {
                         handleSignOut();
                         setIsMobileMenuOpen(false);
                       }}
@@ -198,26 +176,15 @@ export const Navbar = () => {
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        navigate('/auth');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-3 py-2 rounded-md font-light text-foreground/70 hover:text-foreground hover:bg-muted/50"
-                    >
-                      Sign In
-                    </button>
-                    <button
-                      onClick={() => {
-                        navigate('/auth');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-3 py-2 rounded-md font-light bg-primary text-primary-foreground hover:bg-primary/90"
-                    >
-                      Get Started
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => {
+                      navigate('/auth');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 rounded-md font-light bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    Sign In
+                  </button>
                 )}
               </div>
             </div>

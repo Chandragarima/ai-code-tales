@@ -67,10 +67,22 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
           </p>
         </div>
 
-        {/* Screenshots Carousel */}
+        {/* Screenshots Carousel - Compact Version */}
         {project.screenshots && project.screenshots.length > 0 && (
           <div className="px-6 pb-4">
-            <ProjectCarousel screenshots={project.screenshots} projectName={project.name} />
+            <div className="relative h-32 rounded-lg overflow-hidden border border-border/30">
+              <img 
+                src={project.screenshots[0]} 
+                alt={`${project.name} screenshot`}
+                className="w-full h-full object-cover"
+              />
+              {project.screenshots.length > 1 && (
+                <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+                  +{project.screenshots.length - 1} more
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </div>
           </div>
         )}
 

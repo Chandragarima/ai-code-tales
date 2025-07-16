@@ -61,7 +61,7 @@ export default function Auth() {
             title: 'Welcome back! 👋',
             description: 'You have been signed in successfully.',
           });
-          navigate('/');
+          // Don't navigate here, let the useEffect handle it
         }
       }
 

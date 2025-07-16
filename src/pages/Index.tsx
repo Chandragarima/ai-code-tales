@@ -93,12 +93,30 @@ const Index = () => {
           <p className="text-xl text-foreground/80 mb-8 font-light">
             Join our community of innovators and showcase your AI-powered creations.
           </p>
-          <Button 
-            onClick={() => navigate(user ? '/submit' : '/auth')}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-light shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            {user ? 'Submit Your Project' : 'Get Started Today'}
-          </Button>
+          {user ? (
+            <Button 
+              onClick={() => navigate('/submit')}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-light shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              Submit Your Project
+            </Button>
+          ) : (
+            <div className="flex gap-4 justify-center">
+              <Button 
+                onClick={() => navigate('/gallery')}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-light shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Explore Gallery
+              </Button>
+              <Button 
+                onClick={() => navigate('/auth')}
+                variant="outline"
+                className="border-border hover:border-primary/50 hover:bg-primary/5 px-8 py-4 text-lg font-light backdrop-blur-sm"
+              >
+                Join Community
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

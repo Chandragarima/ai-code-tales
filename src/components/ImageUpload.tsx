@@ -40,12 +40,22 @@ export const ImageUpload = ({ screenshots, onScreenshotsChange, maxImages = 5 }:
 
     if (error) {
       console.error('Upload error:', error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
       return null;
     }
 
     const { data: { publicUrl } } = supabase.storage
       .from('project-screenshots')
       .getPublicUrl(data.path);
+
+    toast({
+      title: "Image uploaded",
+      description: "Your image has been uploaded successfully.",
+    });
 
     return publicUrl;
   };

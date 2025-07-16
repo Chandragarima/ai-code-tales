@@ -12,6 +12,7 @@ import Submit from "./pages/Submit";
 import Auth from "./pages/Auth";
 import MyProjectsPage from "./pages/MyProjectsPage";
 import EditProject from "./pages/EditProject";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/my-projects" element={<MyProjectsPage />} />
             <Route path="/edit-project/:id" element={<EditProject />} />
+            <Route path="/profile" element={<Profile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
