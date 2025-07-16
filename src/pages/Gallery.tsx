@@ -96,7 +96,11 @@ export default function Gallery() {
           name: project.creator_name,
           allowsContact: project.allows_contact
         },
-        reactions: reactionCounts[project.id] || { heart: 0, rocket: 0, lightbulb: 0 }
+        reactions: {
+          heart: reactionCounts[project.id]?.heart || 0,
+          rocket: reactionCounts[project.id]?.rocket || 0,
+          lightbulb: reactionCounts[project.id]?.lightbulb || 0
+        }
       })) || [];
 
       setProjects(transformedProjects);

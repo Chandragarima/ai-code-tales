@@ -60,7 +60,13 @@ export const MyProjects = () => {
         return;
       }
 
-      setProjects(data || []);
+      // Type assertion to ensure status is properly typed
+      const typedProjects = (data || []).map(project => ({
+        ...project,
+        status: project.status as 'pending' | 'approved' | 'rejected'
+      }));
+
+      setProjects(typedProjects);
     } catch (error) {
       console.error('Error:', error);
     } finally {
