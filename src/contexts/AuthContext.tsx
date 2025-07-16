@@ -14,8 +14,8 @@ interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -57,7 +57,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      // Use any type to bypass TypeScript issues with missing table types
+      const { data, error } = await (supabase as any)
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -80,62 +81,84 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let counter = 1;
 
     while (true) {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('username', username)
-        .limit(1);
+      try {
+        // Use any type to bypass TypeScript issues with missing table types
+        const { data, error } = await (supabase as any)
+          .from('profiles')
+          .select('username')
+          .eq('username', username)
+          .limit(1);
 
-      if (error) {
+        if (error) {
+          console.error('Error checking username:', error);
+          break;
+        }
+
+        if (!data || data.length === 0) {
+          break;
+        }
+
+        username = `${baseUsername}${counter}`;
+        counter++;
+      } catch (error) {
         console.error('Error checking username:', error);
         break;
       }
-
-      if (!data || data.length === 0) {
-        break;
-      }
-
-      username = `${baseUsername}${counter}`;
-      counter++;
     }
 
     return username;
   };
 
   const signUp = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) throw error;
-
-    if (data.user) {
-      const username = await generateUniqueUsername(email);
+    try {
+      const redirectUrl = `${window.location.origin}/`;
       
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([
-          {
-            id: data.user.id,
-            username,
-            email: data.user.email,
-          },
-        ]);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl
+        }
+      });
 
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
+      if (error) return { error };
+
+      if (data.user) {
+        const username = await generateUniqueUsername(email);
+        
+        // Use any type to bypass TypeScript issues with missing table types
+        const { error: profileError } = await (supabase as any)
+          .from('profiles')
+          .insert([
+            {
+              id: data.user.id,
+              username,
+              email: data.user.email,
+            },
+          ]);
+
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+        }
       }
+
+      return { error: null };
+    } catch (error) {
+      return { error };
     }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) throw error;
+      return { error };
+    } catch (error) {
+      return { error };
+    }
   };
 
   const signOut = async () => {
