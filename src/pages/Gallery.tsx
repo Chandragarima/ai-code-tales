@@ -164,9 +164,10 @@ export default function Gallery() {
       console.error('Unexpected error:', error);
       // Fallback to mock projects
       setProjects(mockProjects);
-    } finally {
-      setLoading(false);
     }
+    
+    // Always ensure loading is set to false
+    setLoading(false);
   };
 
   const fetchUserReactions = async () => {

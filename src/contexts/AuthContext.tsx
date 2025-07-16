@@ -31,9 +31,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      }
       setLoading(false);
     };
 
@@ -41,13 +38,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setUser(session?.user ?? null);
-        if (session?.user) {
-          await fetchProfile(session.user.id);
-        } else {
-          setProfile(null);
-        }
         setLoading(false);
       }
     );
@@ -56,58 +48,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const fetchProfile = async (userId: string) => {
-    try {
-      // Use any type to bypass TypeScript issues with missing table types
-      const { data, error } = await (supabase as any)
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return;
-      }
-
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
+    // Skip profile fetching for now since profiles table doesn't exist
+    setProfile(null);
   };
 
-  const generateUniqueUsername = async (baseEmail: string): Promise<string> => {
-    const baseUsername = baseEmail.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
-    let username = baseUsername;
-    let counter = 1;
-
-    while (true) {
-      try {
-        // Use any type to bypass TypeScript issues with missing table types
-        const { data, error } = await (supabase as any)
-          .from('profiles')
-          .select('username')
-          .eq('username', username)
-          .limit(1);
-
-        if (error) {
-          console.error('Error checking username:', error);
-          break;
-        }
-
-        if (!data || data.length === 0) {
-          break;
-        }
-
-        username = `${baseUsername}${counter}`;
-        counter++;
-      } catch (error) {
-        console.error('Error checking username:', error);
-        break;
-      }
-    }
-
-    return username;
-  };
 
   const signUp = async (email: string, password: string) => {
     try {
@@ -123,24 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) return { error };
 
-      if (data.user) {
-        const username = await generateUniqueUsername(email);
-        
-        // Use any type to bypass TypeScript issues with missing table types
-        const { error: profileError } = await (supabase as any)
-          .from('profiles')
-          .insert([
-            {
-              id: data.user.id,
-              username,
-              email: data.user.email,
-            },
-          ]);
-
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-        }
-      }
+      // Skip profile creation for now since profiles table doesn't exist
 
       return { error: null };
     } catch (error) {
