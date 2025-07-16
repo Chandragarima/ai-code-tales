@@ -1,7 +1,9 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { ExternalLink, Heart, Rocket, Lightbulb, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -106,19 +108,19 @@ export default function Gallery() {
           {mockProjects.map((project) => (
             <Card 
               key={project.id}
-              className="group relative overflow-hidden border-subtle-border hover:border-elegant-accent/20 transition-all duration-500 hover:shadow-xl hover:shadow-elegant-accent/5 bg-card backdrop-blur-sm"
+              className="group relative overflow-hidden border-subtle-border hover:border-elegant-accent/30 transition-all duration-500 hover:shadow-xl hover:shadow-elegant-accent/10 bg-card backdrop-blur-sm"
             >
               <CardContent className="p-0">
                 {/* Header Section */}
-                <div className="p-6 pb-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-xl font-medium text-foreground group-hover:text-elegant-accent transition-colors">
+                <div className="p-6 pb-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-xl font-medium text-foreground group-hover:text-elegant-accent transition-colors leading-tight">
                       {project.name}
                     </h3>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 h-8 w-8"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 h-8 w-8 shrink-0"
                       onClick={() => window.open(project.link, '_blank')}
                     >
                       <ExternalLink className="h-4 w-4" />
@@ -129,21 +131,34 @@ export default function Gallery() {
                   </p>
                 </div>
 
+                {/* Elegant Separator */}
+                <div className="px-6">
+                  <Separator className="bg-gradient-to-r from-transparent via-subtle-border to-transparent" />
+                </div>
+
                 {/* Story Section */}
-                <div className="px-6 py-4 bg-muted/10 border-y border-subtle-border/50">
-                  <p className="text-sm italic text-text-elegant leading-relaxed">
-                    "{project.story}"
-                  </p>
+                <div className="px-6 py-5 bg-muted/5">
+                  <div className="relative">
+                    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-elegant-accent/20 rounded-full"></div>
+                    <p className="text-sm italic text-text-elegant leading-relaxed pl-4">
+                      "{project.story}"
+                    </p>
+                  </div>
+                </div>
+
+                {/* Elegant Separator */}
+                <div className="px-6">
+                  <Separator className="bg-gradient-to-r from-transparent via-subtle-border to-transparent" />
                 </div>
 
                 {/* Tools Section */}
-                <div className="px-6 py-4">
+                <div className="px-6 py-5">
                   <div className="flex flex-wrap gap-2">
                     {project.tools.map((tool) => (
                       <Badge 
                         key={tool} 
                         variant="secondary"
-                        className="text-xs bg-secondary/30 hover:bg-secondary/50 transition-colors px-2 py-1"
+                        className="text-xs bg-secondary/20 hover:bg-secondary/30 transition-colors px-3 py-1 border border-subtle-border/30"
                       >
                         {tool}
                       </Badge>
@@ -151,20 +166,28 @@ export default function Gallery() {
                   </div>
                 </div>
 
+                {/* Distinctive Separator with Accent */}
+                <div className="px-6">
+                  <div className="relative">
+                    <Separator className="bg-subtle-border/40" />
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-elegant-accent/20 rounded-full"></div>
+                  </div>
+                </div>
+
                 {/* Creator Section */}
-                <div className="px-6 py-4 border-t border-subtle-border/50">
+                <div className="px-6 py-5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-elegant-gradient rounded-full flex items-center justify-center text-background text-xs font-medium">
+                      <div className="w-8 h-8 bg-elegant-gradient rounded-full flex items-center justify-center text-background text-xs font-medium shadow-sm">
                         {project.creator.name.split(' ').map(n => n[0]).join('')}
                       </div>
-                      <span className="text-sm text-text-elegant">{project.creator.name}</span>
+                      <span className="text-sm text-text-elegant font-medium">{project.creator.name}</span>
                     </div>
                     {project.creator.allowsContact && (
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="text-xs hover:bg-card-hover transition-colors h-8 px-3"
+                        className="text-xs hover:bg-muted/20 transition-colors h-8 px-3 border border-transparent hover:border-subtle-border/20"
                       >
                         <MessageCircle className="h-3 w-3 mr-1" />
                         Connect
@@ -173,8 +196,13 @@ export default function Gallery() {
                   </div>
                 </div>
 
+                {/* Final Distinctive Separator */}
+                <div className="px-6">
+                  <div className="h-px bg-gradient-to-r from-elegant-accent/10 via-elegant-accent/30 to-elegant-accent/10"></div>
+                </div>
+
                 {/* Reactions Section */}
-                <div className="px-6 py-4 bg-muted/5 border-t border-subtle-border/50">
+                <div className="px-6 py-4 bg-muted/3">
                   <div className="flex items-center gap-4">
                     {Object.entries(project.reactions).map(([type, count]) => {
                       const Icon = getReactionIcon(type);
@@ -185,13 +213,15 @@ export default function Gallery() {
                           key={type}
                           variant="ghost"
                           size="sm"
-                          className={`flex items-center gap-1 text-xs transition-colors h-8 px-2 ${
-                            isActive ? 'text-elegant-accent' : 'text-text-elegant hover:text-foreground'
+                          className={`flex items-center gap-1.5 text-xs transition-all duration-200 h-8 px-3 border border-transparent hover:border-subtle-border/20 ${
+                            isActive 
+                              ? 'text-elegant-accent bg-elegant-accent/5 border-elegant-accent/20' 
+                              : 'text-text-elegant hover:text-foreground hover:bg-muted/10'
                           }`}
                           onClick={() => handleReaction(project.id, type)}
                         >
                           <Icon className={`h-3 w-3 ${isActive ? 'fill-current' : ''}`} />
-                          {count + (isActive ? 1 : 0)}
+                          <span className="font-medium">{count + (isActive ? 1 : 0)}</span>
                         </Button>
                       );
                     })}
