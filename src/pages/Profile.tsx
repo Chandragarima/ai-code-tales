@@ -41,6 +41,7 @@ export default function Profile() {
     twitter: '',
     linkedin: ''
   });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -135,6 +136,72 @@ export default function Profile() {
     }
   };
 
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user || !event.target.files || event.target.files.length === 0) return;
+    
+    const file = event.target.files[0];
+    setUploading(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update profile with new avatar URL
+      const updatedData = { ...formData, avatar_url: publicUrl };
+      
+      if (profile) {
+        const { error } = await supabase
+          .from('profiles' as any)
+          .update({ avatar_url: publicUrl })
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('profiles' as any)
+          .insert({
+            user_id: user.id,
+            username: formData.username || null,
+            bio: formData.bio || null,
+            website: formData.website || null,
+            github: formData.github || null,
+            twitter: formData.twitter || null,
+            linkedin: formData.linkedin || null,
+            avatar_url: publicUrl
+          });
+
+        if (error) throw error;
+      }
+
+      toast({
+        title: "Avatar updated",
+        description: "Your profile picture has been updated successfully."
+      });
+
+      fetchProfile();
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload avatar. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -192,10 +259,26 @@ export default function Profile() {
                 </Avatar>
                 <div className="flex-1">
                   <p className="text-foreground/70 mb-4">Upload a profile picture to personalize your account</p>
-                  <Button variant="outline" className="border-border hover:border-primary/30 font-light">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload Image
-                  </Button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                    id="avatar-upload"
+                  />
+                  <label htmlFor="avatar-upload">
+                    <Button 
+                      variant="outline" 
+                      className="border-border hover:border-primary/30 font-light"
+                      disabled={uploading}
+                      asChild
+                    >
+                      <span>
+                        <Upload className="h-4 w-4 mr-2" />
+                        {uploading ? 'Uploading...' : 'Upload Image'}
+                      </span>
+                    </Button>
+                  </label>
                 </div>
               </div>
             </CardContent>

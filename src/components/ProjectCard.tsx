@@ -2,7 +2,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Heart, Rocket, Lightbulb, MessageCircle } from "lucide-react";
+import { ExternalLink, Heart, Rocket, Lightbulb, MessageCircle, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { ProjectCarousel } from "./ProjectCarousel";
 
 interface Project {
@@ -32,6 +33,8 @@ interface ProjectCardProps {
 }
 
 export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardProps) => {
+  const navigate = useNavigate();
+  
   const getReactionIcon = (type: string) => {
     switch (type) {
       case 'heart': return Heart;
@@ -87,44 +90,50 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
           </div>
         </div>
 
-        {/* Screenshots Carousel - Compact Version */}
+        {/* Story as Primary - Redesigned */}
+        <div className="px-6 py-6 bg-gradient-to-r from-muted/10 to-accent/5">
+          <div className="relative">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary/40 to-accent/40 rounded-full"></div>
+            <div className="pl-6">
+              <h3 className="text-lg font-semibold text-foreground mb-3 leading-tight">The Story</h3>
+              <blockquote className="text-base font-medium text-foreground/90 leading-relaxed mb-4 italic">
+                "{project.story}"
+              </blockquote>
+              <p className="text-sm text-foreground/70 leading-relaxed mb-4">
+                {project.description}
+              </p>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate(`/project/${project.id}`)}
+                className="text-primary hover:text-primary/80 hover:bg-primary/10 transition-all duration-300 p-0 h-auto font-medium"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Read full story
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Screenshots as Secondary - Compact */}
         {project.screenshots && project.screenshots.length > 0 && (
           <div className="px-6 pb-4">
-            <div className="relative h-32 rounded-lg overflow-hidden border border-border/30">
+            <div className="relative h-24 rounded-lg overflow-hidden border border-border/30 cursor-pointer" 
+                 onClick={() => navigate(`/project/${project.id}`)}>
               <img 
                 src={project.screenshots[0]} 
-                alt={`${project.name} screenshot`}
-                className="w-full h-full object-cover"
+                alt={`${project.name} preview`}
+                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               />
               {project.screenshots.length > 1 && (
-                <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
-                  +{project.screenshots.length - 1} more
+                <div className="absolute top-1 right-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                  +{project.screenshots.length - 1}
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </div>
           </div>
         )}
-
-        {/* Elegant Separator with Color */}
-        <div className="px-6">
-          <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-        </div>
-
-        {/* Story Hook Section */}
-        <div className="px-6 py-5 bg-gradient-to-r from-muted/10 to-accent/5">
-          <div className="relative">
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary/40 to-accent/40 rounded-full"></div>
-            <div className="pl-6">
-              <p className="text-base font-medium text-foreground leading-relaxed mb-3">
-                "{project.story}"
-              </p>
-              <p className="text-sm text-foreground/70 leading-relaxed">
-                {project.description}
-              </p>
-            </div>
-          </div>
-        </div>
 
         {/* Decorative Separator */}
         <div className="px-6">
