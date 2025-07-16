@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { ProjectCard } from '@/components/ProjectCard';
 import { GalleryHeader } from '@/components/GalleryHeader';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Project {
   id: string;
@@ -89,10 +91,15 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTool, setSelectedTool] = useState('All');
+  const [userReactions, setUserReactions] = useState<Record<string, string>>({});
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+    if (user) {
+      fetchUserReactions();
+    }
+  }, [user]);
 
   const fetchProjects = async () => {
     try {
@@ -162,6 +169,65 @@ export default function Gallery() {
     }
   };
 
+  const fetchUserReactions = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('project_reactions')
+      .select('project_id, reaction_type')
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Error fetching user reactions:', error);
+      return;
+    }
+
+    const reactions: Record<string, string> = {};
+    data?.forEach(reaction => {
+      reactions[reaction.project_id] = reaction.reaction_type;
+    });
+    setUserReactions(reactions);
+  };
+
+  const handleReaction = async (projectId: string, reactionType: string) => {
+    if (!user) return;
+
+    const currentReaction = userReactions[projectId];
+    
+    if (currentReaction === reactionType) {
+      // Remove reaction
+      const { error } = await supabase
+        .from('project_reactions')
+        .delete()
+        .eq('project_id', projectId)
+        .eq('user_id', user.id);
+
+      if (!error) {
+        setUserReactions(prev => {
+          const newReactions = { ...prev };
+          delete newReactions[projectId];
+          return newReactions;
+        });
+      }
+    } else {
+      // Add or update reaction
+      const { error } = await supabase
+        .from('project_reactions')
+        .upsert({
+          project_id: projectId,
+          user_id: user.id,
+          reaction_type: reactionType
+        });
+
+      if (!error) {
+        setUserReactions(prev => ({
+          ...prev,
+          [projectId]: reactionType
+        }));
+      }
+    }
+  };
+
   const filteredProjects = projects.filter(project => {
     const matchesSearch = project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -206,7 +272,12 @@ export default function Gallery() {
         ) : (
           <div className="grid gap-8 md:gap-12">
             {filteredProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+              <ProjectCard 
+                key={project.id} 
+                project={project} 
+                userReactions={userReactions}
+                onReaction={handleReaction}
+              />
             ))}
           </div>
         )}
