@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, User, LogOut, Settings } from 'lucide-react';
@@ -21,6 +20,7 @@ export const Navbar = () => {
   const navItems = [
     { name: 'Gallery', path: '/gallery' },
     { name: 'Submit', path: '/submit' },
+    ...(user ? [{ name: 'My Projects', path: '/my-projects' }] : []),
   ];
 
   const handleSignOut = async () => {

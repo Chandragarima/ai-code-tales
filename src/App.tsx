@@ -10,6 +10,8 @@ import Index from "./pages/Index";
 import Gallery from "./pages/Gallery";
 import Submit from "./pages/Submit";
 import Auth from "./pages/Auth";
+import MyProjectsPage from "./pages/MyProjectsPage";
+import EditProject from "./pages/EditProject";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +29,8 @@ const App = () => (
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/submit" element={<Submit />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/my-projects" element={<MyProjectsPage />} />
+            <Route path="/edit-project/:id" element={<EditProject />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

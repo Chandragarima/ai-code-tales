@@ -68,11 +68,11 @@ export default function Auth() {
       if (result.error) {
         let errorMessage = 'An error occurred. Please try again.';
         
-        if (result.error.message.includes('Invalid login credentials')) {
+        if (result.error.message?.includes('Invalid login credentials')) {
           errorMessage = 'Invalid email or password. Please try again.';
-        } else if (result.error.message.includes('User already registered')) {
+        } else if (result.error.message?.includes('User already registered')) {
           errorMessage = 'An account with this email already exists. Try signing in instead.';
-        } else if (result.error.message.includes('Email not confirmed')) {
+        } else if (result.error.message?.includes('Email not confirmed')) {
           errorMessage = 'Please check your email and click the confirmation link.';
         }
         
@@ -83,6 +83,7 @@ export default function Auth() {
         });
       }
     } catch (error) {
+      console.error('Auth error:', error);
       toast({
         title: 'Error',
         description: 'Something went wrong. Please try again.',
