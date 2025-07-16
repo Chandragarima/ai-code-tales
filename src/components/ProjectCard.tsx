@@ -3,14 +3,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Heart, Rocket, Lightbulb, MessageCircle } from "lucide-react";
+import { ProjectCarousel } from "./ProjectCarousel";
 
 interface Project {
   id: string;
   name: string;
   description: string;
   story: string;
+  deeper_story?: string;
   link: string;
   tools: string[];
+  screenshots: string[];
   creator: {
     name: string;
     allowsContact: boolean;
@@ -45,7 +48,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
       
       <CardContent className="relative p-0">
         {/* Header Section */}
-        <div className="p-6 pb-5 bg-gradient-to-r from-card via-card to-muted/20">
+        <div className="p-6 pb-4 bg-gradient-to-r from-card via-card to-muted/20">
           <div className="flex items-start justify-between mb-4">
             <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors leading-tight">
               {project.name}
@@ -63,6 +66,13 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
             {project.description}
           </p>
         </div>
+
+        {/* Screenshots Carousel */}
+        {project.screenshots && project.screenshots.length > 0 && (
+          <div className="px-6 pb-4">
+            <ProjectCarousel screenshots={project.screenshots} projectName={project.name} />
+          </div>
+        )}
 
         {/* Elegant Separator with Color */}
         <div className="px-6">

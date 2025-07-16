@@ -14,7 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      project_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string
+          reaction_type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: string
+          reaction_type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string
+          reaction_type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_reactions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          allows_contact: boolean
+          created_at: string
+          creator_name: string
+          deeper_story: string | null
+          description: string
+          email: string
+          id: string
+          link: string
+          name: string
+          screenshots: string[] | null
+          status: string | null
+          story: string
+          tools: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allows_contact?: boolean
+          created_at?: string
+          creator_name: string
+          deeper_story?: string | null
+          description: string
+          email: string
+          id?: string
+          link: string
+          name: string
+          screenshots?: string[] | null
+          status?: string | null
+          story: string
+          tools: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allows_contact?: boolean
+          created_at?: string
+          creator_name?: string
+          deeper_story?: string | null
+          description?: string
+          email?: string
+          id?: string
+          link?: string
+          name?: string
+          screenshots?: string[] | null
+          status?: string | null
+          story?: string
+          tools?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

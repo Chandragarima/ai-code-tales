@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,23 +11,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Sparkles, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ImageUpload } from "@/components/ImageUpload";
 
-const submitSchema = z.object({
+const editSchema = z.object({
   name: z.string().min(3, "Project name must be at least 3 characters"),
   link: z.string().url("Please enter a valid URL"),
   description: z.string().min(10, "Description must be at least 10 characters").max(200, "Description must be under 200 characters"),
@@ -38,7 +30,7 @@ const submitSchema = z.object({
   creatorName: z.string().min(2, "Creator name must be at least 2 characters")
 });
 
-type SubmitForm = z.infer<typeof submitSchema>;
+type EditForm = z.infer<typeof editSchema>;
 
 const aiTools = [
   "Claude", "GPT-4", "GPT-3.5", "Gemini", "Anthropic API", "OpenAI API",
@@ -46,16 +38,18 @@ const aiTools = [
   "Cursor", "Replit", "v0", "Lovable", "Other"
 ];
 
-export default function Submit() {
+export default function EditProject() {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [customTool, setCustomTool] = useState("");
   const [screenshots, setScreenshots] = useState<string[]>([]);
 
-  const form = useForm<SubmitForm>({
-    resolver: zodResolver(submitSchema),
+  const form = useForm<EditForm>({
+    resolver: zodResolver(editSchema),
     defaultValues: {
       name: "",
       link: "",
@@ -68,6 +62,56 @@ export default function Submit() {
       creatorName: ""
     }
   });
+
+  useEffect(() => {
+    if (id && user) {
+      loadProject();
+    }
+  }, [id, user]);
+
+  const loadProject = async () => {
+    if (!id || !user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error loading project:', error);
+        toast({
+          title: "Error",
+          description: "Project not found or you don't have permission to edit it",
+          variant: "destructive",
+        });
+        navigate('/my-projects');
+        return;
+      }
+
+      // Set form values
+      form.reset({
+        name: data.name,
+        link: data.link,
+        description: data.description,
+        story: data.story,
+        deeperStory: data.deeper_story || "",
+        tools: data.tools,
+        allowsContact: data.allows_contact,
+        email: data.email,
+        creatorName: data.creator_name
+      });
+
+      setSelectedTools(data.tools);
+      setScreenshots(data.screenshots || []);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const addTool = (tool: string) => {
     if (!selectedTools.includes(tool)) {
@@ -90,82 +134,78 @@ export default function Submit() {
     }
   };
 
-  const onSubmit = async (data: SubmitForm) => {
-    if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to submit a project",
-        variant: "destructive",
-      });
-      navigate('/auth');
-      return;
-    }
+  const onSubmit = async (data: EditForm) => {
+    if (!id || !user) return;
 
     try {
       const { error } = await supabase
         .from('projects')
-        .insert([
-          {
-            user_id: user.id,
-            name: data.name,
-            link: data.link,
-            description: data.description,
-            story: data.story,
-            deeper_story: data.deeperStory || null,
-            tools: data.tools,
-            allows_contact: data.allowsContact,
-            email: data.email,
-            creator_name: data.creatorName,
-            screenshots,
-            status: 'pending'
-          }
-        ]);
+        .update({
+          name: data.name,
+          link: data.link,
+          description: data.description,
+          story: data.story,
+          deeper_story: data.deeperStory || null,
+          tools: data.tools,
+          allows_contact: data.allowsContact,
+          email: data.email,
+          creator_name: data.creatorName,
+          screenshots,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .eq('user_id', user.id);
 
       if (error) {
-        console.error('Submission error:', error);
+        console.error('Update error:', error);
         toast({
           title: "Error",
-          description: "Failed to submit project. Please try again.",
+          description: "Failed to update project",
           variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: "Project Submitted! 🎉",
-        description: "Your story has been submitted for review. We'll get back to you within 48 hours.",
+        title: "Project Updated! ✨",
+        description: "Your project has been successfully updated.",
       });
-      navigate("/my-projects");
+      navigate('/my-projects');
     } catch (error) {
       console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background bg-subtle-grid bg-grid flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-elegant-accent mx-auto mb-4"></div>
+          <p className="text-text-elegant">Loading project...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background bg-subtle-grid bg-grid">
       <div className="container mx-auto px-6 py-16 max-w-4xl">
-        {/* Header */}
         <div className="mb-12">
           <Button 
             variant="ghost" 
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/my-projects")}
             className="mb-6 text-text-elegant hover:text-foreground font-light"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Gallery
+            Back to My Projects
           </Button>
           
           <div className="text-center">
             <h1 className="text-5xl font-light mb-6 bg-elegant-gradient bg-clip-text text-transparent">
-              Share Your Story
+              Edit Project
             </h1>
             <p className="text-text-elegant text-lg font-light leading-relaxed">
-              Tell us about your AI-powered creation and the journey behind it
+              Update your project details and story
             </p>
           </div>
         </div>
@@ -174,7 +214,7 @@ export default function Submit() {
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-foreground font-light text-xl">
               <Sparkles className="h-6 w-6 text-elegant-accent" />
-              Project Submission
+              Project Details
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -442,12 +482,12 @@ export default function Submit() {
                     type="submit" 
                     className="flex-1 bg-elegant-accent hover:bg-elegant-accent/90 text-background font-light py-3"
                   >
-                    Submit for Review
+                    Update Project
                   </Button>
                   <Button 
                     type="button" 
                     variant="outline" 
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/my-projects")}
                     className="border-subtle-border hover:border-elegant-accent/30 font-light py-3"
                   >
                     Cancel

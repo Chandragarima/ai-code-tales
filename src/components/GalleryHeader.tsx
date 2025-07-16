@@ -1,9 +1,11 @@
 
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const GalleryHeader = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <div className="text-center mb-20">
@@ -15,13 +17,22 @@ export const GalleryHeader = () => {
       <p className="text-xl text-foreground/80 mb-12 max-w-2xl mx-auto font-light">
         Curated stories behind exceptional AI-built applications
       </p>
-      <div className="flex gap-6 justify-center">
+      <div className="flex gap-6 justify-center flex-wrap">
         <Button 
           onClick={() => navigate('/submit')}
           className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg font-light shadow-lg hover:shadow-xl transition-all duration-300"
         >
           Share Your Story
         </Button>
+        {user && (
+          <Button 
+            onClick={() => navigate('/my-projects')}
+            variant="outline" 
+            className="border-border hover:border-primary/50 hover:bg-primary/5 px-8 py-3 text-lg font-light backdrop-blur-sm"
+          >
+            My Projects
+          </Button>
+        )}
         <Button 
           variant="outline" 
           className="border-border hover:border-primary/50 hover:bg-primary/5 px-8 py-3 text-lg font-light backdrop-blur-sm"
