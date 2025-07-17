@@ -2,7 +2,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Heart, Rocket, Lightbulb, MessageCircle } from "lucide-react";
+import { ExternalLink, Heart, Rocket, Lightbulb, MessageCircle, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { ProjectCarousel } from "./ProjectCarousel";
 
 interface Project {
@@ -32,6 +33,8 @@ interface ProjectCardProps {
 }
 
 export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardProps) => {
+  const navigate = useNavigate();
+  
   const getReactionIcon = (type: string) => {
     switch (type) {
       case 'heart': return Heart;
@@ -47,51 +50,88 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       
       <CardContent className="relative p-0">
-        <div className="flex">
-          {/* Left Side - Image Section (1/3 of space) */}
-          <div className="w-1/3 relative">
-            {project.screenshots && project.screenshots.length > 0 ? (
-              <div className="relative h-full min-h-[200px]">
-                <img 
-                  src={project.screenshots[0]} 
-                  alt={`${project.name} screenshot`}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    console.error('Image failed to load:', target.src);
-                    target.style.display = 'none';
-                    const fallback = target.nextElementSibling as HTMLElement;
-                    if (fallback) fallback.style.display = 'flex';
-                  }}
-                />
-                {/* Fallback when image fails to load */}
-                <div className="absolute inset-0 bg-gradient-to-br from-muted/20 to-accent/10 flex items-center justify-center hidden">
-                  <div className="text-foreground/40 text-sm">Image unavailable</div>
-                </div>
-                {/* Overlay with project info on hover */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+        {/* Builder Spotlight Section */}
+        <div className="p-6 pb-4 bg-gradient-to-r from-card via-card to-muted/20">
+          <div className="flex items-center gap-4 mb-4">
+            <div 
+              className="w-12 h-12 rounded-full flex items-center justify-center text-primary-foreground text-lg font-bold shadow-lg"
+              style={{
+                background: `linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))`
+              }}
+            >
+              {project.creator.name.split(' ').map(n => n[0]).join('')}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-lg font-semibold text-foreground">Built by {project.creator.name}</span>
+                {project.creator.allowsContact && (
                   <Button 
-                    variant="secondary" 
-                    size="sm"
-                    className="bg-white/90 text-black hover:bg-white transition-all duration-300"
-                    onClick={() => window.open(project.link, '_blank')}
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-6 px-2 hover:bg-primary/10 hover:text-primary transition-all duration-300"
                   >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    View Project
+                    <MessageCircle className="h-3 w-3 mr-1" />
+                    Connect
                   </Button>
-                </div>
-                {/* Image counter badge */}
-                {project.screenshots.length > 1 && (
-                  <div className="absolute top-3 right-3 bg-black/80 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-                    +{project.screenshots.length - 1}
-                  </div>
                 )}
               </div>
-            ) : (
-              <div className="w-full h-full min-h-[200px] bg-gradient-to-br from-muted/20 to-accent/10 flex items-center justify-center">
-                <div className="text-foreground/40 text-sm">No Screenshot</div>
-              </div>
-            )}
+              <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
+                {project.name}
+              </h3>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="opacity-0 group-hover:opacity-100 transition-all duration-300 h-8 w-8 shrink-0 hover:bg-primary/10 hover:text-primary"
+              onClick={() => window.open(project.link, '_blank')}
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Story as Primary - Redesigned */}
+        <div className="px-6 py-6 bg-gradient-to-r from-muted/10 to-accent/5">
+          <div className="relative">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary/40 to-accent/40 rounded-full"></div>
+            <div className="pl-6">
+              <h3 className="text-lg font-semibold text-foreground mb-3 leading-tight">The Story</h3>
+              <blockquote className="text-base font-medium text-foreground/90 leading-relaxed mb-4 italic">
+                "{project.story}"
+              </blockquote>
+              <p className="text-sm text-foreground/70 leading-relaxed mb-4">
+                {project.description}
+              </p>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate(`/project/${project.id}`)}
+                className="text-primary hover:text-primary/80 hover:bg-primary/10 transition-all duration-300 p-0 h-auto font-medium"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Read full story
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Screenshots as Secondary - Compact */}
+        {project.screenshots && project.screenshots.length > 0 && (
+          <div className="px-6 pb-4">
+            <div className="relative h-24 rounded-lg overflow-hidden border border-border/30 cursor-pointer" 
+                 onClick={() => navigate(`/project/${project.id}`)}>
+              <img 
+                src={project.screenshots[0]} 
+                alt={`${project.name} preview`}
+                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              />
+              {project.screenshots.length > 1 && (
+                <div className="absolute top-1 right-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                  +{project.screenshots.length - 1}
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </div>
           </div>
 
           {/* Right Side - Content Section (2/3 of space) */}
@@ -141,29 +181,15 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
               </div>
             </div>
 
-            {/* Footer Section - Creator and Reactions */}
-            <div className="flex items-center justify-between mt-auto">
-              {/* Creator Info */}
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-primary-foreground text-xs font-medium shadow-lg"
-                  style={{
-                    background: `linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))`
-                  }}
-                >
-                  {project.creator.name.split(' ').map(n => n[0]).join('')}
-                </div>
-                <span className="text-xs text-foreground/80 font-medium truncate">{project.creator.name}</span>
-                {project.creator.allowsContact && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-xs hover:bg-primary/10 hover:text-primary transition-all duration-300 h-6 px-2 border border-transparent hover:border-primary/20"
-                  >
-                    <MessageCircle className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
+        {/* Premium Separator */}
+        <div className="px-6">
+          <div className="relative">
+            <div className="h-px bg-gradient-to-r from-transparent via-primary/40 via-accent/40 to-transparent"></div>
+            <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-1 h-1 bg-primary/50 rounded-full"></div>
+            <div className="absolute right-1/3 top-1/2 -translate-y-1/2 w-1 h-1 bg-accent/50 rounded-full"></div>
+          </div>
+        </div>
+
 
               {/* Reactions */}
               <div className="flex items-center gap-1">

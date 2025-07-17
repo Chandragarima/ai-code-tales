@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, User, LogOut, Settings } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Menu, X, User, LogOut, Settings, MessageSquare } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { MessagesPage } from './MessagesPage';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +16,8 @@ import {
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, profile, signOut } = useAuth();
@@ -28,7 +33,66 @@ export const Navbar = () => {
     navigate('/');
   };
 
+  // Load unread message count
+  useEffect(() => {
+    if (!user) return;
+
+    const loadUnreadCount = async () => {
+      try {
+        // Get all conversations where user is involved
+        const { data: conversations } = await supabase
+          .from('conversations')
+          .select('id')
+          .or(`creator_id.eq.${user.id},sender_id.eq.${user.id}`);
+
+        if (!conversations || conversations.length === 0) {
+          setUnreadCount(0);
+          return;
+        }
+
+        // Count unread messages
+        const conversationIds = conversations.map(c => c.id);
+        const { count } = await supabase
+          .from('messages')
+          .select('id', { count: 'exact', head: true })
+          .in('conversation_id', conversationIds)
+          .eq('is_read', false)
+          .neq('sender_id', user.id);
+
+        setUnreadCount(count || 0);
+      } catch (error) {
+        console.error('Error loading unread count:', error);
+      }
+    };
+
+    loadUnreadCount();
+
+    // Real-time updates for message count
+    const channel = supabase
+      .channel('message-count-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        () => {
+          loadUnreadCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   const isActivePath = (path: string) => location.pathname === path;
+
+  if (showMessages) {
+    return <MessagesPage onClose={() => setShowMessages(false)} />;
+  }
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
@@ -63,6 +127,25 @@ export const Navbar = () => {
 
           {/* Desktop Auth Section */}
           <div className="hidden md:flex items-center space-x-4">
+            {user && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative"
+                onClick={() => setShowMessages(true)}
+              >
+                <MessageSquare className="h-5 w-5" />
+                {unreadCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                  >
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </Badge>
+                )}
+              </Button>
+            )}
+            
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -145,6 +228,23 @@ export const Navbar = () => {
               <div className="border-t border-border/50 mt-4 pt-4">
                 {user ? (
                   <div className="space-y-2">
+                    {/* Messages button for mobile */}
+                    <button
+                      onClick={() => {
+                        setShowMessages(true);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center w-full text-left px-3 py-2 rounded-md font-light text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                    >
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      Messages
+                      {unreadCount > 0 && (
+                        <Badge variant="destructive" className="ml-auto text-xs">
+                          {unreadCount > 9 ? '9+' : unreadCount}
+                        </Badge>
+                      )}
+                    </button>
+                    
                     <div className="flex items-center px-3 py-2 space-x-3">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
                         <span className="text-xs font-medium text-white">
