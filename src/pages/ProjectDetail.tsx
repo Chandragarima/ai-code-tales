@@ -7,6 +7,7 @@ import { ArrowLeft, ExternalLink, Heart, Rocket, Lightbulb, MessageCircle, Calen
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { MessageDialog } from '@/components/MessageDialog';
 
 interface Project {
   id: string;
@@ -21,6 +22,7 @@ interface Project {
   email: string;
   allows_contact: boolean;
   created_at: string;
+  user_id: string;
   reactions: {
     heart: number;
     rocket: number;
@@ -38,6 +40,8 @@ export default function ProjectDetail() {
   const [loading, setLoading] = useState(true);
   const [userReaction, setUserReaction] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [creatorAllowsContact, setCreatorAllowsContact] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -45,6 +49,12 @@ export default function ProjectDetail() {
       if (user) {
         fetchUserReaction();
       }
+    }
+  }, [id, user]);
+
+  useEffect(() => {
+    if (project) {
+      checkCreatorContactSettings();
     }
   }, [id, user]);
 
@@ -186,6 +196,27 @@ export default function ProjectDetail() {
     }
   };
 
+  const checkCreatorContactSettings = async () => {
+    if (!project) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('allow_contact')
+        .eq('user_id', project.user_id)
+        .single();
+
+      if (error) {
+        console.error('Error checking creator contact settings:', error);
+        return;
+      }
+
+      setCreatorAllowsContact(data?.allow_contact !== false);
+    } catch (error) {
+      console.error('Error checking creator contact settings:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background bg-subtle-grid bg-grid flex items-center justify-center">
@@ -254,10 +285,13 @@ export default function ProjectDetail() {
                         <ExternalLink className="h-4 w-4 mr-2" />
                         View Live
                       </Button>
-                      {project.allows_contact && (
-                        <Button variant="outline">
+                      {user && creatorAllowsContact && user.id !== project.user_id && (
+                        <Button 
+                          variant="outline"
+                          onClick={() => setShowMessageDialog(true)}
+                        >
                           <MessageCircle className="h-4 w-4 mr-2" />
-                          Contact Builder
+                          Message Creator
                         </Button>
                       )}
                     </div>
@@ -426,6 +460,17 @@ export default function ProjectDetail() {
           </div>
         </div>
       </div>
+
+      {showMessageDialog && project && (
+        <MessageDialog
+          isOpen={showMessageDialog}
+          onClose={() => setShowMessageDialog(false)}
+          projectId={project.id}
+          creatorId={project.user_id}
+          creatorName={project.creator_name}
+          projectName={project.name}
+        />
+      )}
     </div>
   );
 }

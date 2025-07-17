@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, User, Upload, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ interface Profile {
   github: string | null;
   twitter: string | null;
   linkedin: string | null;
+  allow_contact: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -39,7 +41,8 @@ export default function Profile() {
     website: '',
     github: '',
     twitter: '',
-    linkedin: ''
+    linkedin: '',
+    allow_contact: true
   });
   const [uploading, setUploading] = useState(false);
 
@@ -55,7 +58,6 @@ export default function Profile() {
     if (!user) return;
     
     try {
-      // Using direct SQL query since types haven't been regenerated yet
       const { data, error } = await supabase
         .from('profiles' as any)
         .select('*')
@@ -76,7 +78,8 @@ export default function Profile() {
           website: profileData.website || '',
           github: profileData.github || '',
           twitter: profileData.twitter || '',
-          linkedin: profileData.linkedin || ''
+          linkedin: profileData.linkedin || '',
+          allow_contact: profileData.allow_contact !== false
         });
       }
     } catch (error) {
@@ -98,7 +101,8 @@ export default function Profile() {
         website: formData.website || null,
         github: formData.github || null,
         twitter: formData.twitter || null,
-        linkedin: formData.linkedin || null
+        linkedin: formData.linkedin || null,
+        allow_contact: formData.allow_contact
       };
 
       if (profile) {
@@ -158,8 +162,6 @@ export default function Profile() {
         .getPublicUrl(filePath);
 
       // Update profile with new avatar URL
-      const updatedData = { ...formData, avatar_url: publicUrl };
-      
       if (profile) {
         const { error } = await supabase
           .from('profiles' as any)
@@ -178,6 +180,7 @@ export default function Profile() {
             github: formData.github || null,
             twitter: formData.twitter || null,
             linkedin: formData.linkedin || null,
+            allow_contact: formData.allow_contact,
             avatar_url: publicUrl
           });
 
@@ -202,7 +205,7 @@ export default function Profile() {
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -378,6 +381,31 @@ export default function Profile() {
                   onChange={(e) => handleInputChange('linkedin', e.target.value)}
                   placeholder="https://linkedin.com/in/username"
                   className="border-border/30 focus:border-primary/50"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Contact Settings */}
+          <Card className="border-subtle-border bg-card backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-foreground font-light text-xl">
+                Contact Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label>Allow others to message me</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Let other users send you messages about your projects
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.allow_contact}
+                  onCheckedChange={(checked) => 
+                    handleInputChange('allow_contact', checked)
+                  }
                 />
               </div>
             </CardContent>
