@@ -133,53 +133,32 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </div>
           </div>
+        )}
 
-          {/* Right Side - Content Section (2/3 of space) */}
-          <div className="w-2/3 p-6 flex flex-col">
-            {/* Header Section */}
-            <div className="mb-4">
-              <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors leading-tight mb-2">
-                {project.name}
-              </h3>
-              <p className="text-foreground/70 text-sm leading-relaxed line-clamp-2">
-                {project.description}
-              </p>
-            </div>
-
-            {/* Story Section - Focus Point */}
-            <div className="flex-1 mb-4">
-              <div className="relative">
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#f6d365] to-[#fda085] rounded-full"></div>
-                <p className="text-sm italic text-foreground/90 leading-relaxed pl-4 line-clamp-4">
-                  "{project.story}"
-                </p>
-              </div>
-            </div>
-
-            {/* Tools Section */}
-            <div className="mb-4">
-              <div className="flex flex-wrap gap-1.5">
-                {project.tools.slice(0, 4).map((tool, toolIndex) => (
-                  <Badge 
-                    key={tool} 
-                    variant="secondary"
-                    className="text-xs bg-gradient-to-r from-secondary/80 to-muted/80 hover:from-primary/20 hover:to-accent/20 transition-all duration-300 px-2 py-0.5 border border-border/30 hover:border-primary/30"
-                    style={{
-                      background: toolIndex % 2 === 0 
-                        ? 'linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--accent) / 0.1))'
-                        : 'linear-gradient(135deg, hsl(var(--accent) / 0.1), hsl(var(--secondary) / 0.2))'
-                    }}
-                  >
-                    {tool}
-                  </Badge>
-                ))}
-                {project.tools.length > 4 && (
-                  <Badge variant="outline" className="text-xs px-2 py-0.5">
-                    +{project.tools.length - 4}
-                  </Badge>
-                )}
-              </div>
-            </div>
+        {/* Tools Section */}
+        <div className="px-6 py-4">
+          <div className="flex flex-wrap gap-1.5">
+            {project.tools.slice(0, 4).map((tool, toolIndex) => (
+              <Badge 
+                key={tool} 
+                variant="secondary"
+                className="text-xs bg-gradient-to-r from-secondary/80 to-muted/80 hover:from-primary/20 hover:to-accent/20 transition-all duration-300 px-2 py-0.5 border border-border/30 hover:border-primary/30"
+                style={{
+                  background: toolIndex % 2 === 0 
+                    ? 'linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--accent) / 0.1))'
+                    : 'linear-gradient(135deg, hsl(var(--accent) / 0.1), hsl(var(--secondary) / 0.2))'
+                }}
+              >
+                {tool}
+              </Badge>
+            ))}
+            {project.tools.length > 4 && (
+              <Badge variant="outline" className="text-xs px-2 py-0.5">
+                +{project.tools.length - 4}
+              </Badge>
+            )}
+          </div>
+        </div>
 
         {/* Premium Separator */}
         <div className="px-6">
@@ -190,31 +169,31 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
           </div>
         </div>
 
-
-              {/* Reactions */}
-              <div className="flex items-center gap-1">
-                {Object.entries(project.reactions).map(([type, count]) => {
-                  const Icon = getReactionIcon(type);
-                  const isActive = userReactions[project.id] === type;
-                  
-                  return (
-                    <Button
-                      key={type}
-                      variant="ghost"
-                      size="sm"
-                      className={`flex items-center gap-1 text-xs transition-all duration-300 h-6 px-2 border border-transparent hover:border-primary/20 ${
-                        isActive 
-                          ? 'text-primary bg-primary/10 border-primary/30 shadow-sm' 
-                          : 'text-foreground/70 hover:text-primary hover:bg-primary/5'
-                      }`}
-                      onClick={() => onReaction(project.id, type)}
-                    >
-                      <Icon className={`h-3 w-3 ${isActive ? 'fill-current' : ''}`} />
-                      <span className="font-medium text-xs">{count + (isActive ? 1 : 0)}</span>
-                    </Button>
-                  );
-                })}
-              </div>
+        {/* Reactions Section */}
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              {Object.entries(project.reactions).map(([type, count]) => {
+                const Icon = getReactionIcon(type);
+                const isActive = userReactions[project.id] === type;
+                
+                return (
+                  <Button
+                    key={type}
+                    variant="ghost"
+                    size="sm"
+                    className={`flex items-center gap-1 text-xs transition-all duration-300 h-6 px-2 border border-transparent hover:border-primary/20 ${
+                      isActive 
+                        ? 'text-primary bg-primary/10 border-primary/30 shadow-sm' 
+                        : 'text-foreground/70 hover:text-primary hover:bg-primary/5'
+                    }`}
+                    onClick={() => onReaction(project.id, type)}
+                  >
+                    <Icon className={`h-3 w-3 ${isActive ? 'fill-current' : ''}`} />
+                    <span className="font-medium text-xs">{count + (isActive ? 1 : 0)}</span>
+                  </Button>
+                );
+              })}
             </div>
           </div>
         </div>
