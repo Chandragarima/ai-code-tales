@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Users, Trophy } from "lucide-react";
+import { ArrowRight, Sparkles, Users, Trophy, Book } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -15,108 +15,149 @@ const Index = () => {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl"></div>
       
-      <div className="relative container mx-auto px-6 py-20">
+      {/* Subtle Spotlight Effect */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div 
+          className="w-[900px] h-[700px] rounded-full blur-3xl animate-spotlight"
+          style={{
+            background: 'radial-gradient(circle, hsl(var(--primary) / 0.06) 0%, hsl(var(--primary) / 0.03) 50%, transparent 100%)'
+          }}
+        ></div>
+        <div 
+          className="absolute w-[600px] h-[400px] rounded-full blur-2xl animate-spotlight"
+          style={{
+            background: 'radial-gradient(circle, hsl(var(--elegant-accent) / 0.04) 0%, hsl(var(--elegant-accent) / 0.02) 50%, transparent 100%)',
+            animationDelay: '2s'
+          }}
+        ></div>
+      </div>
+      
+      <div className="relative container mx-auto px-6">
         {/* Hero Section */}
-        <div className="text-center mb-20">
-          <div className="inline-block p-1 rounded-2xl bg-gradient-to-r from-primary/20 to-accent/20 mb-8">
-            <h1 className="text-8xl font-light px-8 py-6 bg-background/80 backdrop-blur-sm rounded-xl bg-elegant-gradient bg-clip-text text-transparent">
-              AI Gallery
+        <div className="mt-8 sm:mt-12 lg:mt-20 px-12 py-4 text-center max-w-[1200px] mx-auto">
+          <div className="flex flex-col items-center space-y-8">
+            <h1 className="font-['Playfair_Display'] text-[2rem] sm:text-[2.5rem] lg:text-[3rem] xl:text-[3.75rem] font-bold leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+            Every AI build has a story.
             </h1>
+            {/* Divider */}
+            <div className="w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
+            <p className="text-[0.875rem] sm:text-[1rem] lg:text-[1rem] xl:text-[1rem] text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px]">
+            Join a community that celebrates not just what was built, but who built it and why. Share your story, discover others, and connect with fellow AI builders.
+            </p>
           </div>
-          <p className="text-2xl text-foreground/80 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-            Discover extraordinary applications built with AI. Share your story, connect with creators, and explore the future of technology.
-          </p>
-          <div className="flex gap-6 justify-center flex-wrap">
+          <div className="flex gap-4 lg:gap-6 justify-center flex-wrap mt-20">
             <Button 
               onClick={() => navigate('/gallery')}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-light shadow-lg hover:shadow-xl transition-all duration-300 group"
+              className="bg-gradient-to-r from-white via-[#f6d365] to-[#fda085] hover:from-[#f6d365] hover:via-[#fda085] hover:to-white text-gray-900 px-8 lg:px-12 py-5 lg:py-6 text-base lg:text-lg font-semibold shadow-xl hover:shadow-2xl hover:shadow-[#fda085]/20 transition-all duration-300 group min-w-[180px] lg:min-w-[200px] rounded-xl hover:scale-105"
             >
               Explore Gallery
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             {user ? (
               <Button 
                 onClick={() => navigate('/submit')}
                 variant="outline" 
-                className="border-border hover:border-primary/50 hover:bg-primary/5 px-8 py-4 text-lg font-light backdrop-blur-sm"
+                className="border-2 border-white/20 hover:border-[#f6d365]/40 hover:bg-white/5 px-8 lg:px-12 py-5 lg:py-6 text-base lg:text-lg font-medium backdrop-blur-sm min-w-[180px] lg:min-w-[200px] rounded-xl transition-all duration-300 hover:scale-105"
               >
-                Share Your Project
+                Share My Project
               </Button>
             ) : (
               <Button 
                 onClick={() => navigate('/auth')}
                 variant="outline" 
-                className="border-border hover:border-primary/50 hover:bg-primary/5 px-8 py-4 text-lg font-light backdrop-blur-sm"
+                className="border-2 border-white/20 hover:border-[#f6d365]/40 hover:bg-white/5 px-8 lg:px-12 py-5 lg:py-6 text-base lg:text-lg font-medium backdrop-blur-sm min-w-[180px] lg:min-w-[200px] rounded-xl transition-all duration-300 hover:scale-105"
               >
-                Join Community
+                Join Our Community
               </Button>
             )}
           </div>
         </div>
 
         {/* Features Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-          <div className="text-center p-8 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Sparkles className="h-8 w-8 text-primary" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mt-16" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))' }}>
+          {/* 1. Behind-the-Code Stories */}
+          <div className="group relative overflow-hidden rounded-[24px] bg-card/80 backdrop-blur-[20px] border border-white/10 p-12 transition-all duration-300 hover:-translate-y-[10px] hover:border-white/20 hover:shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+            {/* Elegant gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/5 via-transparent to-[#fda085]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative">
+              <div className="relative mb-6 ">
+                <div className="w-10 h-10 lg:w-14 lg:h-14 bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] rounded-[16px] flex items-center justify-center mx-auto shadow-lg group-hover:shadow-[#fda085]/30 transition-all duration-300">
+                  <Book className="h-5 w-5 lg:h-7 lg:w-7 text-white" />
+                </div>
+              </div>
+              <h3 className="font-['Crimson_Text'] text-[1.25rem] sm:text-[1.5rem] lg:text-[1.75rem] xl:text-[2rem] font-medium mb-4 text-foreground">
+                The Real Build Stories
+              </h3>
+              <p className="text-foreground/70 font-light leading-[1.6] text-[1rem]">
+              Go beyond features. Discover the "why" behind each app and hear directly from creators about what inspired them and how they built it.
+              </p>
             </div>
-            <h3 className="text-xl font-semibold mb-4">AI-Powered Stories</h3>
-            <p className="text-foreground/70 font-light leading-relaxed">
-              Discover the fascinating stories behind innovative AI applications and the creators who built them.
-            </p>
           </div>
-          <div className="text-center p-8 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Users className="h-8 w-8 text-primary" />
+          {/* 2. Connect & Collaborate */}
+          <div className="group relative overflow-hidden rounded-[24px] bg-card/80 backdrop-blur-[20px] border border-white/10 p-12 transition-all duration-300 hover:-translate-y-[10px] hover:border-white/20 hover:shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+            {/* Elegant gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/5 via-transparent to-[#fda085]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative">
+              <div className="relative mb-6">
+                <div className="w-10 h-10 lg:w-14 lg:h-14 bg-gradient-to-br from-gray-400 via-gray-500 to-gray-600 rounded-[16px] flex items-center justify-center mx-auto shadow-lg group-hover:shadow-gray-500/30 transition-all duration-300">
+                  <Users className="h-5 w-5 lg:h-7 lg:w-7 text-white" strokeWidth={1.5} />
+                </div>
+              </div>
+              <h3 className="font-['Crimson_Text'] text-[1.25rem] sm:text-[1.5rem] lg:text-[1.75rem] xl:text-[2rem] font-medium mb-4 text-foreground">
+                Meet the Builders
+              </h3>
+              <p className="text-foreground/70 font-light leading-[1.6] text-[1rem]">
+                Found an app you love? Connect directly with the creator. Ask questions, share feedback, or explore collaboration opportunities with fellow AI builders.
+              </p>
             </div>
-            <h3 className="text-xl font-semibold mb-4">Connect & Collaborate</h3>
-            <p className="text-foreground/70 font-light leading-relaxed">
-              Network with fellow AI enthusiasts, share experiences, and find your next collaboration partner.
-            </p>
           </div>
-          <div className="text-center p-8 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Trophy className="h-8 w-8 text-primary" />
+          {/* 3. Curated Excellence */}
+          <div className="group relative overflow-hidden rounded-[24px] bg-card/80 backdrop-blur-[20px] border border-white/10 p-12 transition-all duration-300 hover:-translate-y-[10px] hover:border-white/20 hover:shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
+            {/* Elegant gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/5 via-transparent to-[#fda085]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative">
+              <div className="relative mb-6">
+                <div className="w-10 h-10 lg:w-14 lg:h-14 bg-gradient-to-br from-[#fda085] via-[#f6d365] to-[#fda085] rounded-[16px] flex items-center justify-center mx-auto shadow-lg group-hover:shadow-[#f6d365]/30 transition-all duration-300">
+                  <Sparkles className="h-5 w-5 lg:h-7 lg:w-7 text-white" strokeWidth={1.5} />
+                </div>
+              </div>
+              <h3 className="font-['Crimson_Text'] text-[1.25rem] sm:text-[1.5rem] lg:text-[1.75rem] xl:text-[2rem] font-medium mb-4 text-foreground">
+                Quality Over Quantity
+              </h3>
+              <p className="text-foreground/70 font-light leading-[1.6] text-[1rem]">
+                Every featured app is handpicked for its story and innovation. No endless scrolling – just meaningful discoveries that inspire your next AI project.
+              </p>
             </div>
-            <h3 className="text-xl font-semibold mb-4">Showcase Excellence</h3>
-            <p className="text-foreground/70 font-light leading-relaxed">
-              Present your AI projects to a curated audience of creators, investors, and technology enthusiasts.
-            </p>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="text-center bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-3xl p-12 border border-border/30">
-          <h2 className="text-4xl font-light mb-6 bg-elegant-gradient bg-clip-text text-transparent">
-            Ready to Share Your AI Story?
-          </h2>
-          <p className="text-xl text-foreground/80 mb-8 font-light">
-            Join our community of innovators and showcase your AI-powered creations.
-          </p>
-          {user ? (
-            <Button 
-              onClick={() => navigate('/submit')}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-light shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              Submit Your Project
-            </Button>
-          ) : (
-            <div className="flex gap-4 justify-center">
+        <div className="relative mt-28 mb-12 text-center max-w-[1200px] mx-auto">
+          {/* Background effect */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-50 h-50 bg-gradient-to-br from-[#f6d365] to-transparent rounded-full opacity-[0.02] blur-[60px]"></div>
+          
+          <div className="relative z-10">
+            <h2 className="font-['Crimson_Text'] text-[1.75rem] sm:text-[2rem] lg:text-[2.25rem] xl:text-[2.5rem] font-semibold mb-8 text-foreground tracking-[-0.01em] relative">
+              Your Build Deserves the Spotlight.
+              {/* Divider */}
+              <div className="absolute bottom-[-15px] left-1/2 transform -translate-x-1/2 w-12 h-px bg-gradient-to-r from-[#f6d365] to-[#fda085]"></div>
+            </h2>
+            <p className="text-[1.1rem] text-foreground/70 mb-10 max-w-[650px] mx-auto font-light leading-[1.8]">
+              Whether it's your first app or your fifteenth, every journey matters. Join our community and inspire fellow AI builders.
+            </p>
+            
+            <div className="flex gap-4 p-4 justify-center flex-wrap">
               <Button 
-                onClick={() => navigate('/gallery')}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg font-light shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={() => navigate('/submit')}
+                className="group/btn relative overflow-hidden bg-gradient-to-r from-white via-[#f6d365] to-[#fda085] hover:from-[#f6d365] hover:via-[#fda085] hover:to-white text-gray-900 px-8 lg:px-12 py-5 lg:py-6 text-lg font-semibold rounded-xl shadow-xl hover:shadow-2xl hover:shadow-[#fda085]/20 transition-all duration-300 scale-110 transform"
               >
-                Explore Gallery
-              </Button>
-              <Button 
-                onClick={() => navigate('/auth')}
-                variant="outline"
-                className="border-border hover:border-primary/50 hover:bg-primary/5 px-8 py-4 text-lg font-light backdrop-blur-sm"
-              >
-                Join Community
+                <span className="relative z-10 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5" />
+                  Submit My Story
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#fda085]/30 to-[#f6d365]/30 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
               </Button>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
@@ -124,3 +165,4 @@ const Index = () => {
 };
 
 export default Index;
+
