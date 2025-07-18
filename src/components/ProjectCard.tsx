@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Heart, Rocket, Lightbulb, MessageCircle, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ProjectCarousel } from "./ProjectCarousel";
+import { useState } from "react";
+import { MessageDialog } from "./MessageDialog";
 
 interface Project {
   id: string;
@@ -15,6 +17,7 @@ interface Project {
   link: string;
   tools: string[];
   screenshots: string[];
+  user_id?: string;
   creator: {
     name: string;
     allowsContact: boolean;
@@ -32,8 +35,16 @@ interface ProjectCardProps {
   onReaction: (projectId: string, reactionType: string) => void;
 }
 
+interface ProjectForMessaging {
+  id: string;
+  user_id: string;
+  creator_name: string;
+  allows_contact: boolean;
+}
+
 export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardProps) => {
   const navigate = useNavigate();
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
   
   const getReactionIcon = (type: string) => {
     switch (type) {
@@ -69,6 +80,10 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                     variant="outline" 
                     size="sm" 
                     className="text-xs h-6 px-2 hover:bg-primary/10 hover:text-primary transition-all duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMessageDialog(true);
+                    }}
                   >
                     <MessageCircle className="h-3 w-3 mr-1" />
                     Connect
@@ -198,6 +213,18 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
           </div>
         </div>
       </CardContent>
+
+      {/* Message Dialog */}
+      {showMessageDialog && (
+        <MessageDialog
+          isOpen={showMessageDialog}
+          onClose={() => setShowMessageDialog(false)}
+          projectId={project.id}
+          creatorId={(project as any).user_id}
+          creatorName={project.creator.name}
+          projectName={project.name}
+        />
+      )}
     </Card>
   );
 };

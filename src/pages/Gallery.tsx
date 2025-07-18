@@ -14,6 +14,7 @@ interface Project {
   link: string;
   tools: string[];
   screenshots: string[];
+  user_id?: string; // Optional for mock projects
   creator: {
     name: string;
     allowsContact: boolean;
@@ -147,6 +148,7 @@ export default function Gallery() {
         link: project.link,
         tools: project.tools,
         screenshots: project.screenshots || [],
+        user_id: project.user_id, // Include user_id for messaging
         creator: {
           name: project.creator_name,
           allowsContact: project.allows_contact
