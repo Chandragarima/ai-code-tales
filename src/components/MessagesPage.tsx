@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { MessageSquare, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { MessageDialog } from './MessageDialog';
+import { MessageInterface } from './MessageInterface';
 
 interface ConversationWithDetails {
   id: string;
@@ -181,6 +181,33 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
     );
   }
 
+  // Show message interface if conversation is selected
+  if (selectedConversation) {
+    const otherUser = getOtherUser(selectedConversation);
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
+        <div className="relative h-screen flex flex-col">
+          <MessageInterface
+            projectId={selectedConversation.project_id}
+            creatorId={
+              selectedConversation.creator_id === user?.id 
+                ? selectedConversation.sender_id 
+                : selectedConversation.creator_id
+            }
+            creatorName={
+              selectedConversation.creator_id === user?.id
+                ? selectedConversation.sender_profile?.username || 'User'
+                : selectedConversation.creator_profile?.username || selectedConversation.project?.creator_name || 'Creator'
+            }
+            projectName={selectedConversation.project?.name || 'Project'}
+            onBack={() => setSelectedConversation(null)}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
@@ -192,85 +219,66 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
               Messages
             </CardTitle>
           </CardHeader>
-        <CardContent>
-          {conversations.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No conversations yet</p>
-              <p className="text-sm">Start a conversation by messaging a project creator</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {conversations.map((conversation) => {
-                const otherUser = getOtherUser(conversation);
-                return (
-                  <div
-                    key={conversation.id}
-                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
-                    onClick={() => setSelectedConversation(conversation)}
-                  >
-                    <Avatar>
-                      <AvatarImage src={otherUser.profile?.avatar_url || ''} />
-                      <AvatarFallback>
-                        {(otherUser.profile?.username || otherUser.fallbackName)[0]?.toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <p className="font-medium text-sm truncate">
-                          {otherUser.profile?.username || otherUser.fallbackName}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          {conversation.unread_count > 0 && (
-                            <Badge variant="destructive" className="text-xs">
-                              {conversation.unread_count}
-                            </Badge>
-                          )}
-                          {conversation.last_message && (
-                            <span className="text-xs text-muted-foreground">
-                              {formatTime(conversation.last_message.created_at)}
-                            </span>
-                          )}
+          <CardContent>
+            {conversations.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No conversations yet</p>
+                <p className="text-sm">Start a conversation by messaging a project creator</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {conversations.map((conversation) => {
+                  const otherUser = getOtherUser(conversation);
+                  return (
+                    <div
+                      key={conversation.id}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                      onClick={() => setSelectedConversation(conversation)}
+                    >
+                      <Avatar>
+                        <AvatarImage src={otherUser.profile?.avatar_url || ''} />
+                        <AvatarFallback>
+                          {(otherUser.profile?.username || otherUser.fallbackName)[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className="font-medium text-sm truncate">
+                            {otherUser.profile?.username || otherUser.fallbackName}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            {conversation.unread_count > 0 && (
+                              <Badge variant="destructive" className="text-xs">
+                                {conversation.unread_count}
+                              </Badge>
+                            )}
+                            {conversation.last_message && (
+                              <span className="text-xs text-muted-foreground">
+                                {formatTime(conversation.last_message.created_at)}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {conversation.project?.name}
-                      </p>
-                      {conversation.last_message && (
-                        <p className="text-sm text-muted-foreground truncate mt-1">
-                          {conversation.last_message.sender_id === user?.id ? 'You: ' : ''}
-                          {conversation.last_message.content}
+                        <p className="text-xs text-muted-foreground truncate">
+                          {conversation.project?.name}
                         </p>
-                      )}
+                        {conversation.last_message && (
+                          <p className="text-sm text-muted-foreground truncate mt-1">
+                            {conversation.last_message.sender_id === user?.id ? 'You: ' : ''}
+                            {conversation.last_message.content}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
         </Card>
       </div>
-
-      {selectedConversation && (
-        <MessageDialog
-          isOpen={!!selectedConversation}
-          onClose={() => setSelectedConversation(null)}
-          projectId={selectedConversation.project_id}
-          creatorId={
-            selectedConversation.creator_id === user?.id 
-              ? selectedConversation.sender_id 
-              : selectedConversation.creator_id
-          }
-          creatorName={
-            selectedConversation.creator_id === user?.id
-              ? selectedConversation.sender_profile?.username || 'User'
-              : selectedConversation.creator_profile?.username || selectedConversation.project?.creator_name || 'Creator'
-          }
-          projectName={selectedConversation.project?.name || 'Project'}
-        />
-      )}
     </div>
   );
 }
