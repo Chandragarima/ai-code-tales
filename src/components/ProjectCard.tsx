@@ -211,11 +211,12 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                   Details
                 </Button>
                 
-                {project.creator.allowsContact && (
+                {project.creator.allowsContact && project.user_id && (
                   <Button 
                     variant="outline" 
                     size="sm" 
                     className="text-sm h-8 sm:h-7 px-3 sm:px-2.5 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300 border-white/20 hover:border-[#f6d365]/40"
+                    onClick={() => setShowMessageDialog(true)}
                   >
                     <MessageCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1" />
                     Connect
@@ -228,12 +229,12 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
       </CardContent>
 
       {/* Message Dialog */}
-      {showMessageDialog && (
+      {showMessageDialog && project.user_id && (
         <MessageDialog
           isOpen={showMessageDialog}
           onClose={() => setShowMessageDialog(false)}
           projectId={project.id}
-          creatorId={(project as any).user_id}
+          creatorId={project.user_id}
           creatorName={project.creator.name}
           projectName={project.name}
         />

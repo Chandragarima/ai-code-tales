@@ -17,6 +17,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import NotFound from "./pages/NotFound";
 import { MessagesPage } from "./components/MessagesPage";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (

@@ -182,21 +182,15 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
   }
 
   return (
-    <div className={onClose ? "fixed inset-0 bg-background z-50" : "min-h-screen bg-background bg-subtle-grid bg-grid"}>
-      <div className={onClose ? "h-full" : "container mx-auto px-6 py-16"}>
-        <Card className="max-w-2xl mx-auto h-full">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
+      <div className="relative container mx-auto px-6 py-16">
+        <Card className="max-w-2xl mx-auto">
           <CardHeader>
-            <div className="flex items-center gap-3">
-              {onClose && (
-                <Button variant="ghost" size="icon" onClick={onClose}>
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-              )}
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5" />
-                Messages
-              </CardTitle>
-            </div>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5" />
+              Messages
+            </CardTitle>
           </CardHeader>
         <CardContent>
           {conversations.length === 0 ? (

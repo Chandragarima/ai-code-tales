@@ -87,9 +87,11 @@ export function MessageDialog({
           const newMessage = payload.new as Message;
           setMessages(prev => [...prev, newMessage]);
           
-          // Mark as read if user is the recipient
+          // Mark as read if user is the recipient and show notification
           if (newMessage.sender_id !== user?.id) {
             markMessageAsRead(newMessage.id);
+            // Trigger a custom event to update navbar unread count
+            window.dispatchEvent(new CustomEvent('message-read'));
           }
         }
       )
