@@ -36,7 +36,7 @@ interface ConversationWithDetails {
 }
 
 interface MessagesPageProps {
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export function MessagesPage({ onClose }: MessagesPageProps) {
@@ -171,28 +171,33 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
 
   if (loading) {
     return (
-      <Card className="max-w-2xl mx-auto">
-        <CardContent className="p-6">
-          <div className="text-center">Loading conversations...</div>
-        </CardContent>
-      </Card>
+      <div className={onClose ? "fixed inset-0 bg-background z-50 flex items-center justify-center" : "min-h-screen bg-background bg-subtle-grid bg-grid flex items-center justify-center"}>
+        <Card className="max-w-2xl mx-auto">
+          <CardContent className="p-6">
+            <div className="text-center">Loading conversations...</div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <>
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              Messages
-            </CardTitle>
-          </div>
-        </CardHeader>
+    <div className={onClose ? "fixed inset-0 bg-background z-50" : "min-h-screen bg-background bg-subtle-grid bg-grid"}>
+      <div className={onClose ? "h-full" : "container mx-auto px-6 py-16"}>
+        <Card className="max-w-2xl mx-auto h-full">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              {onClose && (
+                <Button variant="ghost" size="icon" onClick={onClose}>
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              )}
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5" />
+                Messages
+              </CardTitle>
+            </div>
+          </CardHeader>
         <CardContent>
           {conversations.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
@@ -251,7 +256,8 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
             </div>
           )}
         </CardContent>
-      </Card>
+        </Card>
+      </div>
 
       {selectedConversation && (
         <MessageDialog
@@ -271,6 +277,6 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
           projectName={selectedConversation.project?.name || 'Project'}
         />
       )}
-    </>
+    </div>
   );
 }

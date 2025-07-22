@@ -15,6 +15,7 @@ import EditProject from "./pages/EditProject";
 import Profile from "./pages/Profile";
 import ProjectDetail from "./pages/ProjectDetail";
 import NotFound from "./pages/NotFound";
+import { MessagesPage } from "./components/MessagesPage";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/my-projects" element={<MyProjectsPage />} />
             <Route path="/edit-project/:id" element={<EditProject />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/messages" element={<MessagesPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
