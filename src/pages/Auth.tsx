@@ -95,25 +95,25 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 sm:p-6">
       <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
       
-      <div className="relative w-full max-w-md">
+      <div className="relative w-full max-w-sm sm:max-w-md">
         <Button
           variant="ghost"
           onClick={() => navigate('/')}
-          className="mb-6 text-foreground/70 hover:text-foreground"
+          className="mb-4 sm:mb-6 text-foreground/70 hover:text-foreground text-sm sm:text-base"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home
         </Button>
 
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-2xl">
-          <CardHeader className="text-center space-y-2">
-            <CardTitle className="text-3xl font-light bg-elegant-gradient bg-clip-text text-transparent">
+          <CardHeader className="text-center space-y-2 px-6 sm:px-8">
+            <CardTitle className="text-2xl sm:text-3xl font-light bg-elegant-gradient bg-clip-text text-transparent">
               {isSignUp ? 'Create Account' : 'Welcome Back'}
             </CardTitle>
-            <p className="text-foreground/70 font-light">
+            <p className="text-foreground/70 font-light text-sm sm:text-base">
               {isSignUp 
                 ? 'Join our community of AI creators' 
                 : 'Sign in to your account'
@@ -121,10 +121,10 @@ export default function Auth() {
             </p>
           </CardHeader>
           
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 sm:space-y-6 px-6 sm:px-8 pb-6 sm:pb-8">
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="font-light flex items-center gap-2">
+                <Label htmlFor="email" className="font-light flex items-center gap-2 text-sm sm:text-base">
                   <Mail className="h-4 w-4" />
                   Email
                 </Label>
@@ -143,7 +143,7 @@ export default function Auth() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="font-light flex items-center gap-2">
+                <Label htmlFor="password" className="font-light flex items-center gap-2 text-sm sm:text-base">
                   <Lock className="h-4 w-4" />
                   Password
                 </Label>
@@ -163,7 +163,7 @@ export default function Auth() {
 
               <Button
                 type="submit"
-                className="w-full bg-primary hover:bg-primary/90 font-light py-3"
+                className="w-full bg-primary hover:bg-primary/90 font-light py-3 text-sm sm:text-base"
                 disabled={loading}
               >
                 {loading ? (

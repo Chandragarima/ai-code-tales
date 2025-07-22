@@ -147,53 +147,84 @@ export default function Submit() {
   };
 
   return (
-    <div className="min-h-screen bg-background bg-subtle-grid bg-grid">
-      <div className="container mx-auto px-6 py-16 max-w-4xl">
-        {/* Header */}
-        <div className="mb-12">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl"></div>
+      
+      {/* Subtle Spotlight Effect
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div 
+          className="w-[900px] h-[700px] rounded-full blur-3xl animate-spotlight"
+          style={{
+            background: 'radial-gradient(circle, hsl(var(--primary) / 0.06) 0%, hsl(var(--primary) / 0.03) 50%, transparent 100%)'
+          }}
+        ></div>
+        <div 
+          className="absolute w-[600px] h-[400px] rounded-full blur-2xl animate-spotlight"
+          style={{
+            background: 'radial-gradient(circle, hsl(var(--elegant-accent) / 0.04) 0%, hsl(var(--elegant-accent) / 0.02) 50%, transparent 100%)',
+            animationDelay: '2s'
+          }}
+        ></div>
+      </div> */}
+      
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 max-w-4xl">
+        {/* Header Section - Aligned with homepage */}
+        <div className="mb-8 sm:mb-12">
           <Button 
             variant="ghost" 
             onClick={() => navigate("/")}
-            className="mb-6 text-text-elegant hover:text-foreground font-light"
+            className="md:hidden mb-6 sm:mb-8 text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Gallery
           </Button>
           
           <div className="text-center">
-            <h1 className="text-5xl font-light mb-6 bg-elegant-gradient bg-clip-text text-transparent">
-              Share Your Story
-            </h1>
-            <p className="text-text-elegant text-lg font-light leading-relaxed">
-              Tell us about your AI-powered creation and the journey behind it
-            </p>
+            <div className="flex flex-col items-center space-y-6 sm:space-y-8">
+              <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-bold leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+                Share Your Story
+              </h1>
+              {/* Divider */}
+              <div className="w-8 sm:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
+              <p className="text-sm sm:text-base lg:text-lg text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px] px-4">
+                Tell us about your AI-powered creation and the journey behind it
+              </p>
+            </div>
           </div>
         </div>
 
-        <Card className="border-subtle-border bg-card backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-foreground font-light text-xl">
-              <Sparkles className="h-6 w-6 text-elegant-accent" />
+        <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 bg-card/90 backdrop-blur-sm">
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          <CardHeader className="relative px-6 sm:px-8 pt-6 sm:pt-8">
+            <CardTitle className="flex items-center gap-3 text-foreground font-light text-lg sm:text-xl">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] rounded-lg flex items-center justify-center shadow-sm">
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+              </div>
               Project Submission
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="relative px-6 sm:px-8 pb-6 sm:pb-8">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
                 
                 {/* Basic Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-light">Project Name</FormLabel>
+                        <FormLabel className="font-light text-sm sm:text-base text-foreground/90">Project Name</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="My Amazing AI App" 
                             {...field} 
-                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
+                            className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
                           />
                         </FormControl>
                         <FormMessage />
@@ -206,12 +237,12 @@ export default function Submit() {
                     name="link"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-light">Project URL</FormLabel>
+                        <FormLabel className="font-light text-sm sm:text-base text-foreground/90">Project URL</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="https://myapp.com" 
                             {...field} 
-                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
+                            className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
                           />
                         </FormControl>
                         <FormMessage />
@@ -225,15 +256,15 @@ export default function Submit() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-light">Brief Description</FormLabel>
+                      <FormLabel className="font-light text-sm sm:text-base text-foreground/90">Brief Description</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="A one-line description of what your app does..."
-                          className="border-subtle-border focus:border-elegant-accent/50 min-h-[80px] font-light"
+                          className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm min-h-[80px] font-light rounded-xl transition-all duration-300"
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription className="font-light text-text-elegant">
+                      <FormDescription className="font-light text-muted-foreground text-sm">
                         Keep it concise - this appears on your gallery card
                       </FormDescription>
                       <FormMessage />
@@ -254,15 +285,15 @@ export default function Submit() {
                   name="story"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-light">Your Story (Required)</FormLabel>
+                      <FormLabel className="font-light text-sm sm:text-base text-foreground/90">Your Story (Required)</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Why did you build this? What problem were you solving? What was your 'aha' moment?..."
-                          className="border-subtle-border focus:border-elegant-accent/50 min-h-[120px] font-light"
+                          className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm min-h-[120px] font-light rounded-xl transition-all duration-300"
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription className="font-light text-text-elegant">
+                      <FormDescription className="font-light text-muted-foreground text-sm">
                         Share the 'why' behind your project - this is what makes it special
                       </FormDescription>
                       <FormMessage />
@@ -275,15 +306,15 @@ export default function Submit() {
                   name="deeperStory"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-light">Deeper Story (Optional)</FormLabel>
+                      <FormLabel className="font-light text-sm sm:text-base text-foreground/90">Deeper Story (Optional)</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Share more details about your build process, challenges faced, iterations, learnings..."
-                          className="border-subtle-border focus:border-elegant-accent/50 min-h-[160px] font-light"
+                          className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm min-h-[160px] font-light rounded-xl transition-all duration-300"
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription className="font-light text-text-elegant">
+                      <FormDescription className="font-light text-muted-foreground text-sm">
                         For those who want to dive deeper into your journey
                       </FormDescription>
                       <FormMessage />
@@ -297,9 +328,9 @@ export default function Submit() {
                   name="tools"
                   render={() => (
                     <FormItem>
-                      <FormLabel className="font-light">AI Tools Used</FormLabel>
-                      <div className="space-y-6">
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      <FormLabel className="font-light text-sm sm:text-base text-foreground/90">AI Tools Used</FormLabel>
+                      <div className="space-y-4 sm:space-y-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
                           {aiTools.map((tool) => (
                             <Button
                               key={tool}
@@ -311,10 +342,11 @@ export default function Submit() {
                                   ? removeTool(tool)
                                   : addTool(tool)
                               }
-                              className={selectedTools.includes(tool) 
-                                ? "bg-elegant-accent text-background font-light" 
-                                : "border-subtle-border hover:border-elegant-accent/30 font-light"
-                              }
+                              className={`text-xs sm:text-sm rounded-xl transition-all duration-300 ${
+                                selectedTools.includes(tool) 
+                                  ? "bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-gray-900 font-medium shadow-md" 
+                                  : "border-white/20 hover:border-[#f6d365]/40 hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 font-light"
+                              }`}
                             >
                               {tool}
                             </Button>
@@ -327,7 +359,7 @@ export default function Submit() {
                             placeholder="Add custom tool..."
                             value={customTool}
                             onChange={(e) => setCustomTool(e.target.value)}
-                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
+                            className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
                                 e.preventDefault();
@@ -339,7 +371,7 @@ export default function Submit() {
                             type="button" 
                             onClick={addCustomTool}
                             variant="outline"
-                            className="border-subtle-border hover:border-elegant-accent/30 font-light"
+                            className="border-white/20 hover:border-[#f6d365]/40 hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 font-light rounded-xl transition-all duration-300"
                           >
                             Add
                           </Button>
@@ -352,11 +384,11 @@ export default function Submit() {
                               <Badge 
                                 key={tool} 
                                 variant="secondary"
-                                className="bg-secondary/30 text-secondary-foreground flex items-center gap-1 font-light"
+                                className="bg-gradient-to-r from-[#f6d365]/20 to-[#fda085]/20 text-foreground/90 border-[#f6d365]/30 flex items-center gap-1 font-medium rounded-full px-3 py-1"
                               >
                                 {tool}
                                 <X 
-                                  className="h-3 w-3 cursor-pointer hover:text-destructive" 
+                                  className="h-3 w-3 cursor-pointer hover:text-destructive transition-colors duration-200" 
                                   onClick={() => removeTool(tool)}
                                 />
                               </Badge>
@@ -376,12 +408,12 @@ export default function Submit() {
                     name="creatorName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-light">Your Name</FormLabel>
+                        <FormLabel className="font-light text-sm sm:text-base text-foreground/90">Your Name</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="John Doe" 
                             {...field} 
-                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
+                            className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
                           />
                         </FormControl>
                         <FormMessage />
@@ -394,16 +426,16 @@ export default function Submit() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-light">Email</FormLabel>
+                        <FormLabel className="font-light text-sm sm:text-base text-foreground/90">Email</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="john@example.com" 
                             type="email"
                             {...field} 
-                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
+                            className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
                           />
                         </FormControl>
-                        <FormDescription className="font-light text-text-elegant">
+                        <FormDescription className="font-light text-muted-foreground text-sm">
                           For review updates only
                         </FormDescription>
                         <FormMessage />
@@ -417,18 +449,19 @@ export default function Submit() {
                   control={form.control}
                   name="allowsContact"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-subtle-border p-6">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-white/20 p-6 bg-background/40 backdrop-blur-sm">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
+                          className="border-white/30 data-[state=checked]:bg-[#f6d365] data-[state=checked]:border-[#f6d365]"
                         />
                       </FormControl>
                       <div className="space-y-2 leading-none">
-                        <FormLabel className="font-light">
+                        <FormLabel className="font-light text-sm sm:text-base">
                           Allow others to connect with me
                         </FormLabel>
-                        <FormDescription className="font-light text-text-elegant leading-relaxed">
+                        <FormDescription className="font-light text-muted-foreground leading-relaxed text-sm">
                           Show a "Connect with Creator" button on your project. Others can reach out for collaboration, questions, or hiring opportunities.
                         </FormDescription>
                       </div>
@@ -437,20 +470,21 @@ export default function Submit() {
                 />
 
                 {/* Submit */}
-                <div className="flex gap-6 pt-8">
-                  <Button 
-                    type="submit" 
-                    className="flex-1 bg-elegant-accent hover:bg-elegant-accent/90 text-background font-light py-3"
-                  >
-                    Submit for Review
-                  </Button>
+                <div className="flex gap-4 sm:gap-6 pt-8">
                   <Button 
                     type="button" 
                     variant="outline" 
                     onClick={() => navigate("/")}
-                    className="border-subtle-border hover:border-elegant-accent/30 font-light py-3"
+                    className="border-2 border-white/20 hover:border-[#f6d365]/40 hover:bg-white/5 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-medium backdrop-blur-sm rounded-xl transition-all duration-300 hover:scale-105"
                   >
                     Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    className="flex-1 bg-gradient-to-r from-white via-[#f6d365] to-[#fda085] hover:from-[#f6d365] hover:via-[#fda085] hover:to-white text-gray-900 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-semibold shadow-xl hover:shadow-2xl hover:shadow-[#fda085]/20 transition-all duration-300 rounded-xl hover:scale-105"
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Submit for Review
                   </Button>
                 </div>
               </form>

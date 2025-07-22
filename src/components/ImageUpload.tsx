@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, Eye } from "lucide-react";
+import { Upload, X, Eye, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -128,18 +128,37 @@ export const ImageUpload = ({ screenshots, onScreenshotsChange, maxImages = 5 }:
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">Screenshots ({screenshots.length}/{maxImages})</label>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading || screenshots.length >= maxImages}
-          className="border-subtle-border hover:border-elegant-accent/30 font-light"
-        >
-          <Upload className="h-4 w-4 mr-2" />
-          {uploading ? 'Uploading...' : 'Add Images'}
-        </Button>
+        <div className="flex items-center gap-2">
+          <ImageIcon className="h-5 w-5 text-[white]" />
+          <label className="font-light text-sm sm:text-base text-foreground/90">Project Screenshots</label>
+        </div>
+        <Badge variant="outline" className="text-xs border-white/20 text-muted-foreground">
+          {screenshots.length}/{maxImages}
+        </Badge>
+      </div>
+
+      {/* Upload Area */}
+      <div 
+        className={`relative border-2 border-dashed rounded-xl p-6 sm:p-8 transition-all duration-300 cursor-pointer ${
+          screenshots.length === 0 
+            ? 'border-white/30 bg-background/40' 
+            : 'border-white/20 bg-background/20'
+        }`}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        <div className="flex flex-col items-center justify-center text-center space-y-3">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center">
+            <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-[#fda085]" />
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm sm:text-base font-medium text-foreground">
+              {uploading ? 'Uploading...' : 'Click to upload screenshots'}
+            </p>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              PNG, JPG up to 5MB each • Max {maxImages} images
+            </p>
+          </div>
+        </div>
       </div>
 
       <Input
@@ -149,48 +168,54 @@ export const ImageUpload = ({ screenshots, onScreenshotsChange, maxImages = 5 }:
         multiple
         onChange={handleFileSelect}
         className="hidden"
+        disabled={uploading || screenshots.length >= maxImages}
       />
 
+      {/* Uploaded Images Grid */}
       {screenshots.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {screenshots.map((url, index) => (
-            <div key={index} className="relative group">
-              <img
-                src={url}
-                alt={`Screenshot ${index + 1}`}
-                className="w-full h-32 object-cover rounded-lg border border-subtle-border"
-              />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => previewImage(url)}
-                  className="text-white hover:bg-white/20"
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground font-light">Uploaded Screenshots</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+            {screenshots.map((url, index) => (
+              <div key={index} className="relative group overflow-hidden rounded-lg border border-white/20 bg-background/40">
+                <img
+                  src={url}
+                  alt={`Screenshot ${index + 1}`}
+                  className="w-full h-24 sm:h-32 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => previewImage(url)}
+                    className="text-white hover:bg-white/20 rounded-full"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => removeImage(index)}
+                    className="text-white hover:bg-white/20 rounded-full"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Badge 
+                  variant="secondary" 
+                  className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm text-xs border-white/20"
                 >
-                  <Eye className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => removeImage(index)}
-                  className="text-white hover:bg-white/20"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                  {index + 1}
+                </Badge>
               </div>
-              <Badge 
-                variant="secondary" 
-                className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm"
-              >
-                {index + 1}
-              </Badge>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
+      {/* Image Preview Modal */}
       {previewUrl && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setPreviewUrl(null)}>
           <div className="max-w-4xl max-h-full">
