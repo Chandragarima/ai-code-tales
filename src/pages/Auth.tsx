@@ -95,105 +95,122 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 sm:p-6">
-      <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
-      
-      <div className="relative w-full max-w-sm sm:max-w-md">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="mb-4 sm:mb-6 text-foreground/70 hover:text-foreground text-sm sm:text-base"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Home
-        </Button>
-
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-2xl">
-          <CardHeader className="text-center space-y-2 px-6 sm:px-8">
-            <CardTitle className="text-2xl sm:text-3xl font-light bg-elegant-gradient bg-clip-text text-transparent">
-              {isSignUp ? 'Create Account' : 'Welcome Back'}
-            </CardTitle>
-            <p className="text-foreground/70 font-light text-sm sm:text-base">
-              {isSignUp 
-                ? 'Join our community of AI creators' 
-                : 'Sign in to your account'
-              }
-            </p>
-          </CardHeader>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
+      {/* Decorative background elements */}
+      {/* <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30 pointer-events-none"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-[#f6d365]/5 to-[#fda085]/5 rounded-full blur-3xl pointer-events-none"></div>
+       */}
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 max-w-5xl">
+        {/* Header Section */}
+        <div className="mb-8 sm:mb-12">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="md:hidden mb-6 sm:mb-8 text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
           
-          <CardContent className="space-y-4 sm:space-y-6 px-6 sm:px-8 pb-6 sm:pb-8">
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="font-light flex items-center gap-2 text-sm sm:text-base">
-                  <Mail className="h-4 w-4" />
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  {...form.register('email')}
-                  className="border-border/50 focus:border-primary/50"
-                />
-                {form.formState.errors.email && (
-                  <p className="text-sm text-red-500">
-                    {form.formState.errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password" className="font-light flex items-center gap-2 text-sm sm:text-base">
-                  <Lock className="h-4 w-4" />
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  {...form.register('password')}
-                  className="border-border/50 focus:border-primary/50"
-                />
-                {form.formState.errors.password && (
-                  <p className="text-sm text-red-500">
-                    {form.formState.errors.password.message}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/90 font-light py-3 text-sm sm:text-base"
-                disabled={loading}
-              >
-                {loading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    {isSignUp ? 'Creating Account...' : 'Signing In...'}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    {isSignUp ? 'Create Account' : 'Sign In'}
-                  </div>
-                )}
-              </Button>
-            </form>
-
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => setIsSignUp(!isSignUp)}
-                className="text-primary hover:text-primary/80 font-light text-sm transition-colors"
-              >
+          <div className="text-center">
+            <div className="flex flex-col items-center space-y-6 sm:space-y-8">
+              <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-normal leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+                {isSignUp ? 'Create Account' : 'Welcome Back'}
+              </h1>
+              {/* Divider */}
+              <div className="w-8 sm:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
+              <p className="text-sm sm:text-base lg:text-lg text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px] px-4">
                 {isSignUp 
-                  ? 'Already have an account? Sign in' 
-                  : "Don't have an account? Sign up"
+                  ? 'Join our community of AI creators and share your innovative projects'
+                  : 'Sign in to your account and continue your journey'
                 }
-              </button>
+              </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+        {/* Auth Form */}
+        <div className="flex justify-center">
+          <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 bg-card/90 backdrop-blur-sm max-w-md w-full">
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            <CardContent className="relative p-6 sm:p-8">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="font-light flex items-center gap-2 text-sm sm:text-base text-foreground/90">
+                    <Mail className="h-4 w-4 text-[#fda085]" />
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    {...form.register('email')}
+                    className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
+                  />
+                  {form.formState.errors.email && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.email.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="font-light flex items-center gap-2 text-sm sm:text-base text-foreground/90">
+                    <Lock className="h-4 w-4 text-[#fda085]" />
+                    Password
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    {...form.register('password')}
+                    className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
+                  />
+                  {form.formState.errors.password && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.password.message}
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-black font-medium shadow-lg hover:shadow-xl transition-all duration-200 group py-3"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                      {isSignUp ? 'Creating Account...' : 'Signing In...'}
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
+                      {isSignUp ? 'Create Account' : 'Sign In'}
+                    </div>
+                  )}
+                </Button>
+              </form>
+
+              <div className="text-center mt-6">
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(!isSignUp)}
+                  className="text-[#fda085] hover:text-[#f6d365] font-light text-sm transition-all duration-200 hover:underline"
+                >
+                  {isSignUp 
+                    ? 'Already have an account? Sign in' 
+                    : "Don't have an account? Sign up"
+                  }
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

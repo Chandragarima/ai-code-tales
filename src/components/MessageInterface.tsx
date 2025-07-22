@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, Check, CheckCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
@@ -175,6 +175,9 @@ export function MessageInterface({
           .from('messages')
           .update({ is_read: true })
           .in('id', messageIds);
+        
+        // Dispatch event to update notification badge
+        window.dispatchEvent(new CustomEvent('message-read'));
       }
     } catch (error) {
       console.error('Error loading messages:', error);
@@ -226,79 +229,154 @@ export function MessageInterface({
     }
   };
 
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    
+    if (diffInHours < 24) {
+      return date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } else {
+      return date.toLocaleDateString([], {
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+  };
+
+  const isOwnMessage = (message: Message) => message.sender_id === user?.id;
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Decorative background elements */}
+      {/* <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30 pointer-events-none"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+       */}
       {/* Header */}
-      <div className="flex items-center gap-3 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <Button variant="ghost" size="icon" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" />
+      <div className="relative flex items-center gap-3 p-4 sm:p-6 bg-card/80 backdrop-blur-md border-b border-border/50">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={onBack}
+          className="hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+        >
+          <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
-        <Avatar className="h-8 w-8">
+        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 ring-2 ring-border/50">
           <AvatarImage src={creatorProfile?.avatar_url || ''} />
-          <AvatarFallback>
+          <AvatarFallback className="bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] text-white font-semibold text-sm sm:text-base">
             {creatorProfile?.username?.[0]?.toUpperCase() || creatorName[0]?.toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <div>
-          <h3 className="font-medium text-sm">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-foreground truncate text-sm sm:text-base lg:text-lg">
             {creatorProfile?.username || creatorName}
           </h3>
-          <p className="text-xs text-muted-foreground">{projectName}</p>
+          <p className="text-muted-foreground truncate text-xs sm:text-sm">{projectName}</p>
         </div>
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
-            >
+      <ScrollArea className="flex-1 px-4 sm:px-6 py-4 sm:py-6">
+        <div className="space-y-3 max-w-4xl mx-auto">
+          {messages.map((message, index) => {
+            const isOwn = isOwnMessage(message);
+            const showAvatar = !isOwn && (index === 0 || messages[index - 1]?.sender_id !== message.sender_id);
+            const showTime = index === messages.length - 1 || 
+              messages[index + 1]?.sender_id !== message.sender_id ||
+              new Date(messages[index + 1]?.created_at).getTime() - new Date(message.created_at).getTime() > 300000; // 5 minutes
+
+            return (
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
-                  message.sender_id === user?.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted'
-                }`}
+                key={message.id}
+                className={`flex items-end gap-2 sm:gap-3 ${isOwn ? 'justify-end' : 'justify-start'}`}
               >
-                <p className="leading-relaxed">{message.content}</p>
-                <p className={`text-xs mt-1 ${
-                  message.sender_id === user?.id 
-                    ? 'text-primary-foreground/70' 
-                    : 'text-muted-foreground'
-                }`}>
-                  {new Date(message.created_at).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </p>
+                {/* Avatar for received messages */}
+                {!isOwn && (
+                  <div className="flex-shrink-0">
+                    {showAvatar ? (
+                      <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+                        <AvatarImage src={creatorProfile?.avatar_url || ''} />
+                        <AvatarFallback className="bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] text-white text-xs sm:text-sm">
+                          {creatorProfile?.username?.[0]?.toUpperCase() || creatorName[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    ) : (
+                      <div className="h-8 w-8 sm:h-10 sm:w-10" />
+                    )}
+                  </div>
+                )}
+
+                {/* Message bubble */}
+                <div className={`flex flex-col max-w-[75%] sm:max-w-[70%] lg:max-w-[65%] min-w-0 ${isOwn ? 'items-end' : 'items-start'}`}>
+                  <div
+                    className={`px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl shadow-sm max-w-full ${
+                      isOwn
+                        ? 'bg-primary/90 text-primary-foreground rounded-br-md border border-primary/20'
+                        : 'bg-card/60 text-card-foreground rounded-bl-md border border-border/30 backdrop-blur-sm'
+                    }`}
+                  >
+                    <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words overflow-hidden word-wrap">
+                      {message.content}
+                    </p>
+                  </div>
+                  
+                  {/* Message status and time */}
+                  {showTime && (
+                    <div className={`flex items-center gap-1 mt-1 px-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                      {isOwn && (
+                        <div className="flex items-center">
+                          {message.is_read ? (
+                            <CheckCheck className="h-3 w-3 sm:h-4 sm:w-4 text-primary/70" />
+                          ) : (
+                            <Check className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground/60" />
+                          )}
+                        </div>
+                      )}
+                      <span className="text-xs text-muted-foreground/70">
+                        {formatTime(message.created_at)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Spacer for sent messages */}
+                {isOwn && <div className="w-10 sm:w-12 flex-shrink-0" />}
               </div>
-            </div>
-          ))}
+            );
+          })}
           <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
 
       {/* Message Input */}
-      <div className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex gap-3 items-end">
-          <Textarea
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            className="flex-1 min-h-[40px] max-h-[120px] resize-none rounded-2xl"
-            disabled={loading}
-          />
-          <Button 
-            onClick={sendMessage} 
-            disabled={!newMessage.trim() || loading}
-            size="icon"
-            className="rounded-full shrink-0"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+      <div className="relative p-4 sm:p-6 bg-card/80 backdrop-blur-md border-t border-border/50">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex gap-3 sm:gap-4 items-end">
+            <div className="flex-1 relative">
+              <Textarea
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                className="min-h-[44px] sm:min-h-[48px] max-h-[120px] resize-none rounded-2xl border-border bg-background focus:ring-2 focus:ring-[#fda085] focus:border-transparent pr-12 text-sm sm:text-base"
+                disabled={loading}
+                rows={1}
+              />
+            </div>
+            <Button 
+              onClick={sendMessage} 
+              disabled={!newMessage.trim() || loading}
+              size="icon"
+              className="h-11 w-11 sm:h-12 sm:w-12 rounded-full bg-primary/80 hover:bg-primary text-primary-foreground shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <Send className="h-4 w-4 sm:h-5 sm:w-5" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

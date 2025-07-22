@@ -58,7 +58,7 @@ const Index = () => {
                 variant="outline" 
                 className="border-2 border-white/20 hover:border-[#f6d365]/40 hover:bg-white/5 px-6 sm:px-8 lg:px-12 py-4 sm:py-5 lg:py-6 text-sm sm:text-base lg:text-lg font-medium backdrop-blur-sm min-w-[160px] sm:min-w-[180px] lg:min-w-[200px] rounded-xl transition-all duration-300 hover:scale-105"
               >
-                Share My Project
+                Share Story
               </Button>
             ) : (
               <Button 
@@ -66,7 +66,7 @@ const Index = () => {
                 variant="outline" 
                 className="border-2 border-white/20 hover:border-[#f6d365]/40 hover:bg-white/5 px-6 sm:px-8 lg:px-12 py-4 sm:py-5 lg:py-6 text-sm sm:text-base lg:text-lg font-medium backdrop-blur-sm min-w-[160px] sm:min-w-[180px] lg:min-w-[200px] rounded-xl transition-all duration-300 hover:scale-105"
               >
-                Join Our Community
+                Join Community
               </Button>
             )}
           </div>
@@ -84,7 +84,7 @@ const Index = () => {
                   <Book className="h-4 w-4 sm:h-5 sm:w-5 lg:h-7 lg:w-7 text-white" />
                 </div>
               </div>
-              <h3 className="font-['Crimson_Text'] text-lg sm:text-xl lg:text-2xl font-medium mb-3 sm:mb-4 text-foreground">
+              <h3 className="font-['Crimson_Text'] text-lg sm:text-xl lg:text-2xl font-medium mb-3 sm:mb-4 text-foreground flex items-center justify-center ">
                 The Real Build Stories
               </h3>
               <p className="text-foreground/70 font-light leading-[1.6] text-sm sm:text-base">
@@ -102,7 +102,7 @@ const Index = () => {
                   <Users className="h-4 w-4 sm:h-5 sm:w-5 lg:h-7 lg:w-7 text-white" strokeWidth={1.5} />
                 </div>
               </div>
-              <h3 className="font-['Crimson_Text'] text-lg sm:text-xl lg:text-2xl font-medium mb-3 sm:mb-4 text-foreground">
+              <h3 className="font-['Crimson_Text'] text-lg sm:text-xl lg:text-2xl font-medium mb-3 sm:mb-4 text-foreground flex items-center justify-center ">
                 Meet the Builders
               </h3>
               <p className="text-foreground/70 font-light leading-[1.6] text-sm sm:text-base">
@@ -120,10 +120,10 @@ const Index = () => {
                   <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 lg:h-7 lg:w-7 text-white" strokeWidth={1.5} />
                 </div>
               </div>
-              <h3 className="font-['Crimson_Text'] text-lg sm:text-xl lg:text-2xl font-medium mb-3 sm:mb-4 text-foreground">
+              <h3 className="font-['Crimson_Text'] text-lg sm:text-xl lg:text-2xl font-medium mb-3 sm:mb-4 text-foreground flex items-center justify-center ">
                 Quality Over Quantity
               </h3>
-              <p className="text-foreground/70 font-light leading-[1.6] text-sm sm:text-base">
+              <p className="text-foreground/70 font-light leading-[1.6] text-sm sm:text-base ">
                 Every featured app is handpicked for its story and innovation. No endless scrolling – just meaningful discoveries that inspire your next AI project.
               </p>
             </div>
@@ -152,7 +152,7 @@ const Index = () => {
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
-                  Submit My Story
+                  Share Story
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-[#fda085]/30 to-[#f6d365]/30 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
               </Button>

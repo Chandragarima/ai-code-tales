@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Edit, Trash2, ExternalLink, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Edit, Trash2, ExternalLink, Clock, CheckCircle, XCircle, Eye, FolderOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProjectCarousel } from "./ProjectCarousel";
@@ -139,111 +139,108 @@ export const MyProjects = () => {
     );
   }
 
-  if (projects.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-text-elegant mb-4">You haven't submitted any projects yet.</p>
-        <Button 
-          onClick={() => navigate('/submit')}
-          className="bg-elegant-accent hover:bg-elegant-accent/90 text-background"
-        >
-          Submit Your First Project
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-light text-foreground">My Projects ({projects.length})</h2>
-        <Button 
-          onClick={() => navigate('/submit')}
-          className="bg-elegant-accent hover:bg-elegant-accent/90 text-background"
-        >
-          Submit New Project
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {projects.map((project) => (
-          <Card key={project.id} className="border-subtle-border bg-card/80 backdrop-blur-sm">
-            <CardHeader className="pb-4">
-              <div className="flex items-start justify-between">
-                <CardTitle className="text-lg font-medium text-foreground">{project.name}</CardTitle>
-                <div className="flex items-center gap-2">
-                  <Badge className={`font-light ${getStatusColor(project.status)}`}>
-                    <span className="flex items-center gap-1">
-                      {getStatusIcon(project.status)}
-                      {project.status}
-                    </span>
-                  </Badge>
+      {projects.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-gradient-to-br from-[#f6d365]/20 to-[#fda085]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <FolderOpen className="h-8 w-8 text-muted-foreground/70" />
+          </div>
+          <h3 className="text-lg font-medium text-foreground mb-2">No projects yet</h3>
+          <p className="text-sm text-muted-foreground max-w-lg mx-auto">
+            You haven't submitted any projects yet. Use the button above to get started.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {projects.map((project) => (
+            <Card key={project.id} className="border-border/30 bg-card/80 backdrop-blur-sm hover:bg-card/90 transition-all duration-300">
+              <CardHeader className="pb-4">
+                <div className="flex items-start justify-between">
+                  <CardTitle className="text-lg font-medium text-foreground">{project.name}</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Badge className={`font-light ${getStatusColor(project.status)}`}>
+                      <span className="flex items-center gap-1">
+                        {getStatusIcon(project.status)}
+                        {project.status}
+                      </span>
+                    </Badge>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
+              </CardHeader>
 
-            <CardContent className="space-y-4">
-              {project.screenshots && project.screenshots.length > 0 && (
-                <ProjectCarousel screenshots={project.screenshots} projectName={project.name} />
-              )}
-
-              <p className="text-sm text-foreground/70 leading-relaxed">{project.description}</p>
-
-              <div className="flex flex-wrap gap-2">
-                {project.tools.map((tool, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs font-light">
-                    {tool}
-                  </Badge>
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between pt-4 border-t border-subtle-border">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => window.open(project.link, '_blank')}
-                    className="border-subtle-border hover:border-elegant-accent/30 font-light"
-                  >
-                    <ExternalLink className="h-3 w-3 mr-1" />
-                    Visit
-                  </Button>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate(`/edit-project/${project.id}`)}
-                    className="border-subtle-border hover:border-elegant-accent/30 font-light"
-                  >
-                    <Edit className="h-3 w-3 mr-1" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => deleteProject(project.id)}
-                    className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-light"
-                  >
-                    <Trash2 className="h-3 w-3 mr-1" />
-                    Delete
-                  </Button>
-                </div>
-              </div>
-
-              <div className="text-xs text-text-elegant">
-                Created: {new Date(project.created_at).toLocaleDateString()}
-                {project.updated_at !== project.created_at && (
-                  <span className="ml-2">
-                    • Updated: {new Date(project.updated_at).toLocaleDateString()}
-                  </span>
+              <CardContent className="space-y-4">
+                {project.screenshots && project.screenshots.length > 0 && (
+                  <ProjectCarousel screenshots={project.screenshots} projectName={project.name} />
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+
+                <p className="text-sm text-foreground/70 leading-relaxed">{project.description}</p>
+
+                <div className="flex flex-wrap gap-2">
+                  {project.tools.map((tool, index) => (
+                    <Badge key={index} variant="secondary" className="text-xs font-light">
+                      {tool}
+                    </Badge>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-border/30">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/project/${project.id}`)}
+                      className="border-border/30 hover:border-[#fda085]/50 hover:bg-[#fda085]/10 font-light"
+                    >
+                      <Eye className="h-3 w-3 mr-1" />
+                      View
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(project.link, '_blank')}
+                      className="border-border/30 hover:border-[#fda085]/50 hover:bg-[#fda085]/10 font-light"
+                    >
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      Visit
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/edit-project/${project.id}`)}
+                      className="border-border/30 hover:border-[#fda085]/50 hover:bg-[#fda085]/10 font-light"
+                    >
+                      <Edit className="h-3 w-3 mr-1" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => deleteProject(project.id)}
+                      className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-light"
+                    >
+                      <Trash2 className="h-3 w-3 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="text-xs text-muted-foreground">
+                  Created: {new Date(project.created_at).toLocaleDateString()}
+                  {project.updated_at !== project.created_at && (
+                    <span className="ml-2">
+                      • Updated: {new Date(project.updated_at).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

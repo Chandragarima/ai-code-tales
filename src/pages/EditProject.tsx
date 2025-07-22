@@ -178,42 +178,54 @@ export default function EditProject() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background bg-subtle-grid bg-grid flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-elegant-accent mx-auto mb-4"></div>
-          <p className="text-text-elegant">Loading project...</p>
+          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-foreground/70">Loading project...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background bg-subtle-grid bg-grid">
-      <div className="container mx-auto px-6 py-16 max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30 pointer-events-none"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-4xl">
         <div className="mb-12">
           <Button 
             variant="ghost" 
             onClick={() => navigate("/my-projects")}
-            className="mb-6 text-text-elegant hover:text-foreground font-light"
+            className="mb-8 text-foreground/70 hover:text-foreground font-light group md:hidden"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to My Projects
           </Button>
           
           <div className="text-center">
-            <h1 className="text-5xl font-light mb-6 bg-elegant-gradient bg-clip-text text-transparent">
-              Edit Project
-            </h1>
-            <p className="text-text-elegant text-lg font-light leading-relaxed">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] rounded-2xl flex items-center justify-center shadow-lg">
+                <Sparkles className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-4xl sm:text-5xl font-light bg-elegant-gradient bg-clip-text text-transparent">
+                Edit Project
+              </h1>
+            </div>
+            <p className="text-foreground/70 text-lg font-light leading-relaxed max-w-2xl mx-auto">
               Update your project details and story
             </p>
           </div>
         </div>
 
-        <Card className="border-subtle-border bg-card backdrop-blur-sm">
+        <Card className="border-border/30 bg-card/80 backdrop-blur-sm hover:bg-card/90 transition-all duration-300">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-foreground font-light text-xl">
-              <Sparkles className="h-6 w-6 text-elegant-accent" />
+              <div className="w-8 h-8 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-lg flex items-center justify-center">
+                <Sparkles className="h-4 w-4 text-white" />
+              </div>
               Project Details
             </CardTitle>
           </CardHeader>
@@ -228,12 +240,12 @@ export default function EditProject() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-light">Project Name</FormLabel>
+                        <FormLabel className="font-light text-foreground/80">Project Name</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="My Amazing AI App" 
                             {...field} 
-                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
+                            className="border-border/30 focus:border-[#fda085]/50 focus:ring-[#fda085]/20 font-light"
                           />
                         </FormControl>
                         <FormMessage />
@@ -246,12 +258,12 @@ export default function EditProject() {
                     name="link"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-light">Project URL</FormLabel>
+                        <FormLabel className="font-light text-foreground/80">Project URL</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="https://myapp.com" 
                             {...field} 
-                            className="border-subtle-border focus:border-elegant-accent/50 font-light"
+                            className="border-border/30 focus:border-[#fda085]/50 focus:ring-[#fda085]/20 font-light"
                           />
                         </FormControl>
                         <FormMessage />
@@ -265,15 +277,15 @@ export default function EditProject() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-light">Brief Description</FormLabel>
+                      <FormLabel className="font-light text-foreground/80">Brief Description</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="A one-line description of what your app does..."
-                          className="border-subtle-border focus:border-elegant-accent/50 min-h-[80px] font-light"
+                          className="border-border/30 focus:border-[#fda085]/50 focus:ring-[#fda085]/20 min-h-[80px] font-light"
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription className="font-light text-text-elegant">
+                      <FormDescription className="font-light text-muted-foreground">
                         Keep it concise - this appears on your gallery card
                       </FormDescription>
                       <FormMessage />

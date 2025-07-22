@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ExternalLink, Heart, Rocket, Lightbulb, MessageCircle, Calendar, Globe, User, Eye, Sparkles } from "lucide-react";
+import { ArrowLeft, ExternalLink, Heart, Rocket, Lightbulb, MessageCircle, Calendar, Globe, User, Eye, Sparkles, Mail, Github, Twitter, Linkedin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +30,15 @@ interface Project {
   };
 }
 
+interface CreatorProfile {
+  allow_contact: boolean;
+  bio?: string;
+  website?: string;
+  github?: string;
+  twitter?: string;
+  linkedin?: string;
+}
+
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -37,11 +46,11 @@ export default function ProjectDetail() {
   const { toast } = useToast();
   
   const [project, setProject] = useState<Project | null>(null);
+  const [creatorProfile, setCreatorProfile] = useState<CreatorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [userReaction, setUserReaction] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showMessageDialog, setShowMessageDialog] = useState(false);
-  const [creatorAllowsContact, setCreatorAllowsContact] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -49,12 +58,6 @@ export default function ProjectDetail() {
       if (user) {
         fetchUserReaction();
       }
-    }
-  }, [id, user]);
-
-  useEffect(() => {
-    if (project) {
-      checkCreatorContactSettings();
     }
   }, [id, user]);
 
@@ -101,6 +104,9 @@ export default function ProjectDetail() {
       };
 
       setProject(project);
+
+      // Fetch creator profile
+      await fetchCreatorProfile(projectData.user_id);
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -111,6 +117,25 @@ export default function ProjectDetail() {
       navigate('/gallery');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCreatorProfile = async (creatorId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('allow_contact, bio, website, github, twitter, linkedin')
+        .eq('user_id', creatorId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching creator profile:', error);
+        return;
+      }
+
+      setCreatorProfile(data);
+    } catch (error) {
+      console.error('Error fetching creator profile:', error);
     }
   };
 
@@ -157,15 +182,27 @@ export default function ProjectDetail() {
           .from('project_reactions')
           .delete()
           .eq('project_id', id)
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .eq('reaction_type', reactionType);
 
         if (error) throw error;
         setUserReaction(null);
       } else {
-        // Add or update reaction
+        // First, delete any existing reaction by this user for this project
+        if (userReaction) {
+          const { error: deleteError } = await supabase
+            .from('project_reactions')
+            .delete()
+            .eq('project_id', id)
+            .eq('user_id', user.id);
+
+          if (deleteError) throw deleteError;
+        }
+
+        // Then insert the new reaction
         const { error } = await supabase
           .from('project_reactions')
-          .upsert({
+          .insert({
             project_id: id,
             user_id: user.id,
             reaction_type: reactionType
@@ -196,25 +233,19 @@ export default function ProjectDetail() {
     }
   };
 
-  const checkCreatorContactSettings = async () => {
-    if (!project) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('allow_contact')
-        .eq('user_id', project.user_id)
-        .single();
+  const canContactCreator = () => {
+    return project?.allows_contact && 
+           creatorProfile?.allow_contact && 
+           user?.id !== project.user_id;
+  };
 
-      if (error) {
-        console.error('Error checking creator contact settings:', error);
-        return;
-      }
+  const shouldShowConnectSection = () => {
+    return project?.allows_contact && creatorProfile?.allow_contact;
+  };
 
-      setCreatorAllowsContact(data?.allow_contact !== false);
-    } catch (error) {
-      console.error('Error checking creator contact settings:', error);
-    }
+  const shouldShowAboutCreator = () => {
+    // Only show "About the Creator" if there's no "Connect with Creator" section
+    return !shouldShowConnectSection() && creatorProfile;
   };
 
   if (loading) {
@@ -244,135 +275,125 @@ export default function ProjectDetail() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
-      <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30 pointer-events-none"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
       
-      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-6xl">
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-8">
           <Button 
             variant="ghost" 
             onClick={() => navigate('/gallery')}
-            className="mb-4 sm:mb-6 text-foreground/70 hover:text-[#fda085] text-sm sm:text-base transition-all duration-300"
+            className="mb-6 text-foreground/70 hover:text-[#fda085] text-sm sm:text-base transition-all duration-300"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Gallery
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
-            {/* Project Header - Most Important */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Project Header - Name and Description First */}
             <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1">
-              {/* Subtle gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               
-              <CardContent className="relative p-0">
-                <div className="p-4 sm:p-6 lg:p-8">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0 mb-4 sm:mb-6">
-                    <div className="flex-1">
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0">
-                          {project.creator_name.split(' ').map(n => n[0]).join('')}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-muted-foreground mb-1 font-normal">Built by {project.creator_name}</p>
-                          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground leading-tight group-hover:text-[#f6d365] transition-colors duration-300">
-                            {project.name}
-                          </h1>
-                        </div>
+              <CardContent className="relative p-6 sm:p-8">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 mb-6">
+                  <div className="flex-1">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0">
+                        {project.creator_name.split(' ').map(n => n[0]).join('')}
                       </div>
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-foreground/60 text-sm">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>{new Date(project.created_at).toLocaleDateString()}</span>
-                        </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-muted-foreground mb-2 font-medium">Built by {project.creator_name}</p>
+                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground leading-tight group-hover:text-[#f6d365] transition-colors duration-300">
+                          {project.name}
+                        </h1>
                       </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                      <Button 
-                        onClick={() => window.open(project.link, '_blank')}
-                        className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white font-semibold shadow-lg hover:shadow-xl hover:shadow-[#fda085]/20 transition-all duration-300 hover:scale-105"
-                      >
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        View Live
-                      </Button>
-                      {user && creatorAllowsContact && user.id !== project.user_id && (
-                        <Button 
-                          variant="outline"
-                          onClick={() => setShowMessageDialog(true)}
-                          className="bg-gradient-to-r from-[#f6d365]/20 to-[#fda085]/20 hover:from-[#f6d365]/30 hover:to-[#fda085]/30 text-foreground hover:text-[#fda085] transition-all duration-300 border-[#f6d365]/30 hover:border-[#f6d365]/50"
-                        >
-                          <MessageCircle className="h-4 w-4 mr-2" />
-                          Message Creator
-                        </Button>
-                      )}
+                    <div className="flex items-center gap-4 text-foreground/60 text-sm mb-4">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span>{new Date(project.created_at).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Eye className="h-4 w-4" />
+                        <span>Project Details</span>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Tools */}
-                  <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
-                    {project.tools.map((tool, index) => (
-                      <Badge 
-                        key={tool} 
-                        variant="secondary"
-                        className={`text-xs px-2.5 py-1 border transition-all duration-300 ${
-                          index % 2 === 0 
-                            ? 'bg-gradient-to-r from-[#f6d365]/10 to-[#fda085]/10 hover:from-[#f6d365]/20 hover:to-[#fda085]/20 text-foreground/90 border-[#f6d365]/20 hover:border-[#f6d365]/40' 
-                            : 'bg-gradient-to-r from-[#fda085]/10 to-[#f6d365]/10 hover:from-[#fda085]/20 hover:to-[#f6d365]/20 text-foreground/90 border-[#fda085]/20 hover:border-[#fda085]/40'
-                        }`}
-                      >
-                        {tool}
-                      </Badge>
-                    ))}
+                  <div className="flex flex-col gap-3">
+                    <Button 
+                      onClick={() => window.open(project.link, '_blank')}
+                      className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white font-semibold shadow-lg hover:shadow-xl hover:shadow-[#fda085]/20 transition-all duration-300 hover:scale-105"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Live
+                    </Button>
                   </div>
-
-                  {/* Description */}
-                  <p className="text-foreground/80 text-base sm:text-lg leading-relaxed">
-                    {project.description}
-                  </p>
-                  
-                  {/* Subtle connection hint */}
-                  {project.allows_contact && creatorAllowsContact && (
-                    <div className="mt-4 p-3 rounded-lg bg-gradient-to-r from-[#f6d365]/5 to-[#fda085]/5 border border-[#f6d365]/20">
-                      <div className="flex items-center gap-2 text-sm text-foreground/70">
-                        <MessageCircle className="h-4 w-4 text-[#fda085]" />
-                        <span>Want to learn more? <span className="text-[#fda085] font-medium">Connect with the creator</span> in the sidebar.</span>
-                      </div>
-                    </div>
-                  )}
                 </div>
+
+                {/* Tools */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {project.tools.map((tool, index) => (
+                    <Badge 
+                      key={tool} 
+                      variant="secondary"
+                      className={`text-xs px-3 py-1.5 border transition-all duration-300 ${
+                        index % 2 === 0 
+                          ? 'bg-gradient-to-r from-[#f6d365]/10 to-[#fda085]/10 hover:from-[#f6d365]/20 hover:to-[#fda085]/20 text-foreground/90 border-[#f6d365]/20 hover:border-[#f6d365]/40' 
+                          : 'bg-gradient-to-r from-[#fda085]/10 to-[#f6d365]/10 hover:from-[#fda085]/20 hover:to-[#f6d365]/20 text-foreground/90 border-[#fda085]/20 hover:border-[#fda085]/40'
+                      }`}
+                    >
+                      {tool}
+                    </Badge>
+                  ))}
+                </div>
+
+                {/* Description */}
+                <p className="text-foreground/80 text-lg leading-relaxed">
+                  {project.description}
+                </p>
               </CardContent>
             </Card>
 
-            {/* Story Section - Moved up for better engagement */}
-            <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              
-              <CardContent className="relative p-4 sm:p-6 lg:p-8">
-                <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                  <Sparkles className="h-5 w-5 text-[#fda085]" />
-                  <h2 className="text-xl sm:text-2xl font-semibold text-foreground">The Story</h2>
+            {/* Story Section */}
+            <Card className="border-border/50 bg-card/90 backdrop-blur-sm">
+              <CardContent className="p-6 sm:p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <Sparkles className="h-6 w-6 text-[#fda085]" />
+                  <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">The Story</h2>
                 </div>
-                <div className="prose prose-lg max-w-none">
+                
+                <div className="space-y-6">
+                  {/* Main Story - Always shown as a quote */}
                   <div className="relative">
-                    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#f6d365] to-[#fda085] rounded-full"></div>
-                    <div className="pl-4 sm:pl-6">
-                      <blockquote className="text-base sm:text-lg lg:text-xl leading-relaxed italic text-foreground/90 mb-4 sm:mb-6">
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#f6d365] to-[#fda085] rounded-full"></div>
+                    <div className="pl-6">
+                      <blockquote className="text-base sm:text-lg lg:text-xl leading-relaxed italic text-foreground/90 font-medium">
                         "{project.story}"
                       </blockquote>
                     </div>
                   </div>
+                  
+                  {/* Detailed Story - Only shown if exists */}
                   {project.deeper_story && (
-                    <div className="text-foreground/80 leading-relaxed whitespace-pre-line text-sm sm:text-base">
-                      {project.deeper_story}
+                    <div className="border-t border-border/30 pt-6">
+                      <div className="prose prose-lg max-w-none">
+                        <div className="text-foreground/80 leading-relaxed whitespace-pre-line text-base sm:text-lg">
+                          {project.deeper_story}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Screenshots Gallery - Moved down as supporting content */}
+            {/* Screenshots Gallery - Integrated carefully */}
             {project.screenshots && project.screenshots.length > 0 && (
               <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -382,7 +403,7 @@ export default function ProjectDetail() {
                     <img 
                       src={project.screenshots[currentImageIndex]} 
                       alt={`${project.name} screenshot ${currentImageIndex + 1}`}
-                      className="w-full h-48 sm:h-64 lg:h-96 object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                      className="w-full h-64 sm:h-80 lg:h-96 object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                     />
                     {project.screenshots.length > 1 && (
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
@@ -390,7 +411,7 @@ export default function ProjectDetail() {
                           <button
                             key={index}
                             onClick={() => setCurrentImageIndex(index)}
-                            className={`w-2 sm:w-3 h-2 sm:h-3 rounded-full transition-all ${
+                            className={`w-3 h-3 rounded-full transition-all ${
                               currentImageIndex === index 
                                 ? 'bg-gradient-to-r from-[#f6d365] to-[#fda085] shadow-lg' 
                                 : 'bg-white/50 hover:bg-white/70'
@@ -401,13 +422,13 @@ export default function ProjectDetail() {
                     )}
                   </div>
                   {project.screenshots.length > 1 && (
-                    <div className="p-3 sm:p-4 border-t border-white/10">
+                    <div className="p-4 border-t border-white/10">
                       <div className="flex gap-2 overflow-x-auto">
                         {project.screenshots.map((screenshot, index) => (
                           <button
                             key={index}
                             onClick={() => setCurrentImageIndex(index)}
-                            className={`flex-shrink-0 w-16 sm:w-20 h-12 sm:h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                            className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                               currentImageIndex === index 
                                 ? 'border-[#fda085] shadow-lg' 
                                 : 'border-border/30 hover:border-[#f6d365]/50'
@@ -429,87 +450,168 @@ export default function ProjectDetail() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4 sm:space-y-6">
-            {/* Connect with Creator - Moved to top for immediate visibility */}
-            {project.allows_contact && creatorAllowsContact && (
-              <Card className="group relative overflow-hidden border-[#f6d365]/30 hover:border-[#fda085]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/10 bg-gradient-to-br from-card/95 to-card/90 backdrop-blur-sm hover:-translate-y-1">
-                {/* Subtle brand gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/5 via-transparent to-[#fda085]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                {/* Highlight indicator */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#f6d365] to-[#fda085] opacity-60"></div>
-                
-                <CardContent className="relative p-6">
+          <div className="space-y-6">
+            {/* Connect with Creator - Prominent placement */}
+            {shouldShowConnectSection() && (
+              <Card className="border-border/50 bg-card/90 backdrop-blur-sm">
+                <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#f6d365] to-[#fda085] flex items-center justify-center">
-                      <MessageCircle className="h-4 w-4 text-white" />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f6d365] to-[#fda085] flex items-center justify-center">
+                      <MessageCircle className="h-5 w-5 text-white" />
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-foreground">Connect with Creator</h3>
-                      <p className="text-xs text-[#fda085] font-medium">Platform Feature</p>
+                      <p className="text-sm text-muted-foreground">
+                        {user ? 'Direct messaging available' : 'Sign in to connect'}
+                      </p>
                     </div>
                   </div>
                   
-                  <div className="space-y-4">
-                    <p className="text-foreground/80 text-sm leading-relaxed">
-                      Have questions about this project? Want to collaborate or share feedback? 
-                      <span className="text-[#fda085] font-medium"> Reach out directly to the creator.</span>
-                    </p>
-                    
-                    <div className="flex items-center gap-2 text-xs text-foreground/60">
-                      <div className="w-2 h-2 rounded-full bg-[#f6d365]"></div>
-                      <span>Direct messaging with project creators</span>
-                    </div>
-                    
-                    <Button 
-                      onClick={() => setShowMessageDialog(true)}
-                      className="w-full bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white font-semibold py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl hover:shadow-[#fda085]/20"
+                  <p className="text-foreground/80 text-sm leading-relaxed mb-4">
+                    {user ? (
+                      <>
+                        Have questions about this project? Want to collaborate or share feedback? 
+                        <span className="text-[#fda085] font-medium"> Reach out directly to {project.creator_name}.</span>
+                      </>
+                    ) : (
+                      <>
+                        Want to connect with {project.creator_name}? 
+                        <span className="text-[#fda085] font-medium"> Sign in to start a conversation.</span>
+                      </>
+                    )}
+                  </p>
+                  
+                                      <Button 
+                      onClick={() => {
+                        if (!user) {
+                          toast({
+                            title: "Sign in required",
+                            description: "Please sign in to message the creator.",
+                            variant: "destructive"
+                          });
+                          return;
+                        }
+                        if (user.id === project.user_id) {
+                          toast({
+                            title: "Cannot message yourself",
+                            description: "You cannot send a message to yourself.",
+                            variant: "destructive"
+                          });
+                          return;
+                        }
+                        setShowMessageDialog(true);
+                      }}
+                      variant="outline"
+                      className="w-full border-border/50 hover:border-[#fda085]/50 text-foreground/80 hover:text-[#fda085] bg-transparent hover:bg-[#fda085]/5 font-medium py-2.5 rounded-lg transition-all duration-300"
                     >
                       <MessageCircle className="h-4 w-4 mr-2" />
-                      Message {project.creator_name}
+                      {user ? `Message ${project.creator_name}` : 'Sign in to Message'}
                     </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* About Creator - Only show when no Connect section exists */}
+            {shouldShowAboutCreator() && (
+              <Card className="border-border/50 bg-card/90 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f6d365] to-[#fda085] flex items-center justify-center">
+                      <User className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">About the Creator</h3>
+                      <p className="text-sm text-muted-foreground">{project.creator_name}</p>
+                    </div>
+                  </div>
+                  
+                  {creatorProfile.bio && (
+                    <p className="text-foreground/80 text-sm leading-relaxed mb-4">
+                      {creatorProfile.bio}
+                    </p>
+                  )}
+                  
+                  {/* Social Links */}
+                  <div className="space-y-2">
+                    {creatorProfile.website && (
+                      <a href={creatorProfile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-foreground/70 hover:text-[#fda085] transition-colors">
+                        <Globe className="h-4 w-4" />
+                        <span>Website</span>
+                      </a>
+                    )}
+                    {creatorProfile.github && (
+                      <a href={creatorProfile.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-foreground/70 hover:text-[#fda085] transition-colors">
+                        <Github className="h-4 w-4" />
+                        <span>GitHub</span>
+                      </a>
+                    )}
+                    {creatorProfile.twitter && (
+                      <a href={creatorProfile.twitter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-foreground/70 hover:text-[#fda085] transition-colors">
+                        <Twitter className="h-4 w-4" />
+                        <span>Twitter</span>
+                      </a>
+                    )}
+                    {creatorProfile.linkedin && (
+                      <a href={creatorProfile.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-foreground/70 hover:text-[#fda085] transition-colors">
+                        <Linkedin className="h-4 w-4" />
+                        <span>LinkedIn</span>
+                      </a>
+                    )}
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Reactions - Moved down as secondary interaction */}
-            <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm lg:sticky lg:top-8 hover:-translate-y-1">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              
-              <CardContent className="relative p-4 sm:p-6">
-                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">Show your appreciation</h3>
-                <div className="space-y-2 sm:space-y-3">
+            {/* Reactions - Simplified design */}
+            <Card className="border-border/50 bg-card/90 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f6d365] to-[#fda085] flex items-center justify-center">
+                    <Heart className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">Show Your Appreciation</h3>
+                    <p className="text-sm text-muted-foreground">Support the creator</p>
+                  </div>
+                </div>
+                
+                <p className="text-foreground/80 text-sm leading-relaxed mb-4">
+                  Loved this project? Show your appreciation and support the creator's work.
+                </p>
+                
+                <div className="space-y-2">
                   {Object.entries(project.reactions).map(([type, count]) => {
                     const Icon = getReactionIcon(type);
                     const isActive = userReaction === type;
-                    const displayCount = count + (isActive ? 1 : 0);
                     
                     return (
                       <Button
                         key={type}
                         variant="ghost"
-                        size="lg"
-                        className={`w-full justify-between text-left transition-all duration-300 ${
+                        size="sm"
+                        className={`w-full justify-between text-left h-auto py-2 ${
                           isActive 
-                            ? 'bg-gradient-to-r from-[#f6d365]/20 to-[#fda085]/20 border-[#f6d365]/30 text-[#fda085]' 
-                            : 'hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 text-foreground/70 hover:text-foreground'
+                            ? 'bg-[#fda085]/10 text-[#fda085]' 
+                            : 'hover:bg-muted/50 text-foreground/70 hover:text-foreground'
                         }`}
                         onClick={() => handleReaction(type)}
                       >
                         <div className="flex items-center gap-3">
-                          <Icon className={`h-5 w-5 ${isActive ? 'fill-current' : ''}`} />
-                          <span className="font-medium capitalize">{type}</span>
+                          <Icon className={`h-4 w-4 ${isActive ? 'text-[#fda085]' : 'text-muted-foreground'}`} />
+                          <span className="font-medium capitalize text-sm">{type}</span>
                         </div>
-                        <span className="text-lg font-bold">{displayCount}</span>
+                        <span className="text-sm font-medium text-[#fda085]">{count}</span>
                       </Button>
                     );
                   })}
                 </div>
+                
                 {!user && (
-                  <p className="text-xs text-foreground/50 mt-4 text-center">
-                    Sign in to react to this project
-                  </p>
+                  <div className="mt-4 p-3 rounded-lg bg-muted/30 border border-border/50">
+                    <p className="text-xs text-foreground/70 text-center">
+                      Sign in to show your appreciation
+                    </p>
+                  </div>
                 )}
               </CardContent>
             </Card>
