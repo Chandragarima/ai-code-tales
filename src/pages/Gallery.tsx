@@ -253,10 +253,10 @@ export default function Gallery() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
       <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
       
-      <div className="relative container mx-auto px-4 py-8">
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 overflow-x-hidden">
         <GalleryHeader 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -266,12 +266,12 @@ export default function Gallery() {
         />
 
         {filteredProjects.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-foreground/60 text-lg">No projects found matching your criteria.</p>
-            <p className="text-foreground/40 mt-2">Try adjusting your search or filters.</p>
+          <div className="text-center py-12 sm:py-16">
+            <p className="text-foreground/60 text-base sm:text-lg">No projects found matching your criteria.</p>
+            <p className="text-foreground/40 mt-2 text-sm sm:text-base">Try adjusting your search or filters.</p>
           </div>
         ) : (
-          <div className="grid gap-8 md:gap-12">
+          <div className="grid gap-6 sm:gap-8 md:gap-12">
             {filteredProjects.map((project) => (
               <ProjectCard 
                 key={project.id} 
