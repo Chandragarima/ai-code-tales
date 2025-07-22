@@ -29,7 +29,7 @@ export const GalleryHeader = ({
       {/* Hero Section - Aligned with homepage */}
       <div className="text-center mb-8 sm:mb-12">
         <div className="flex flex-col items-center space-y-6 sm:space-y-8">
-          <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-bold leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+          <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-normal leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
             Gallery
           </h1>
           {/* Divider */}

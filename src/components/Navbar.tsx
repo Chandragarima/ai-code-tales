@@ -61,7 +61,6 @@ export const Navbar = () => {
   // Listen for message read events to update unread count
   useEffect(() => {
     const handleMessageRead = () => {
-      // Reload unread count when messages are read
       if (user) {
         loadUnreadCount();
       }
@@ -77,7 +76,6 @@ export const Navbar = () => {
     if (!user) return;
     
     try {
-      // Get all conversations where user is involved
       const { data: conversations } = await supabase
         .from('conversations')
         .select('id')
@@ -88,7 +86,6 @@ export const Navbar = () => {
         return;
       }
 
-      // Count unread messages
       const conversationIds = conversations.map(c => c.id);
       const { count } = await supabase
         .from('messages')
@@ -105,33 +102,60 @@ export const Navbar = () => {
 
   const isActivePath = (path: string) => location.pathname === path;
 
+  const getDisplayName = () => {
+    if (profile?.username) {
+      return profile.username;
+    }
+    return user?.email || 'User';
+  };
+
+  const getDisplayInitials = () => {
+    if (profile?.username) {
+      return profile.username.slice(0, 2).toUpperCase();
+    }
+    return user?.email?.slice(0, 2).toUpperCase() || 'U';
+  };
+
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50 overflow-x-hidden">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+    <nav className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border/30">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
             <button
               onClick={() => navigate('/')}
-              className="text-2xl font-light bg-elegant-gradient bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity group"
             >
-              AI Gallery
+              {/* Logo Icon */}
+              <div className="relative">
+                {/* Code bracket icon */}
+                <div className="w-8 h-8 border-2 border-[#fda085] rounded flex items-center justify-center">
+                  <span className="text-[#fda085] font-mono text-sm font-bold">&lt;/&gt;</span>
+                </div>
+                {/* Speech bubble overlay */}
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-pink-400 to-orange-400 rounded-full opacity-90 group-hover:scale-110 transition-transform duration-200"></div>
+              </div>
+              {/* Logo Text */}
+              <div className="flex flex-col">
+                <span className="text-[#fda085] font-semibold text-lg leading-none">AI Code</span>
+                <span className="text-[#fda085] font-semibold text-sm leading-none">STORIES</span>
+              </div>
             </button>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
             {navItems.map((item) => (
               <button
                 key={item.name}
                 onClick={() => navigate(item.path)}
-                className={`relative flex items-center gap-1 font-light transition-colors duration-200 ${
+                className={`relative flex items-center gap-2 font-light transition-all duration-200 ${
                   isActivePath(item.path)
-                    ? 'text-primary border-b-2 border-primary'
-                    : 'text-foreground/70 hover:text-foreground'
+                    ? 'text-[#fda085] border-b-2 border-[#fda085]'
+                    : 'text-foreground/70 hover:text-foreground hover:text-[#fda085]'
                 }`}
               >
-                <span>{item.name}</span>
+                <span className="text-sm lg:text-base">{item.name}</span>
                 {item.path === '/messages' && unreadCount > 0 && (
                   <Badge 
                     variant="destructive" 
@@ -151,28 +175,34 @@ export const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="flex items-center space-x-2 hover:bg-primary/10"
+                    className="flex items-center space-x-3 hover:bg-muted/50 transition-all duration-200"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#f6d365] to-[#fda085] flex items-center justify-center">
                       <span className="text-xs font-medium text-white">
-                        {profile?.username ? profile.username.slice(0, 2).toUpperCase() : user.email?.slice(0, 2).toUpperCase()}
+                        {getDisplayInitials()}
                       </span>
                     </div>
-                    <span className="font-light">{profile?.username || user.email}</span>
+                    <span className="font-light text-sm lg:text-base">{getDisplayName()}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="px-2 py-1.5">
-                    <p className="text-sm font-medium">{profile?.username || user.email}</p>
+                <DropdownMenuContent align="end" className="w-56 bg-card/95 backdrop-blur-sm border-border/50">
+                  <div className="px-3 py-2">
+                    <p className="text-sm font-medium text-foreground">{getDisplayName()}</p>
                     <p className="text-xs text-muted-foreground">{user.email}</p>
                   </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  <DropdownMenuSeparator className="bg-border/50" />
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/profile')}
+                    className="hover:bg-muted/50 cursor-pointer"
+                  >
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                  <DropdownMenuSeparator className="bg-border/50" />
+                  <DropdownMenuItem 
+                    onClick={handleSignOut} 
+                    className="text-red-500 hover:text-red-600 hover:bg-red-50 cursor-pointer"
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign Out
                   </DropdownMenuItem>
@@ -181,7 +211,7 @@ export const Navbar = () => {
             ) : (
               <Button
                 onClick={() => navigate('/auth')}
-                className="bg-primary hover:bg-primary/90 font-light"
+                className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-black font-light shadow-sm"
               >
                 Sign In
               </Button>
@@ -194,11 +224,12 @@ export const Navbar = () => {
               variant="ghost"
               size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="hover:bg-muted/50"
             >
               {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5" />
               ) : (
-                <Menu className="h-6 w-6" />
+                <Menu className="h-5 w-5" />
               )}
             </Button>
           </div>
@@ -206,8 +237,8 @@ export const Navbar = () => {
 
         {/* Mobile Navigation Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-sm">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+          <div className="md:hidden border-t border-border/30 bg-card/95 backdrop-blur-sm">
+            <div className="px-4 py-4 space-y-2">
               {navItems.map((item) => (
                 <button
                   key={item.name}
@@ -215,13 +246,13 @@ export const Navbar = () => {
                     navigate(item.path);
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`flex items-center justify-between w-full text-left px-3 py-2 rounded-md font-light transition-colors ${
+                  className={`flex items-center justify-between w-full text-left px-3 py-3 rounded-lg font-light transition-all duration-200 ${
                     isActivePath(item.path)
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-foreground/70 hover:text-foreground hover:bg-muted/50'
+                      ? 'bg-gradient-to-r from-[#f6d365]/20 to-[#fda085]/20 text-[#fda085] border border-[#fda085]/30'
+                      : 'text-foreground/70 hover:text-foreground hover:bg-muted/30'
                   }`}
                 >
-                  <span>{item.name}</span>
+                  <span className="text-sm">{item.name}</span>
                   {item.path === '/messages' && unreadCount > 0 && (
                     <Badge variant="destructive" className="text-xs">
                       {unreadCount > 9 ? '9+' : unreadCount}
@@ -230,17 +261,17 @@ export const Navbar = () => {
                 </button>
               ))}
               
-              <div className="border-t border-border/50 mt-4 pt-4">
+              <div className="border-t border-border/30 mt-4 pt-4">
                 {user ? (
                   <div className="space-y-2">
-                    <div className="flex items-center px-3 py-2 space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
-                        <span className="text-xs font-medium text-white">
-                          {profile?.username ? profile.username.slice(0, 2).toUpperCase() : user.email?.slice(0, 2).toUpperCase()}
+                    <div className="flex items-center px-3 py-3 space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f6d365] to-[#fda085] flex items-center justify-center">
+                        <span className="text-sm font-medium text-white">
+                          {getDisplayInitials()}
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium">{profile?.username || user.email}</p>
+                        <p className="text-sm font-medium text-foreground">{getDisplayName()}</p>
                         <p className="text-xs text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
@@ -249,7 +280,7 @@ export const Navbar = () => {
                         navigate('/profile');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="block w-full text-left px-3 py-2 rounded-md font-light text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                      className="block w-full text-left px-3 py-3 rounded-lg font-light text-foreground/70 hover:text-foreground hover:bg-muted/30 transition-all duration-200"
                     >
                       Profile
                     </button>
@@ -258,7 +289,7 @@ export const Navbar = () => {
                         handleSignOut();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="block w-full text-left px-3 py-2 rounded-md font-light text-red-600 hover:bg-red-50"
+                      className="block w-full text-left px-3 py-3 rounded-lg font-light text-red-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
                     >
                       Sign Out
                     </button>
@@ -269,7 +300,7 @@ export const Navbar = () => {
                       navigate('/auth');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left px-3 py-2 rounded-md font-light bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="block w-full text-left px-3 py-3 rounded-lg font-light bg-gradient-to-r from-[#f6d365] to-[#fda085] text-black hover:from-[#fda085] hover:to-[#f6d365] transition-all duration-200"
                   >
                     Sign In
                   </button>

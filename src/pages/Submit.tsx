@@ -170,7 +170,7 @@ export default function Submit() {
         ></div>
       </div> */}
       
-      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 max-w-4xl">
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-10 max-w-4xl">
         {/* Header Section - Aligned with homepage */}
         <div className="mb-8 sm:mb-12">
           <Button 
@@ -184,7 +184,7 @@ export default function Submit() {
           
           <div className="text-center">
             <div className="flex flex-col items-center space-y-6 sm:space-y-8">
-              <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-bold leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+              <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-normal leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
                 Share Your Story
               </h1>
               {/* Divider */}

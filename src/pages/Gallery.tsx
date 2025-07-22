@@ -14,7 +14,7 @@ interface Project {
   link: string;
   tools: string[];
   screenshots: string[];
-  user_id?: string; // Optional for mock projects
+  user_id?: string;
   creator: {
     name: string;
     allowsContact: boolean;
@@ -25,67 +25,6 @@ interface Project {
     lightbulb: number;
   };
 }
-
-// Mock projects to show UI examples
-const mockProjects: Project[] = [
-  {
-    id: 'mock-1',
-    name: 'AI Recipe Generator',
-    description: 'Transform your leftover ingredients into delicious meals with AI-powered recipe suggestions.',
-    story: 'Born from the frustration of wasting food and not knowing what to cook, this app uses machine learning to suggest creative recipes based on available ingredients.',
-    deeper_story: 'The idea came to me during a particularly uninspiring evening staring into my nearly-empty fridge. Instead of ordering takeout again, I wondered: what if AI could help me create something delicious from what I already have?',
-    link: 'https://ai-recipe-gen.example.com',
-    tools: ['React', 'OpenAI API', 'Node.js', 'MongoDB'],
-    screenshots: ['/placeholder.svg'],
-    creator: {
-      name: 'Sarah Chen',
-      allowsContact: true
-    },
-    reactions: {
-      heart: 24,
-      rocket: 8,
-      lightbulb: 12
-    }
-  },
-  {
-    id: 'mock-2',
-    name: 'Focus Flow',
-    description: 'A minimalist productivity app that adapts to your work patterns and helps maintain deep focus.',
-    story: 'After struggling with traditional productivity methods, I built an app that learns from your work habits and suggests optimal focus sessions.',
-    deeper_story: 'As someone with ADHD, I found existing productivity apps either too rigid or too chaotic. Focus Flow uses gentle AI nudges and pattern recognition to create a personalized workflow that actually works with how your brain operates.',
-    link: 'https://focusflow.example.com',
-    tools: ['Vue.js', 'Python', 'TensorFlow', 'PostgreSQL'],
-    screenshots: ['/placeholder.svg'],
-    creator: {
-      name: 'Alex Rivera',
-      allowsContact: false
-    },
-    reactions: {
-      heart: 31,
-      rocket: 15,
-      lightbulb: 9
-    }
-  },
-  {
-    id: 'mock-3',
-    name: 'Local Explorer AR',
-    description: 'Discover hidden gems in your city through augmented reality storytelling.',
-    story: 'Combines GPS data with AR to reveal the untold stories of places around you - from historical events to local legends.',
-    deeper_story: 'Moving to a new city made me realize how much history and culture we walk past every day without knowing. This app turns every street corner into a potential discovery, using AR to overlay stories, reviews, and hidden details about local spots.',
-    link: 'https://localexplorer.example.com',
-    tools: ['React Native', 'ARKit', 'Firebase', 'Google Maps API'],
-    screenshots: ['/placeholder.svg'],
-    creator: {
-      name: 'Jamie Park',
-      allowsContact: true
-    },
-    reactions: {
-      heart: 18,
-      rocket: 22,
-      lightbulb: 16
-    }
-  }
-];
 
 export default function Gallery() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -114,7 +53,7 @@ export default function Gallery() {
       if (projectsError) {
         console.error('Error fetching projects:', projectsError);
         // Use only mock projects if database fetch fails
-        setProjects(mockProjects);
+        // setProjects(mockProjects); // Removed mock projects
         return;
       }
 
@@ -160,12 +99,12 @@ export default function Gallery() {
         }
       })) || [];
 
-      // Combine mock projects with real projects
-      setProjects([...mockProjects, ...transformedProjects]);
+      // Combine mock projects with real projects // Removed mock projects
+      setProjects(transformedProjects);
     } catch (error) {
       console.error('Unexpected error:', error);
-      // Fallback to mock projects
-      setProjects(mockProjects);
+      // Fallback to mock projects // Removed mock projects
+      setProjects([]);
     }
     
     // Always ensure loading is set to false
@@ -203,7 +142,8 @@ export default function Gallery() {
         .from('project_reactions')
         .delete()
         .eq('project_id', projectId)
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('reaction_type', reactionType);
 
       if (!error) {
         setUserReactions(prev => {
@@ -211,12 +151,28 @@ export default function Gallery() {
           delete newReactions[projectId];
           return newReactions;
         });
+        // Refresh reaction counts
+        refreshReactionCounts();
       }
     } else {
-      // Add or update reaction
+      // First, delete any existing reaction by this user for this project
+      if (currentReaction) {
+        const { error: deleteError } = await supabase
+          .from('project_reactions')
+          .delete()
+          .eq('project_id', projectId)
+          .eq('user_id', user.id);
+
+        if (deleteError) {
+          console.error('Error deleting existing reaction:', deleteError);
+          return;
+        }
+      }
+
+      // Then insert the new reaction
       const { error } = await supabase
         .from('project_reactions')
-        .upsert({
+        .insert({
           project_id: projectId,
           user_id: user.id,
           reaction_type: reactionType
@@ -227,7 +183,50 @@ export default function Gallery() {
           ...prev,
           [projectId]: reactionType
         }));
+        // Refresh reaction counts
+        refreshReactionCounts();
       }
+    }
+  };
+
+  const refreshReactionCounts = async () => {
+    try {
+      // Fetch updated reactions for all projects
+      const { data: reactionsData, error: reactionsError } = await supabase
+        .from('project_reactions')
+        .select('project_id, reaction_type');
+
+      if (reactionsError) {
+        console.error('Error fetching reactions:', reactionsError);
+        return;
+      }
+
+      // Count reactions by project and type
+      const reactionCounts: Record<string, Record<string, number>> = {};
+      
+      reactionsData?.forEach(reaction => {
+        if (!reactionCounts[reaction.project_id]) {
+          reactionCounts[reaction.project_id] = { heart: 0, rocket: 0, lightbulb: 0 };
+        }
+        reactionCounts[reaction.project_id][reaction.reaction_type] = 
+          (reactionCounts[reaction.project_id][reaction.reaction_type] || 0) + 1;
+      });
+
+      // Update projects with new reaction counts
+      setProjects(prevProjects => 
+        prevProjects.map(project => {
+          return {
+            ...project,
+            reactions: {
+              heart: reactionCounts[project.id]?.heart || 0,
+              rocket: reactionCounts[project.id]?.rocket || 0,
+              lightbulb: reactionCounts[project.id]?.lightbulb || 0
+            }
+          };
+        })
+      );
+    } catch (error) {
+      console.error('Error refreshing reaction counts:', error);
     }
   };
 

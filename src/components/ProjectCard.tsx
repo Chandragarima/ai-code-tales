@@ -194,7 +194,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                       onClick={() => onReaction(project.id, type)}
                     >
                       <Icon className={`h-4 w-4 sm:h-3.5 sm:w-3.5 ${isActive ? 'fill-current' : ''}`} />
-                      <span className="font-medium">{count + (isActive ? 1 : 0)}</span>
+                      <span className="font-medium">{count}</span>
                     </Button>
                   );
                 })}
