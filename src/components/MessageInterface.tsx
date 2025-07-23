@@ -118,12 +118,26 @@ export function MessageInterface({
     console.log('Loading conversation for user:', user.id, 'project:', projectId, 'creator:', creatorId);
 
     try {
-      const { data: existingConversation, error: convError } = await supabase
+      // First try to find conversation where current user is sender
+      let { data: existingConversation, error: convError } = await supabase
         .from('conversations')
         .select('*')
         .eq('project_id', projectId)
         .eq('sender_id', user.id)
-        .single();
+        .maybeSingle();
+
+      // If not found as sender, try to find where current user is creator
+      if (!existingConversation && !convError) {
+        const { data: creatorConversation, error: creatorError } = await supabase
+          .from('conversations')
+          .select('*')
+          .eq('project_id', projectId)
+          .eq('creator_id', user.id)
+          .maybeSingle();
+        
+        existingConversation = creatorConversation;
+        convError = creatorError;
+      }
 
       console.log('Existing conversation query result:', existingConversation, 'Error:', convError);
 

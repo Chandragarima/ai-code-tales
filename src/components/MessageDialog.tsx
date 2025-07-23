@@ -237,6 +237,9 @@ export function MessageDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md h-[600px] flex flex-col p-0 bg-gradient-to-br from-background via-background to-muted/20 border-border/50">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Message with {creatorProfile?.username || creatorName}</DialogTitle>
+        </DialogHeader>
         {/* Header */}
         <div className="relative flex items-center gap-3 p-4 sm:p-6 bg-card/80 backdrop-blur-md border-b border-border/50">
           <Avatar className="h-10 w-10 sm:h-12 sm:w-12 ring-2 ring-border/50">
