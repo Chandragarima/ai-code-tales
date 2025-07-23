@@ -115,6 +115,8 @@ export function MessageInterface({
   const loadConversation = async () => {
     if (!user) return;
 
+    console.log('Loading conversation for user:', user.id, 'project:', projectId, 'creator:', creatorId);
+
     try {
       const { data: existingConversation, error: convError } = await supabase
         .from('conversations')
@@ -122,6 +124,8 @@ export function MessageInterface({
         .eq('project_id', projectId)
         .eq('sender_id', user.id)
         .single();
+
+      console.log('Existing conversation query result:', existingConversation, 'Error:', convError);
 
       if (convError && convError.code !== 'PGRST116') {
         throw convError;
@@ -247,7 +251,10 @@ export function MessageInterface({
     }
   };
 
-  const isOwnMessage = (message: Message) => message.sender_id === user?.id;
+  const isOwnMessage = (message: Message) => {
+    console.log('Checking message:', message.id, 'sender_id:', message.sender_id, 'user?.id:', user?.id, 'isOwn:', message.sender_id === user?.id);
+    return message.sender_id === user?.id;
+  };
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-background via-background to-muted/20">
