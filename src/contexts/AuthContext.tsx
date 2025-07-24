@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfile({
           id: data.id,
           username: data.username,
-          email: data.user_id, // We'll use user_id as email since it's not stored in profiles
+          email: userId, // Use the userId parameter which is the actual user ID
           avatar_url: data.avatar_url,
           created_at: data.created_at
         });
