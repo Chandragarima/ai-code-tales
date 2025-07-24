@@ -118,52 +118,56 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border/30">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/40 shadow-sm">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div className="flex justify-between items-center h-16 lg:h-18">
           {/* Logo */}
           <div className="flex-shrink-0">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity group"
+              className="flex items-center gap-3 hover:scale-105 transition-all duration-300 group"
             >
               {/* Logo Icon */}
               <div className="relative">
-                {/* Code bracket icon */}
-                <div className="w-8 h-8 border-2 border-[#fda085] rounded flex items-center justify-center">
-                  <span className="text-[#fda085] font-mono text-sm font-bold">&lt;/&gt;</span>
+                {/* Code bracket icon with modern gradient */}
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-xl flex items-center justify-center shadow-lg shadow-primary/25 group-hover:shadow-primary/40 transition-all duration-300">
+                  <span className="text-white font-mono text-base lg:text-lg font-bold">&lt;/&gt;</span>
                 </div>
-                {/* Speech bubble overlay */}
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-pink-400 to-orange-400 rounded-full opacity-90 group-hover:scale-110 transition-transform duration-200"></div>
+                {/* Animated glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/60 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 animate-pulse"></div>
               </div>
               {/* Logo Text */}
               <div className="flex flex-col">
-                <span className="text-[#fda085] font-semibold text-lg leading-none">AI Code</span>
-                <span className="text-[#fda085] font-semibold text-sm leading-none">STORIES</span>
+                <span className="text-foreground font-bold text-xl lg:text-2xl leading-none tracking-tight">AI Code</span>
+                <span className="text-muted-foreground font-medium text-sm lg:text-base leading-none tracking-widest">STORIES</span>
               </div>
             </button>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+          <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
             {navItems.map((item) => (
               <button
                 key={item.name}
                 onClick={() => navigate(item.path)}
-                className={`relative flex items-center gap-2 font-light transition-all duration-200 ${
+                className={`relative flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 group ${
                   isActivePath(item.path)
-                    ? 'text-[#fda085] border-b-2 border-[#fda085]'
-                    : 'text-foreground/70 hover:text-foreground hover:text-[#fda085]'
+                    ? 'text-primary bg-primary/10 shadow-md'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 }`}
               >
                 <span className="text-sm lg:text-base">{item.name}</span>
                 {item.path === '/messages' && unreadCount > 0 && (
                   <Badge 
                     variant="destructive" 
-                    className="h-4 w-4 rounded-full p-0 flex items-center justify-center text-xs"
+                    className="h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs animate-pulse"
                   >
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </Badge>
+                )}
+                {/* Active indicator */}
+                {isActivePath(item.path) && (
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-primary rounded-full"></div>
                 )}
               </button>
             ))}
@@ -176,36 +180,35 @@ export const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="flex items-center space-x-3 hover:bg-muted/50 transition-all duration-200"
+                    className="flex items-center space-x-3 px-3 py-2 rounded-full hover:bg-muted/80 transition-all duration-300 border border-transparent hover:border-border/40"
                   >
-                    <Avatar className="w-8 h-8">
+                    <Avatar className="w-9 h-9 lg:w-10 lg:h-10 ring-2 ring-primary/20">
                       <AvatarImage src={profile?.avatar_url || undefined} alt={getDisplayName()} />
-                      <AvatarFallback className="bg-gradient-to-br from-[#f6d365] to-[#fda085] text-white text-xs font-medium">
+                      <AvatarFallback className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white text-sm font-medium">
                         {getDisplayInitials()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="font-light text-sm lg:text-base">{getDisplayName()}</span>
+                    <span className="font-medium text-sm lg:text-base hidden lg:block">{getDisplayName()}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-card/95 backdrop-blur-sm border-border/50">
-                  <div className="px-3 py-2">
-                    <p className="text-sm font-medium text-foreground">{getDisplayName()}</p>
-                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                <DropdownMenuContent align="end" className="w-64 bg-card/95 backdrop-blur-xl border-border/60 shadow-xl rounded-xl">
+                  <div className="px-4 py-3 border-b border-border/20">
+                    <p className="text-sm font-semibold text-foreground">{getDisplayName()}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{user.email}</p>
                   </div>
-                  <DropdownMenuSeparator className="bg-border/50" />
                   <DropdownMenuItem 
                     onClick={() => navigate('/profile')}
-                    className="hover:bg-muted/50 cursor-pointer"
+                    className="hover:bg-muted/80 cursor-pointer mx-2 my-1 rounded-lg"
                   >
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
+                    <User className="mr-3 h-4 w-4" />
+                    Profile Settings
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-border/50" />
+                  <DropdownMenuSeparator className="bg-border/30 mx-2" />
                   <DropdownMenuItem 
                     onClick={handleSignOut} 
-                    className="text-red-500 hover:text-red-600 hover:bg-red-50 cursor-pointer"
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer mx-2 my-1 rounded-lg"
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="mr-3 h-4 w-4" />
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -213,7 +216,7 @@ export const Navbar = () => {
             ) : (
               <Button
                 onClick={() => navigate('/auth')}
-                className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-black font-light shadow-sm"
+                className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 hover:from-primary/90 hover:to-primary text-white font-medium shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300 rounded-full px-6 py-2"
               >
                 Sign In
               </Button>
@@ -226,7 +229,7 @@ export const Navbar = () => {
               variant="ghost"
               size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="hover:bg-muted/50"
+              className="rounded-full hover:bg-muted/80 transition-all duration-300"
             >
               {isMobileMenuOpen ? (
                 <X className="h-5 w-5" />
@@ -239,8 +242,8 @@ export const Navbar = () => {
 
         {/* Mobile Navigation Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border/30 bg-card/95 backdrop-blur-sm">
-            <div className="px-4 py-4 space-y-2">
+          <div className="md:hidden border-t border-border/40 bg-card/98 backdrop-blur-xl shadow-lg">
+            <div className="px-4 py-6 space-y-3">
               {navItems.map((item) => (
                 <button
                   key={item.name}
@@ -248,34 +251,34 @@ export const Navbar = () => {
                     navigate(item.path);
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`flex items-center justify-between w-full text-left px-3 py-3 rounded-lg font-light transition-all duration-200 ${
+                  className={`flex items-center justify-between w-full text-left px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
                     isActivePath(item.path)
-                      ? 'bg-gradient-to-r from-[#f6d365]/20 to-[#fda085]/20 text-[#fda085] border border-[#fda085]/30'
-                      : 'text-foreground/70 hover:text-foreground hover:bg-muted/30'
+                      ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
                   }`}
                 >
-                  <span className="text-sm">{item.name}</span>
+                  <span className="text-base">{item.name}</span>
                   {item.path === '/messages' && unreadCount > 0 && (
-                    <Badge variant="destructive" className="text-xs">
+                    <Badge variant="destructive" className="text-xs animate-pulse">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </Badge>
                   )}
                 </button>
               ))}
               
-              <div className="border-t border-border/30 mt-4 pt-4">
+              <div className="border-t border-border/40 mt-6 pt-6">
                 {user ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center px-3 py-3 space-x-3">
-                      <Avatar className="w-10 h-10">
+                  <div className="space-y-3">
+                    <div className="flex items-center px-4 py-4 bg-muted/30 rounded-xl">
+                      <Avatar className="w-12 h-12 ring-2 ring-primary/20">
                         <AvatarImage src={profile?.avatar_url || undefined} alt={getDisplayName()} />
-                        <AvatarFallback className="bg-gradient-to-br from-[#f6d365] to-[#fda085] text-white text-sm font-medium">
+                        <AvatarFallback className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white text-sm font-medium">
                           {getDisplayInitials()}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{getDisplayName()}</p>
-                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                      <div className="ml-3">
+                        <p className="text-base font-semibold text-foreground">{getDisplayName()}</p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
                     <button
@@ -283,17 +286,19 @@ export const Navbar = () => {
                         navigate('/profile');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="block w-full text-left px-3 py-3 rounded-lg font-light text-foreground/70 hover:text-foreground hover:bg-muted/30 transition-all duration-200"
+                      className="flex items-center w-full text-left px-4 py-3 rounded-xl font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-300"
                     >
-                      Profile
+                      <User className="mr-3 h-5 w-5" />
+                      Profile Settings
                     </button>
                     <button
                       onClick={() => {
                         handleSignOut();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="block w-full text-left px-3 py-3 rounded-lg font-light text-red-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                      className="flex items-center w-full text-left px-4 py-3 rounded-xl font-medium text-destructive hover:bg-destructive/10 transition-all duration-300"
                     >
+                      <LogOut className="mr-3 h-5 w-5" />
                       Sign Out
                     </button>
                   </div>
@@ -303,7 +308,7 @@ export const Navbar = () => {
                       navigate('/auth');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left px-3 py-3 rounded-lg font-light bg-gradient-to-r from-[#f6d365] to-[#fda085] text-black hover:from-[#fda085] hover:to-[#f6d365] transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-xl font-medium bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300"
                   >
                     Sign In
                   </button>
