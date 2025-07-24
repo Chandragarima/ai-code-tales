@@ -7,6 +7,7 @@ interface Profile {
   id: string;
   username: string;
   email: string;
+  avatar_url?: string;
   created_at: string;
 }
 
@@ -17,6 +18,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +33,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
+      if (session?.user) {
+        await fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
       setLoading(false);
     };
 
@@ -38,8 +45,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setUser(session?.user ?? null);
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
         setLoading(false);
       }
     );
@@ -48,8 +60,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const fetchProfile = async (userId: string) => {
-    // Skip profile fetching for now since profiles table doesn't exist
-    setProfile(null);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+      
+      if (data) {
+        setProfile({
+          id: data.id,
+          username: data.username,
+          email: data.user_id, // We'll use user_id as email since it's not stored in profiles
+          avatar_url: data.avatar_url,
+          created_at: data.created_at
+        });
+      } else {
+        setProfile(null);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      setProfile(null);
+    }
   };
 
 
@@ -93,6 +130,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) throw error;
   };
 
+  const refreshProfile = async () => {
+    if (user) {
+      await fetchProfile(user.id);
+    }
+  };
+
   const value = {
     user,
     profile,
@@ -100,6 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp,
     signIn,
     signOut,
+    refreshProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

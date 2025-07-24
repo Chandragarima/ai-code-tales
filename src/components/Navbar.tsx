@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Menu, X, User, LogOut, Settings, MessageSquare } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -177,11 +178,12 @@ export const Navbar = () => {
                     variant="ghost" 
                     className="flex items-center space-x-3 hover:bg-muted/50 transition-all duration-200"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#f6d365] to-[#fda085] flex items-center justify-center">
-                      <span className="text-xs font-medium text-white">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={profile?.avatar_url || undefined} alt={getDisplayName()} />
+                      <AvatarFallback className="bg-gradient-to-br from-[#f6d365] to-[#fda085] text-white text-xs font-medium">
                         {getDisplayInitials()}
-                      </span>
-                    </div>
+                      </AvatarFallback>
+                    </Avatar>
                     <span className="font-light text-sm lg:text-base">{getDisplayName()}</span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -265,11 +267,12 @@ export const Navbar = () => {
                 {user ? (
                   <div className="space-y-2">
                     <div className="flex items-center px-3 py-3 space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#f6d365] to-[#fda085] flex items-center justify-center">
-                        <span className="text-sm font-medium text-white">
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage src={profile?.avatar_url || undefined} alt={getDisplayName()} />
+                        <AvatarFallback className="bg-gradient-to-br from-[#f6d365] to-[#fda085] text-white text-sm font-medium">
                           {getDisplayInitials()}
-                        </span>
-                      </div>
+                        </AvatarFallback>
+                      </Avatar>
                       <div>
                         <p className="text-sm font-medium text-foreground">{getDisplayName()}</p>
                         <p className="text-xs text-muted-foreground">{user.email}</p>
