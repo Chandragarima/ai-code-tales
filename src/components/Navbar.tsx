@@ -211,7 +211,7 @@ export const Navbar = () => {
             ) : (
               <Button
                 onClick={() => navigate('/auth')}
-                className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-black font-light shadow-sm"
+                className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-black font-normal shadow-sm"
               >
                 Sign In
               </Button>
@@ -289,7 +289,7 @@ export const Navbar = () => {
                         handleSignOut();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="block w-full text-left px-3 py-3 rounded-lg font-light text-red-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                      className="block w-full text-left px-3 py-3 rounded-lg font-normal text-red-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
                     >
                       Sign Out
                     </button>
@@ -300,7 +300,7 @@ export const Navbar = () => {
                       navigate('/auth');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left px-3 py-3 rounded-lg font-light bg-gradient-to-r from-[#f6d365] to-[#fda085] text-black hover:from-[#fda085] hover:to-[#f6d365] transition-all duration-200"
+                    className="block w-full text-left px-3 py-3 rounded-lg font-normal bg-gradient-to-r from-[#f6d365] to-[#fda085] text-black hover:from-[#fda085] hover:to-[#f6d365] transition-all duration-200"
                   >
                     Sign In
                   </button>

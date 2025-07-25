@@ -317,12 +317,12 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-4 text-foreground/60 text-sm mb-4">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
-                        <span>{new Date(project.created_at).toLocaleDateString()}</span>
+                        <span>Submitted: {new Date(project.created_at).toLocaleDateString()}</span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      {/* <div className="flex items-center gap-2">
                         <Eye className="h-4 w-4" />
                         <span>Project Details</span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   <div className="flex flex-col gap-3">

@@ -56,7 +56,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
   };
 
   return (
-    <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1 max-w-4xl mx-auto">
+    <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1 max-w-5xl mx-auto">
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       
@@ -143,7 +143,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#f6d365] to-[#fda085] rounded-full"></div>
                 <div className="pl-3 sm:pl-4">
                   {/* <h4 className="text-sm font-semibold text-[#fda085] mb-1 sm:mb-2 uppercase tracking-wide">The Story</h4> */}
-                  <blockquote className="text-base font-medium text-foreground/90 leading-[1.5] italic line-clamp-4 mb-2 sm:mb-3">
+                  <blockquote className="text-base font-light text-foreground/90 leading-[1.5] italic line-clamp-4 mb-2 sm:mb-3">
                     "{project.story}"
                   </blockquote>
                 </div>
