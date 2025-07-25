@@ -22,7 +22,10 @@ export const ImageUpload = ({ screenshots, onScreenshotsChange, maxImages = 5 }:
   const { user } = useAuth();
 
   const uploadImage = async (file: File) => {
-    if (!user) {
+    console.log('Starting upload process...');
+    
+    if (!user) { 
+      console.log('No user found, upload cancelled');
       toast({
         title: "Authentication required",
         description: "Please sign in to upload images",
@@ -30,34 +33,103 @@ export const ImageUpload = ({ screenshots, onScreenshotsChange, maxImages = 5 }:
       });
       return null;
     }
+    
+    console.log('User authenticated:', user.id);
+    console.log('File details:', { name: file.name, size: file.size, type: file.type });
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-
-    const { data, error } = await supabase.storage
-      .from('project-screenshots')
-      .upload(fileName, file);
-
-    if (error) {
-      console.error('Upload error:', error);
+    // Validate file size
+    if (file.size > 5 * 1024 * 1024) {
+      console.log('File too large:', file.size);
       toast({
-        title: "Upload failed",
-        description: "Failed to upload image. Please try again.",
+        title: "File too large",
+        description: "Please select images smaller than 5MB",
         variant: "destructive",
       });
       return null;
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('project-screenshots')
-      .getPublicUrl(data.path);
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      console.log('Invalid file type:', file.type);
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return null;
+    }
 
-    toast({
-      title: "Image uploaded",
-      description: "Your image has been uploaded successfully.",
-    });
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+    console.log('Generated file path:', fileName);
+    
+    try {
+      console.log('Starting file upload...');
+      
+      // Add timeout to prevent hanging
+      const uploadPromise = supabase.storage
+        .from('project-screenshots')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-    return publicUrl;
+      // Create a timeout promise
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Upload timeout after 10 seconds')), 10000);
+      });
+
+      console.log('Upload promise created, waiting for response...');
+      
+      // Race between upload and timeout
+      const { data, error } = await Promise.race([uploadPromise, timeoutPromise]) as any;
+
+      console.log('Upload response received:', { data, error });
+
+      if (error) {
+        console.error('Upload error details:', error);
+        toast({
+          title: "Upload failed",
+          description: error.message || "Failed to upload image. Please try again.",
+          variant: "destructive",
+        });
+        return null;
+      }
+
+      if (!data || !data.path) {
+        console.error('No data or path returned from upload');
+        toast({
+          title: "Upload failed",
+          description: "Upload completed but no file path returned.",
+          variant: "destructive",
+        });
+        return null;
+      }
+
+      console.log('Upload successful, getting public URL...');
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from('project-screenshots')
+        .getPublicUrl(data.path);
+      
+      console.log('Public URL generated:', publicUrl);
+      
+      toast({
+        title: "Image uploaded",
+        description: "Your image has been uploaded successfully.",
+      });
+      
+      return publicUrl;
+      
+    } catch (error) {
+      console.error('Upload exception:', error);
+      toast({
+        title: "Upload failed",
+        description: error instanceof Error ? error.message : "An unexpected error occurred during upload.",
+        variant: "destructive",
+      });
+      return null;
+    }
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +144,7 @@ export const ImageUpload = ({ screenshots, onScreenshotsChange, maxImages = 5 }:
       });
       return;
     }
-
+    console.log('uploading')  
     setUploading(true);
     const newScreenshots = [...screenshots];
 
@@ -85,15 +157,15 @@ export const ImageUpload = ({ screenshots, onScreenshotsChange, maxImages = 5 }:
         });
         continue;
       }
-
+      console.log('uploading file', file)
       const url = await uploadImage(file);
       if (url) {
         newScreenshots.push(url);
       }
     }
-
-    onScreenshotsChange(newScreenshots);
     setUploading(false);
+    onScreenshotsChange(newScreenshots);
+    console.log('uploading done')
     
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
