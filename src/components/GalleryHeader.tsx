@@ -42,23 +42,23 @@ export const GalleryHeader = ({
 
       {/* Search and Filter Section */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-        <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 items-center justify-between">
+        <div className="flex flex-col md:flex-row gap-3 sm:gap-4 lg:gap-6 items-center justify-between">
           {/* Search and Filter - Left Side */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full md:w-auto">
             {/* Search */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full sm:w-56 pl-10 pr-4 h-12 bg-card/60 backdrop-blur-sm border-white/10 focus:border-[#f6d365]/30 focus:ring-[#f6d365]/10 text-sm rounded-xl transition-all duration-300"
+                className="w-full sm:w-56 pl-10 pr-4 h-10 sm:h-12 bg-card/60 backdrop-blur-sm border-white/10 focus:border-[#f6d365]/30 focus:ring-[#f6d365]/10 text-sm rounded-xl transition-all duration-300"
               />
             </div>
 
             {/* Filter */}
             <Select value={selectedTool} onValueChange={onToolChange}>
-              <SelectTrigger className="w-full sm:w-40 bg-card/60 backdrop-blur-sm border-white/10 focus:border-[#f6d365]/30 focus:ring-[#f6d365]/10 rounded-xl h-12 text-sm transition-all duration-300">
+              <SelectTrigger className="w-full sm:w-40 bg-card/60 backdrop-blur-sm border-white/10 focus:border-[#f6d365]/30 focus:ring-[#f6d365]/10 rounded-xl h-10 sm:h-12 text-sm transition-all duration-300">
                 <Filter className="h-4 w-4 text-muted-foreground mr-2" />
                 <SelectValue placeholder="All tools" />
               </SelectTrigger>
@@ -79,10 +79,11 @@ export const GalleryHeader = ({
           {/* Submit Button - Right Side */}
           <Button 
             onClick={() => navigate('/submit')}
-            className="bg-gradient-to-r from-white via-[#f6d365] to-[#fda085] hover:from-[#f6d365] hover:via-[#fda085] hover:to-white text-gray-900 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-semibold shadow-xl hover:shadow-2xl hover:shadow-[#fda085]/20 transition-all duration-300 group min-w-[140px] sm:min-w-[160px] rounded-xl hover:scale-105"
+            className="bg-gradient-to-r from-white via-[#f6d365] to-[#fda085] hover:from-[#f6d365] hover:via-[#fda085] hover:to-white text-gray-900 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 text-sm sm:text-base font-semibold shadow-xl hover:shadow-2xl hover:shadow-[#fda085]/20 transition-all duration-300 group min-w-[120px] sm:min-w-[140px] md:min-w-[160px] rounded-xl hover:scale-105 w-full md:w-auto"
           >
-            <Sparkles className="h-4 w-4 mr-2" />
-            Share Story
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
+            <span className="hidden xs:inline">Share Story</span>
+            <span className="xs:hidden">Share</span>
           </Button>
         </div>
 

@@ -21,6 +21,7 @@ interface Project {
   creator: {
     name: string;
     allowsContact: boolean;
+    avatar_url?: string;
   };
   reactions: {
     heart: number;
@@ -61,11 +62,11 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
       <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       
       <CardContent className="relative p-0">
-        <div className="flex flex-col lg:flex-row h-full">
+        <div className="flex flex-col md:flex-row h-full">
           {/* Left Pane - Screenshot Display */}
-          <div className="w-full lg:w-2/5 bg-gradient-to-b from-[#f6d365]/5 via-[#fda085]/3 to-muted/10 p-4 flex items-center justify-center relative">
+          <div className="w-full md:w-2/5 bg-gradient-to-b from-[#f6d365]/5 via-[#fda085]/3 to-muted/10 p-3 sm:p-4 flex items-center justify-center relative">
             {project.screenshots && project.screenshots.length > 0 ? (
-              <div className="relative group/screenshot w-full h-48 lg:h-52">
+              <div className="relative group/screenshot w-full h-40 sm:h-48 md:h-52">
                 {/* Screenshot Display */}
                 <div className="relative w-full h-full overflow-hidden rounded-lg border border-white/20 shadow-md">
                   <img 
@@ -99,9 +100,9 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                 <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-gradient-to-br from-[#fda085]/20 to-[#f6d365]/20 rounded-full opacity-0 group-hover/screenshot:opacity-100 transition-opacity duration-300 delay-100"></div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center text-center w-full h-48 lg:h-52">
+              <div className="flex flex-col items-center justify-center text-center w-full h-40 sm:h-48 md:h-52">
                 <div className="w-full h-full bg-gradient-to-b from-muted/20 to-muted/10 rounded-lg border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">
-                  <Smartphone className="h-8 w-8 text-muted-foreground/40" />
+                  <Smartphone className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground/40" />
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">No screenshots</p>
               </div>
@@ -109,7 +110,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
           </div>
 
           {/* Right Pane - Project Information */}
-          <div className="w-full lg:w-3/5 p-5 flex flex-col relative">
+          <div className="w-full md:w-3/5 p-4 sm:p-5 flex flex-col relative">
             {/* External Link Button - Top Right */}
             <Button 
               variant="ghost" 
@@ -121,16 +122,24 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
             </Button>
 
             {/* Header Section - Creator and Title */}
-            <div className="mb-3 sm:mb-4 pr-10 sm:pr-12">
+            <div className="mb-3 sm:mb-4 pr-8 sm:pr-10 md:pr-12">
               <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
-                <div 
-                  className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-sm bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0"
-                >
-                  {project.creator.name.split(' ').map(n => n[0]).join('')}
-                </div>
+                {project.creator.avatar_url ? (
+                  <img
+                    src={project.creator.avatar_url}
+                    alt={project.creator.name}
+                    className="w-7 h-7 sm:w-9 sm:h-9 rounded-full object-cover shadow-sm border-2 border-[#f6d365]/20 flex-shrink-0"
+                  />
+                ) : (
+                  <div 
+                    className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-sm bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0"
+                  >
+                    {project.creator.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-muted-foreground mb-1 font-normal">Built by {project.creator.name}</p>
-                  <h3 className="text-lg sm:text-xl font-bold text-foreground leading-[1.2] sm:leading-[1.3] group-hover:text-[#f6d365] transition-colors duration-300">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-1 font-normal">Built by {project.creator.name}</p>
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground leading-[1.2] sm:leading-[1.3] group-hover:text-[#f6d365] transition-colors duration-300">
                     {project.name}
                   </h3>
                 </div>
@@ -143,7 +152,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#f6d365] to-[#fda085] rounded-full"></div>
                 <div className="pl-3 sm:pl-4">
                   {/* <h4 className="text-sm font-semibold text-[#fda085] mb-1 sm:mb-2 uppercase tracking-wide">The Story</h4> */}
-                  <blockquote className="text-base font-light text-foreground/90 leading-[1.5] italic line-clamp-4 mb-2 sm:mb-3">
+                  <blockquote className="text-sm sm:text-base font-medium text-foreground/90 leading-[1.5] italic line-clamp-3 sm:line-clamp-4 mb-2 sm:mb-3">
                     "{project.story}"
                   </blockquote>
                 </div>
@@ -152,7 +161,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
 
             {/* Tools Section - Compact */}
             <div className="mb-4">
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1 sm:gap-1.5">
                 {project.tools.slice(0, 2).map((tool, index) => (
                   <Badge 
                     key={tool} 
@@ -175,7 +184,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
             </div>
 
             {/* Bottom Section - Reactions and Actions */}
-            <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-white/10 mt-auto">
+            <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3 xs:gap-0 pt-2 sm:pt-3 border-t border-white/10 mt-auto">
               <div className="flex items-center gap-1 sm:gap-2">
                 {Object.entries(project.reactions).map(([type, count]) => {
                   const Icon = getReactionIcon(type);
@@ -186,41 +195,43 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                       key={type}
                       variant="ghost"
                       size="sm"
-                      className={`flex items-center gap-1 sm:gap-1.5 text-sm transition-all duration-300 h-8 sm:h-7 px-2 sm:px-2 text-muted-foreground hover:text-foreground ${
+                      className={`flex items-center gap-1 text-xs sm:text-sm transition-all duration-300 h-7 sm:h-8 px-1.5 sm:px-2 text-muted-foreground hover:text-foreground ${
                         isActive 
                           ? 'text-[#fda085] bg-gradient-to-r from-[#f6d365]/10 to-[#fda085]/10' 
                           : 'hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5'
                       }`}
                       onClick={() => onReaction(project.id, type)}
                     >
-                      <Icon className={`h-4 w-4 sm:h-3.5 sm:w-3.5 ${isActive ? 'fill-current' : ''}`} />
-                      <span className="font-medium">{count}</span>
+                      <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isActive ? 'fill-current' : ''}`} />
+                      <span className="font-medium text-xs sm:text-sm">{count}</span>
                     </Button>
                   );
                 })}
               </div>
               
               <div className="flex items-center gap-1 sm:gap-1.5">
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate(`/project/${project.id}`)}
-                  className="text-sm h-8 sm:h-7 px-3 sm:px-2.5 bg-gradient-to-r from-[#f6d365]/20 to-[#fda085]/20 hover:from-[#f6d365]/30 hover:to-[#fda085]/30 text-foreground hover:text-[#fda085] transition-all duration-300 border-[#f6d365]/30 hover:border-[#f6d365]/50"
-                >
-                  <Eye className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1" />
-                  Details
-                </Button>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate(`/project/${project.id}`)}
+                    className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 bg-gradient-to-r from-[#f6d365]/20 to-[#fda085]/20 hover:from-[#f6d365]/30 hover:to-[#fda085]/30 text-foreground hover:text-[#fda085] transition-all duration-300 border-[#f6d365]/30 hover:border-[#f6d365]/50"
+                  >
+                    <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+                    <span className="hidden xs:inline">Details</span>
+                    <span className="xs:hidden">View</span>
+                  </Button>
                 
                 {project.creator.allowsContact && project.user_id && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-sm h-8 sm:h-7 px-3 sm:px-2.5 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300 border-white/20 hover:border-[#f6d365]/40"
-                    onClick={() => setShowMessageDialog(true)}
-                  >
-                    <MessageCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 mr-1" />
-                    Connect
-                  </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300 border-white/20 hover:border-[#f6d365]/40"
+                      onClick={() => setShowMessageDialog(true)}
+                    >
+                      <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+                      <span className="hidden xs:inline">Connect</span>
+                      <span className="xs:hidden">Chat</span>
+                    </Button>
                 )}
               </div>
             </div>

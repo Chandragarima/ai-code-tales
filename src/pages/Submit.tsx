@@ -213,7 +213,7 @@ export default function Submit() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
                 
                 {/* Basic Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <FormField
                     control={form.control}
                     name="name"
@@ -330,7 +330,7 @@ export default function Submit() {
                     <FormItem>
                       <FormLabel className="font-light text-sm sm:text-base text-foreground/90">AI Tools Used</FormLabel>
                       <div className="space-y-4 sm:space-y-6">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
+                        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
                           {aiTools.map((tool) => (
                             <Button
                               key={tool}
@@ -354,12 +354,12 @@ export default function Submit() {
                         </div>
                         
                         {/* Custom Tool Input */}
-                        <div className="flex gap-3">
+                        <div className="flex flex-col xs:flex-row gap-2 xs:gap-3">
                           <Input
                             placeholder="Add custom tool..."
                             value={customTool}
                             onChange={(e) => setCustomTool(e.target.value)}
-                            className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
+                            className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300 flex-1"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
                                 e.preventDefault();
@@ -371,7 +371,7 @@ export default function Submit() {
                             type="button" 
                             onClick={addCustomTool}
                             variant="outline"
-                            className="border-white/20 hover:border-[#f6d365]/40 hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 font-light rounded-xl transition-all duration-300"
+                            className="border-white/20 hover:border-[#f6d365]/40 hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 font-light rounded-xl transition-all duration-300 w-full xs:w-auto"
                           >
                             Add
                           </Button>

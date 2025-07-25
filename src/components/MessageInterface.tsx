@@ -97,6 +97,20 @@ export function MessageInterface({
     };
   }, [conversation?.id, user?.id]);
 
+  // Listen for profile updates to refresh creator profile
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      if (creatorId) {
+        loadCreatorProfile();
+      }
+    };
+
+    window.addEventListener('profile-updated', handleProfileUpdate);
+    return () => {
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+    };
+  }, [creatorId]);
+
   const loadCreatorProfile = async () => {
     try {
       const { data, error } = await supabase
@@ -115,34 +129,57 @@ export function MessageInterface({
   const loadConversation = async () => {
     if (!user) return;
 
+    console.log('Loading conversation for user:', user.id, 'project:', projectId, 'creator:', creatorId);
+
     try {
-      const { data: existingConversation, error: convError } = await supabase
+      // Find existing conversation where current user is involved
+      const { data: existingConversations, error: convError } = await supabase
         .from('conversations')
         .select('*')
         .eq('project_id', projectId)
-        .eq('sender_id', user.id)
-        .single();
+        .or(`creator_id.eq.${user.id},sender_id.eq.${user.id}`);
 
-      if (convError && convError.code !== 'PGRST116') {
+      console.log('Existing conversation query result:', existingConversations, 'Error:', convError);
+
+      if (convError) {
         throw convError;
       }
 
-      if (existingConversation) {
-        setConversation(existingConversation);
-        loadMessages(existingConversation.id);
+      if (existingConversations && existingConversations.length > 0) {
+        const conversation = existingConversations[0];
+        setConversation(conversation);
+        loadMessages(conversation.id);
       } else {
-        const { data: newConversation, error: createError } = await supabase
+        // Check if conversation already exists with current user as sender
+        const { data: existingBySender, error: senderError } = await supabase
           .from('conversations')
-          .insert({
-            project_id: projectId,
-            creator_id: creatorId,
-            sender_id: user.id
-          })
-          .select()
-          .single();
+          .select('*')
+          .eq('project_id', projectId)
+          .eq('sender_id', user.id)
+          .maybeSingle();
 
-        if (createError) throw createError;
-        setConversation(newConversation);
+        if (senderError && senderError.code !== 'PGRST116') {
+          throw senderError;
+        }
+
+        if (existingBySender) {
+          setConversation(existingBySender);
+          loadMessages(existingBySender.id);
+        } else {
+          // Only create if none exists
+          const { data: newConversation, error: createError } = await supabase
+            .from('conversations')
+            .insert({
+              project_id: projectId,
+              creator_id: creatorId,
+              sender_id: user.id
+            })
+            .select()
+            .single();
+
+          if (createError) throw createError;
+          setConversation(newConversation);
+        }
       }
     } catch (error) {
       console.error('Error loading conversation:', error);
@@ -247,7 +284,10 @@ export function MessageInterface({
     }
   };
 
-  const isOwnMessage = (message: Message) => message.sender_id === user?.id;
+  const isOwnMessage = (message: Message) => {
+    console.log('Checking message:', message.id, 'sender_id:', message.sender_id, 'user?.id:', user?.id, 'isOwn:', message.sender_id === user?.id);
+    return message.sender_id === user?.id;
+  };
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-background via-background to-muted/20">
