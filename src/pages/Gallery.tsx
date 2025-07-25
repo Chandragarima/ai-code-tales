@@ -287,7 +287,7 @@ export default function Gallery() {
             <p className="text-foreground/40 mt-2 text-sm sm:text-base">Try adjusting your search or filters.</p>
           </div>
         ) : (
-          <div className="grid gap-6 sm:gap-8 md:gap-12">
+          <div className="grid gap-4 sm:gap-6 md:gap-8 lg:gap-12">
             {filteredProjects.map((project) => (
               <ProjectCard 
                 key={project.id} 

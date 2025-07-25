@@ -293,9 +293,9 @@ export default function ProjectDetail() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 lg:space-y-8">
             {/* Project Header - Name and Description First */}
             <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1">
               <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -308,13 +308,13 @@ export default function ProjectDetail() {
                         {project.creator_name.split(' ').map(n => n[0]).join('')}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-muted-foreground mb-2 font-medium">Built by {project.creator_name}</p>
-                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground leading-tight group-hover:text-[#f6d365] transition-colors duration-300">
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-2 font-medium">Built by {project.creator_name}</p>
+                        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground leading-tight group-hover:text-[#f6d365] transition-colors duration-300">
                           {project.name}
                         </h1>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-foreground/60 text-sm mb-4">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-foreground/60 text-xs sm:text-sm mb-4">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
                         <span>{new Date(project.created_at).toLocaleDateString()}</span>
@@ -325,12 +325,12 @@ export default function ProjectDetail() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <Button 
                       onClick={() => window.open(project.link, '_blank')}
-                      className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white font-semibold shadow-lg hover:shadow-xl hover:shadow-[#fda085]/20 transition-all duration-300 hover:scale-105"
+                      className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white font-semibold shadow-lg hover:shadow-xl hover:shadow-[#fda085]/20 transition-all duration-300 hover:scale-105 text-sm sm:text-base"
                     >
-                      <ExternalLink className="h-4 w-4 mr-2" />
+                      <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2" />
                       View Live
                     </Button>
                   </div>
@@ -365,7 +365,7 @@ export default function ProjectDetail() {
               <CardContent className="p-6 sm:p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <Sparkles className="h-6 w-6 text-[#fda085]" />
-                  <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">The Story</h2>
+                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-foreground">The Story</h2>
                 </div>
                 
                 <div className="space-y-6">
@@ -373,7 +373,7 @@ export default function ProjectDetail() {
                   <div className="relative">
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#f6d365] to-[#fda085] rounded-full"></div>
                     <div className="pl-6">
-                      <blockquote className="text-base sm:text-lg lg:text-xl leading-relaxed italic text-foreground/90 font-medium">
+                      <blockquote className="text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed italic text-foreground/90 font-medium">
                         "{project.story}"
                       </blockquote>
                     </div>
@@ -383,7 +383,7 @@ export default function ProjectDetail() {
                   {project.deeper_story && (
                     <div className="border-t border-border/30 pt-6">
                       <div className="prose prose-lg max-w-none">
-                        <div className="text-foreground/80 leading-relaxed whitespace-pre-line text-base sm:text-lg">
+                        <div className="text-foreground/80 leading-relaxed whitespace-pre-line text-sm sm:text-base lg:text-lg">
                           {project.deeper_story}
                         </div>
                       </div>
@@ -403,7 +403,7 @@ export default function ProjectDetail() {
                     <img 
                       src={project.screenshots[currentImageIndex]} 
                       alt={`${project.name} screenshot ${currentImageIndex + 1}`}
-                      className="w-full h-64 sm:h-80 lg:h-96 object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                      className="w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                     />
                     {project.screenshots.length > 1 && (
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
