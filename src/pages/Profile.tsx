@@ -29,7 +29,7 @@ interface Profile {
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const { toast } = useToast();
   
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -127,7 +127,7 @@ export default function Profile() {
         description: "Your profile has been updated successfully."
       });
 
-      fetchProfile();
+      await refreshProfile();
     } catch (error) {
       console.error('Error saving profile:', error);
       toast({
@@ -192,7 +192,7 @@ export default function Profile() {
         description: "Your profile picture has been updated successfully."
       });
 
-      fetchProfile();
+      await refreshProfile();
     } catch (error) {
       console.error('Error uploading avatar:', error);
       toast({
