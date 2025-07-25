@@ -24,13 +24,19 @@ export default function MyProjectsPage() {
   });
 
   useEffect(() => {
-    if (!loading && !user) {
+    console.log('loading', loading)
+    console.log('user', user) 
+
+    if (loading && !user) {
+      console.log('loading auth')
       navigate('/auth');
     }
+    
   }, [user, loading, navigate]);
 
   useEffect(() => {
     if (user) {
+      console.log('fetching user stats')
       fetchStats();
     }
   }, [user]);
@@ -78,16 +84,7 @@ export default function MyProjectsPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-foreground/70">Loading your projects...</p>
-        </div>
-      </div>
-    );
-  }
+  
 
   if (!user) {
     return null;
