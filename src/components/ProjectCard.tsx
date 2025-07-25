@@ -21,6 +21,7 @@ interface Project {
   creator: {
     name: string;
     allowsContact: boolean;
+    avatar_url?: string;
   };
   reactions: {
     heart: number;
@@ -123,11 +124,19 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
             {/* Header Section - Creator and Title */}
             <div className="mb-3 sm:mb-4 pr-10 sm:pr-12">
               <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
-                <div 
-                  className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-sm bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0"
-                >
-                  {project.creator.name.split(' ').map(n => n[0]).join('')}
-                </div>
+                {project.creator.avatar_url ? (
+                  <img
+                    src={project.creator.avatar_url}
+                    alt={project.creator.name}
+                    className="w-7 h-7 sm:w-9 sm:h-9 rounded-full object-cover shadow-sm border-2 border-[#f6d365]/20 flex-shrink-0"
+                  />
+                ) : (
+                  <div 
+                    className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-sm bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0"
+                  >
+                    {project.creator.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-muted-foreground mb-1 font-normal">Built by {project.creator.name}</p>
                   <h3 className="text-lg sm:text-xl font-bold text-foreground leading-[1.2] sm:leading-[1.3] group-hover:text-[#f6d365] transition-colors duration-300">

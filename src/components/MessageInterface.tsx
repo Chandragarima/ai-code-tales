@@ -97,6 +97,20 @@ export function MessageInterface({
     };
   }, [conversation?.id, user?.id]);
 
+  // Listen for profile updates to refresh creator profile
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      if (creatorId) {
+        loadCreatorProfile();
+      }
+    };
+
+    window.addEventListener('profile-updated', handleProfileUpdate);
+    return () => {
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+    };
+  }, [creatorId]);
+
   const loadCreatorProfile = async () => {
     try {
       const { data, error } = await supabase

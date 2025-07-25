@@ -133,6 +133,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshProfile = async () => {
     if (user) {
       await fetchProfile(user.id, user.email);
+      // Trigger a custom event to notify other components about profile updates
+      window.dispatchEvent(new CustomEvent('profile-updated'));
     }
   };
 

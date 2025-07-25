@@ -144,19 +144,19 @@ export const Navbar = () => {
             </button>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
+          {/* Desktop Navigation - Centered */}
+          <div className="hidden md:flex items-center justify-center space-x-2 lg:space-x-4 absolute left-1/2 transform -translate-x-1/2">
             {navItems.map((item) => (
               <button
                 key={item.name}
                 onClick={() => navigate(item.path)}
-                className={`relative flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 group ${
+                className={`relative flex items-center gap-2 px-4 lg:px-6 py-2.5 rounded-full font-medium transition-all duration-300 group ${
                   isActivePath(item.path)
-                    ? 'text-primary bg-primary/10 shadow-md'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    ? 'text-foreground bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 hover:border-border/40 border border-transparent'
                 }`}
               >
-                <span className="text-sm lg:text-base">{item.name}</span>
+                <span className="text-sm lg:text-base font-medium">{item.name}</span>
                 {item.path === '/messages' && unreadCount > 0 && (
                   <Badge 
                     variant="destructive" 
@@ -167,7 +167,7 @@ export const Navbar = () => {
                 )}
                 {/* Active indicator */}
                 {isActivePath(item.path) && (
-                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-primary rounded-full"></div>
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-primary/60 via-primary to-primary/60 rounded-full"></div>
                 )}
               </button>
             ))}

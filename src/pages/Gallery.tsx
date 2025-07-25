@@ -18,6 +18,7 @@ interface Project {
   creator: {
     name: string;
     allowsContact: boolean;
+    avatar_url?: string;
   };
   reactions: {
     heart: number;
@@ -41,19 +42,35 @@ export default function Gallery() {
     }
   }, [user]);
 
+  // Listen for profile updates to refresh project data
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      fetchProjects();
+    };
+
+    window.addEventListener('profile-updated', handleProfileUpdate);
+    return () => {
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+    };
+  }, []);
+
   const fetchProjects = async () => {
     try {
-      // Fetch real projects from database
+      // Fetch projects with creator profiles for up-to-date username/avatar
       const { data: projectsData, error: projectsError } = await supabase
         .from('projects')
-        .select('*')
+        .select(`
+          *,
+          profiles!inner(
+            username,
+            avatar_url
+          )
+        `)
         .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
       if (projectsError) {
         console.error('Error fetching projects:', projectsError);
-        // Use only mock projects if database fetch fails
-        // setProjects(mockProjects); // Removed mock projects
         return;
       }
 
@@ -87,10 +104,11 @@ export default function Gallery() {
         link: project.link,
         tools: project.tools,
         screenshots: project.screenshots || [],
-        user_id: project.user_id, // Include user_id for messaging
+        user_id: project.user_id,
         creator: {
-          name: project.creator_name,
-          allowsContact: project.allows_contact
+          name: (project.profiles as any)?.username || project.creator_name,
+          allowsContact: project.allows_contact,
+          avatar_url: (project.profiles as any)?.avatar_url
         },
         reactions: {
           heart: reactionCounts[project.id]?.heart || 0,
@@ -99,15 +117,12 @@ export default function Gallery() {
         }
       })) || [];
 
-      // Combine mock projects with real projects // Removed mock projects
       setProjects(transformedProjects);
     } catch (error) {
       console.error('Unexpected error:', error);
-      // Fallback to mock projects // Removed mock projects
       setProjects([]);
     }
     
-    // Always ensure loading is set to false
     setLoading(false);
   };
 
