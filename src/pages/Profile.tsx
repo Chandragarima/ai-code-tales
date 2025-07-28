@@ -176,8 +176,8 @@ export default function Profile() {
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      const filePath = fileName;
 
       console.log('Uploading to storage path:', filePath);
       const { error: uploadError } = await supabase.storage
