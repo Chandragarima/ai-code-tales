@@ -59,13 +59,7 @@ export default function Gallery() {
       // Fetch projects with creator profiles for up-to-date username/avatar
       const { data: projectsData, error: projectsError } = await supabase
         .from('projects')
-        .select(`
-          *,
-          profiles!inner(
-            username,
-            avatar_url
-          )
-        `)
+        .select('*')
         .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
@@ -106,9 +100,9 @@ export default function Gallery() {
         screenshots: project.screenshots || [],
         user_id: project.user_id,
         creator: {
-          name: (project.profiles as any)?.username || project.creator_name,
+          name: project.creator_name,
           allowsContact: project.allows_contact,
-          avatar_url: (project.profiles as any)?.avatar_url
+          avatar_url: undefined // We'll handle avatar separately if needed
         },
         reactions: {
           heart: reactionCounts[project.id]?.heart || 0,
@@ -257,16 +251,16 @@ export default function Gallery() {
 
   const allTools = ['All', ...Array.from(new Set(projects.flatMap(p => p.tools)))];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-foreground/70">Loading amazing projects...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+  //         <p className="text-foreground/70">Loading amazing projects...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
@@ -284,7 +278,7 @@ export default function Gallery() {
         {filteredProjects.length === 0 ? (
           <div className="text-center py-12 sm:py-16">
             <p className="text-foreground/60 text-base sm:text-lg">No projects found matching your criteria.</p>
-            <p className="text-foreground/40 mt-2 text-sm sm:text-base">Try adjusting your search or filters.</p>
+            {/* <p className="text-foreground/40 mt-2 text-sm sm:text-base">Try adjusting your search or filters.</p> */}
           </div>
         ) : (
           <div className="grid gap-4 sm:gap-6 md:gap-8 lg:gap-12">

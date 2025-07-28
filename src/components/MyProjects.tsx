@@ -128,16 +128,7 @@ export const MyProjects = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[200px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-elegant-accent mx-auto mb-4"></div>
-          <p className="text-text-elegant">Loading your projects...</p>
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="space-y-6">

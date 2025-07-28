@@ -216,7 +216,7 @@ export const Navbar = () => {
             ) : (
               <Button
                 onClick={() => navigate('/auth')}
-                className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 hover:from-primary/90 hover:to-primary text-white font-medium shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300 rounded-full px-6 py-2"
+                className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-black font-normal shadow-sm"
               >
                 Sign In
               </Button>
@@ -296,7 +296,7 @@ export const Navbar = () => {
                         handleSignOut();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="flex items-center w-full text-left px-4 py-3 rounded-xl font-medium text-destructive hover:bg-destructive/10 transition-all duration-300"
+                      className="block w-full text-left px-3 py-3 rounded-lg font-normal text-red-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
                     >
                       <LogOut className="mr-3 h-5 w-5" />
                       Sign Out
@@ -308,7 +308,7 @@ export const Navbar = () => {
                       navigate('/auth');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 rounded-xl font-medium bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300"
+                    className="block w-full text-left px-3 py-3 rounded-lg font-normal bg-gradient-to-r from-[#f6d365] to-[#fda085] text-black hover:from-[#fda085] hover:to-[#f6d365] transition-all duration-200"
                   >
                     Sign In
                   </button>

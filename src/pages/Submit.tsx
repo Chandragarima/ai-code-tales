@@ -34,8 +34,8 @@ const submitSchema = z.object({
   deeperStory: z.string().optional(),
   tools: z.array(z.string()).min(1, "Please select at least one AI tool"),
   allowsContact: z.boolean(),
-  email: z.string().email("Please enter a valid email"),
-  creatorName: z.string().min(2, "Creator name must be at least 2 characters")
+  email: z.string().email("Please enter a valid email").optional(),
+  creatorName: z.string().min(2, "Creator name must be at least 2 characters").optional()
 });
 
 type SubmitForm = z.infer<typeof submitSchema>;
@@ -102,6 +102,23 @@ export default function Submit() {
     }
 
     try {
+      // Get user profile data
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+        toast({
+          title: "Error",
+          description: "Failed to fetch user profile. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('projects')
         .insert([
@@ -114,8 +131,8 @@ export default function Submit() {
             deeper_story: data.deeperStory || null,
             tools: data.tools,
             allows_contact: data.allowsContact,
-            email: data.email,
-            creator_name: data.creatorName,
+            email: user.email || data.email || '',
+            creator_name: profileData.username || data.creatorName || '',
             screenshots,
             status: 'pending'
           }
@@ -170,26 +187,36 @@ export default function Submit() {
         ></div>
       </div> */}
       
-      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-10 max-w-4xl">
-        {/* Header Section - Aligned with homepage */}
-        <div className="mb-8 sm:mb-12">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate("/")}
-            className="md:hidden mb-6 sm:mb-8 text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Gallery
-          </Button>
+      <div className="relative container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8 lg:py-10 max-w-4xl">
+        {/* Compact Header Bar - Mobile Optimized */}
+        <div className="mb-6 sm:mb-8 lg:mb-12">
+          {/* Mobile Header Bar */}
+          <div className="md:hidden flex items-center justify-between mb-5 sm:mb-6">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate("/")}
+              className="text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light text-sm p-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            
+            <h1 className="font-['Playfair_Display'] text-xl sm:text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+              Share Story
+            </h1>
+            
+            <div className="w-10"></div> {/* Spacer for centering */}
+          </div>
           
-          <div className="text-center">
-            <div className="flex flex-col items-center space-y-6 sm:space-y-8">
-              <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-normal leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+          {/* Desktop Header */}
+          <div className="hidden md:block text-center mb-8 sm:mb-12">
+            <div className="flex flex-col items-center space-y-6 lg:space-y-8">
+              <h1 className="font-['Playfair_Display'] text-[2.5rem] xl:text-[3rem] 2xl:text-[3.5rem] font-normal leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
                 Share Your Story
               </h1>
               {/* Divider */}
-              <div className="w-8 sm:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
-              <p className="text-sm sm:text-base lg:text-lg text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px] px-4">
+              <div className="w-8 lg:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
+              {/* Subtitle */}
+              <p className="text-sm lg:text-base text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px]">
                 Tell us about your AI-powered creation and the journey behind it
               </p>
             </div>
@@ -200,7 +227,7 @@ export default function Submit() {
           {/* Subtle gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           
-          <CardHeader className="relative px-6 sm:px-8 pt-6 sm:pt-8">
+          <CardHeader className="relative px-4 sm:px-6 md:px-8 pt-4 sm:pt-6 md:pt-8">
             <CardTitle className="flex items-center gap-3 text-foreground font-light text-lg sm:text-xl">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] rounded-lg flex items-center justify-center shadow-sm">
                 <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
@@ -208,12 +235,12 @@ export default function Submit() {
               Project Submission
             </CardTitle>
           </CardHeader>
-          <CardContent className="relative px-6 sm:px-8 pb-6 sm:pb-8">
+          <CardContent className="relative px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 md:space-y-8">
                 
                 {/* Basic Info */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                   <FormField
                     control={form.control}
                     name="name"
@@ -401,48 +428,7 @@ export default function Submit() {
                   )}
                 />
 
-                {/* Creator Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="creatorName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-light text-sm sm:text-base text-foreground/90">Your Name</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="John Doe" 
-                            {...field} 
-                            className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-light text-sm sm:text-base text-foreground/90">Email</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="john@example.com" 
-                            type="email"
-                            {...field} 
-                            className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
-                          />
-                        </FormControl>
-                        <FormDescription className="font-light text-muted-foreground text-sm">
-                          For review updates only
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
 
                 {/* Contact Preference */}
                 <FormField
@@ -470,7 +456,7 @@ export default function Submit() {
                 />
 
                 {/* Submit */}
-                <div className="flex gap-4 sm:gap-6 pt-8">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 pt-6 sm:pt-8">
                   <Button 
                     type="button" 
                     variant="outline" 

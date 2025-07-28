@@ -169,16 +169,16 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
     }
   };
 
-  if (loading) {
-    return (
-      <div className={onClose ? "fixed inset-0 bg-background z-50 flex items-center justify-center" : "min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center"}>
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-foreground/70">Loading conversations...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className={onClose ? "fixed inset-0 bg-background z-50 flex items-center justify-center" : "min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center"}>
+  //       <div className="text-center">
+  //         <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+  //         <p className="text-foreground/70">Loading conversations...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // Show message interface if conversation is selected
   if (selectedConversation) {
@@ -215,26 +215,36 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-[#f6d365]/5 to-[#fda085]/5 rounded-full blur-3xl pointer-events-none"></div>
        */}
-      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-10 max-w-6xl">
-        {/* Header Section */}
-        <div className="mb-8 sm:mb-12">
-          <Button 
-            variant="ghost" 
-            onClick={onClose || (() => window.history.back())}
-            className="md:hidden mb-6 sm:mb-8 text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
+      <div className="relative w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10 max-w-5xl mx-auto">
+        {/* Compact Header Bar - Mobile Optimized */}
+        <div className="mb-6 sm:mb-8 lg:mb-12">
+          {/* Mobile Header Bar */}
+          <div className="md:hidden flex items-center justify-between mb-4">
+            <Button 
+              variant="ghost" 
+              onClick={onClose || (() => window.history.back())}
+              className="text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light text-sm p-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            
+            <h1 className="font-['Playfair_Display'] text-xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+              Messages
+            </h1>
+            
+            <div className="w-10"></div> {/* Spacer for centering */}
+          </div>
           
-          <div className="text-center">
-            <div className="flex flex-col items-center space-y-6 sm:space-y-8">
-              <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-normal leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+          {/* Desktop Header */}
+          <div className="hidden md:block text-center">
+            <div className="flex flex-col items-center space-y-6 lg:space-y-8">
+              <h1 className="font-['Playfair_Display'] text-[2.5rem] xl:text-[3rem] 2xl:text-[3.5rem] font-normal leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
                 Messages
               </h1>
               {/* Divider */}
-              <div className="w-8 sm:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
-              <p className="text-sm sm:text-base lg:text-lg text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px] px-4">
+              <div className="w-8 lg:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
+              {/* Subtitle */}
+              <p className="text-sm lg:text-base text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px]">
                 Connect with creators and fellow builders through meaningful conversations.
               </p>
             </div>
@@ -246,19 +256,20 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
           {/* Subtle gradient overlay */}
           {/* <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div> */}
           
-          <CardContent className="relative p-6 sm:p-8">
+          <CardContent className="relative p-3 sm:p-6 lg:p-8">
             {conversations.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
+              <div className="text-center py-8 sm:py-12 text-muted-foreground">
                 {/* <div className="w-16 h-16 bg-gradient-to-br from-[#f6d365]/20 to-[#fda085]/20 rounded-full flex items-center justify-center mx-auto mb-6"> */}
                   {/* <MessageSquare className="h-8 w-8 text-muted-foreground/70" /> */}
                 {/* </div> */}
-                <h3 className="text-lg font-medium text-foreground mb-2">No conversations yet</h3>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  Start a conversation by messaging a project creator from the gallery
+                <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">No messages yet</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto">
+                  <span className="block sm:hidden">Start a conversation by messaging a creator from the gallery</span>
+                  <span className="hidden sm:block">Start a conversation by messaging a project creator from the gallery</span>
                 </p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {conversations.map((conversation) => {
                   const otherUser = getOtherUser(conversation);
                   const isOwnMessage = conversation.last_message?.sender_id === user?.id;
@@ -266,30 +277,30 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
                   return (
                     <div
                       key={conversation.id}
-                      className="group relative overflow-hidden rounded-xl border border-border/30 hover:border-white/20 transition-all duration-200 cursor-pointer bg-card/40 backdrop-blur-sm hover:bg-card/60"
+                      className="group relative overflow-hidden rounded-lg sm:rounded-xl border border-border/30 hover:border-white/20 transition-all duration-200 cursor-pointer bg-card/40 backdrop-blur-sm hover:bg-card/60"
                       onClick={() => setSelectedConversation(conversation)}
                     >
                       {/* Subtle gradient overlay on hover */}
                       {/* <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/5 via-transparent to-[#fda085]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div> */}
                       
-                      <div className="relative p-4 sm:p-6">
+                      <div className="relative p-3 sm:p-4 lg:p-6">
                         {/* Header with avatar and user info */}
-                        <div className="flex items-start gap-4 mb-3">
-                          <Avatar className="w-10 h-10 flex-shrink-0">
+                        <div className="flex items-start gap-3 sm:gap-4 mb-2 sm:mb-3">
+                          <Avatar className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
                             <AvatarImage src={otherUser.profile?.avatar_url || ''} />
-                            <AvatarFallback className="bg-gradient-to-br from-[#f6d365] to-[#fda085] text-white font-medium text-sm">
+                            <AvatarFallback className="bg-gradient-to-br from-[#f6d365] to-[#fda085] text-white font-medium text-xs sm:text-sm">
                               {(otherUser.profile?.username || otherUser.fallbackName)[0]?.toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
-                              <h3 className="font-medium text-foreground truncate">
+                              <h3 className="font-medium text-foreground truncate text-sm sm:text-base">
                                 {otherUser.profile?.username || otherUser.fallbackName}
                               </h3>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1 sm:gap-2">
                                 {conversation.unread_count > 0 && (
-                                  <Badge variant="destructive" className="text-xs px-2 py-1 h-5 min-w-[20px] flex items-center justify-center">
+                                  <Badge variant="destructive" className="text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 h-4 sm:h-5 min-w-[16px] sm:min-w-[20px] flex items-center justify-center">
                                     {conversation.unread_count}
                                   </Badge>
                                 )}
@@ -300,7 +311,7 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
                                 )}
                               </div>
                             </div>
-                            <p className="text-sm text-muted-foreground truncate">
+                            <p className="text-xs sm:text-sm text-muted-foreground truncate">
                               {conversation.project?.name}
                             </p>
                           </div>
@@ -308,8 +319,8 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
 
                         {/* Message content with bubble styling */}
                         {conversation.last_message && (
-                          <div className="ml-14">
-                            <div className={`inline-block max-w-full rounded-lg px-4 py-1 ${
+                          <div className="ml-11 sm:ml-14">
+                            <div className={`inline-block max-w-full rounded-lg px-3 sm:px-4 py-1 ${
                               isOwnMessage 
                                 ? 'bg-muted/60 text-white ml-auto shadow-sm' 
                                 : 'bg-[white] text-black border border-border/50'
@@ -319,9 +330,9 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
                                   <span className="text-xs font-medium text-white/70">You</span>
                                 )}
                               </div>
-                              <p className="text-sm leading-relaxed break-words">
-                                {conversation.last_message.content.length > 100 
-                                  ? `${conversation.last_message.content.substring(0, 100)}...`
+                              <p className="text-xs sm:text-sm leading-relaxed break-words">
+                                {conversation.last_message.content.length > 80 
+                                  ? `${conversation.last_message.content.substring(0, 80)}...`
                                   : conversation.last_message.content
                                 }
                               </p>
