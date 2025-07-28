@@ -58,11 +58,14 @@ export default function Profile() {
     if (!user) return;
     
     try {
+      console.log('Fetching profile for user:', user.id);
       const { data, error } = await supabase
-        .from('profiles' as any)
+        .from('profiles')
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
+
+      console.log('Profile fetch result:', { data, error });
 
       if (error && error.code !== 'PGRST116') { // PGRST116 = not found
         console.error('Error fetching profile:', error);
@@ -70,7 +73,8 @@ export default function Profile() {
       }
 
       if (data) {
-        const profileData = data as any as Profile;
+        const profileData = data as Profile;
+        console.log('Setting profile data:', profileData);
         setProfile(profileData);
         setFormData({
           username: profileData.username || '',
@@ -81,6 +85,9 @@ export default function Profile() {
           linkedin: profileData.linkedin || '',
           allow_contact: profileData.allow_contact !== false
         });
+      } else {
+        console.log('No profile found for user, will create new one');
+        setProfile(null);
       }
     } catch (error) {
       console.error('Error:', error);
