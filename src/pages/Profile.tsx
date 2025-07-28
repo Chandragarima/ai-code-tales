@@ -122,12 +122,18 @@ export default function Profile() {
         if (error) throw error;
       }
 
+      // Fetch the updated profile to get the latest data
+      await fetchProfile();
+      
       toast({
         title: "Profile saved",
         description: "Your profile has been updated successfully."
       });
 
       await refreshProfile();
+      
+      // Trigger profile update event for other components  
+      window.dispatchEvent(new CustomEvent('profile-updated'));
     } catch (error) {
       console.error('Error saving profile:', error);
       toast({
@@ -187,12 +193,18 @@ export default function Profile() {
         if (error) throw error;
       }
 
+      // Update local profile state immediately
+      setProfile(prev => prev ? { ...prev, avatar_url: publicUrl } : null);
+      
       toast({
         title: "Avatar updated",
         description: "Your profile picture has been updated successfully."
       });
 
       await refreshProfile();
+      
+      // Trigger profile update event for other components
+      window.dispatchEvent(new CustomEvent('profile-updated'));
     } catch (error) {
       console.error('Error uploading avatar:', error);
       toast({
