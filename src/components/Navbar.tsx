@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Menu, X, User, LogOut, Settings, MessageSquare } from 'lucide-react';
+import { Menu, X, User, LogOut, Image, Plus, FolderOpen, MessageSquare } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,9 +22,12 @@ export const Navbar = () => {
   const { user, profile, signOut } = useAuth();
 
   const navItems = [
-    { name: 'Gallery', path: '/gallery' },
-    { name: 'Submit', path: '/submit' },
-    ...(user ? [{ name: 'My Projects', path: '/my-projects' }, { name: 'Messages', path: '/messages' }] : []),
+    { name: 'Gallery', path: '/gallery', icon: Image, label: 'Gallery' },
+    { name: 'Submit', path: '/submit', icon: Plus, label: 'Submit' },
+    ...(user ? [
+      { name: 'My Projects', path: '/my-projects', icon: FolderOpen, label: 'Projects' }, 
+      { name: 'Messages', path: '/messages', icon: MessageSquare, label: 'Messages' }
+    ] : []),
   ];
 
   const handleSignOut = async () => {
@@ -118,97 +121,85 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/40 shadow-sm">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
-        <div className="flex justify-between items-center h-16 lg:h-18">
-          {/* Logo */}
+    <nav className="sticky top-0 z-50 bg-background/98 backdrop-blur-2xl border-b border-border/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-14 sm:h-16">
+          
+          {/* Logo - Compact */}
           <div className="flex-shrink-0">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center gap-3 hover:scale-105 transition-all duration-300 group"
+              className="flex items-center gap-2 sm:gap-3 group"
             >
-              {/* Logo Icon */}
-              <div className="relative">
-                {/* Code bracket icon with modern gradient */}
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-xl flex items-center justify-center shadow-lg shadow-primary/25 group-hover:shadow-primary/40 transition-all duration-300">
-                  <span className="text-white font-mono text-base lg:text-lg font-bold">&lt;/&gt;</span>
-                </div>
-                {/* Animated glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/60 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 animate-pulse"></div>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105">
+                <span className="text-primary-foreground font-mono text-sm sm:text-base font-bold">&lt;/&gt;</span>
               </div>
-              {/* Logo Text */}
-              <div className="flex flex-col">
-                <span className="text-foreground font-bold text-xl lg:text-2xl leading-none tracking-tight">AI Code</span>
-                <span className="text-muted-foreground font-medium text-sm lg:text-base leading-none tracking-widest">STORIES</span>
+              <div className="hidden xs:block">
+                <span className="text-foreground font-bold text-lg sm:text-xl tracking-tight">AI Code Stories</span>
               </div>
             </button>
           </div>
 
-          {/* Desktop Navigation - Centered */}
-          <div className="hidden md:flex items-center justify-center space-x-2 lg:space-x-4 absolute left-1/2 transform -translate-x-1/2">
-            {navItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => navigate(item.path)}
-                className={`relative flex items-center gap-2 px-4 lg:px-6 py-2.5 rounded-full font-medium transition-all duration-300 group ${
-                  isActivePath(item.path)
-                    ? 'text-foreground bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/30 hover:border-border/40 border border-transparent'
-                }`}
-              >
-                <span className="text-sm lg:text-base font-medium">{item.name}</span>
-                {item.path === '/messages' && unreadCount > 0 && (
-                  <Badge 
-                    variant="destructive" 
-                    className="h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs animate-pulse"
-                  >
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </Badge>
-                )}
-                {/* Active indicator */}
-                {isActivePath(item.path) && (
-                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-primary/60 via-primary to-primary/60 rounded-full"></div>
-                )}
-              </button>
-            ))}
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  className={`relative flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isActivePath(item.path)
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="hidden lg:inline">{item.label || item.name}</span>
+                  {item.path === '/messages' && unreadCount > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="h-4 w-4 rounded-full p-0 flex items-center justify-center text-xs ml-1"
+                    >
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </Badge>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Desktop Auth Section */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Auth Section */}
+          <div className="hidden md:flex items-center">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="flex items-center space-x-3 px-3 py-2 rounded-full hover:bg-muted/80 transition-all duration-300 border border-transparent hover:border-border/40"
+                    className="flex items-center gap-2 px-2 py-2 rounded-full hover:bg-muted/50 h-auto"
                   >
-                    <Avatar className="w-9 h-9 lg:w-10 lg:h-10 ring-2 ring-primary/20">
-                      <AvatarImage src={profile?.avatar_url || undefined} alt={getDisplayName()} />
-                      <AvatarFallback className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white text-sm font-medium">
+                    <Avatar className="w-8 h-8 ring-1 ring-border">
+                      <AvatarImage src={(profile as any)?.avatar_url || ''} alt={getDisplayName()} />
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                         {getDisplayInitials()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="font-medium text-sm lg:text-base hidden lg:block">{getDisplayName()}</span>
+                    <span className="font-medium text-sm hidden lg:block max-w-24 truncate">{getDisplayName()}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 bg-card/95 backdrop-blur-xl border-border/60 shadow-xl rounded-xl">
-                  <div className="px-4 py-3 border-b border-border/20">
-                    <p className="text-sm font-semibold text-foreground">{getDisplayName()}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{user.email}</p>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-3 py-2">
+                    <p className="text-sm font-medium">{getDisplayName()}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
-                  <DropdownMenuItem 
-                    onClick={() => navigate('/profile')}
-                    className="hover:bg-muted/80 cursor-pointer mx-2 my-1 rounded-lg"
-                  >
-                    <User className="mr-3 h-4 w-4" />
-                    Profile Settings
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-border/30 mx-2" />
-                  <DropdownMenuItem 
-                    onClick={handleSignOut} 
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer mx-2 my-1 rounded-lg"
-                  >
-                    <LogOut className="mr-3 h-4 w-4" />
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -216,69 +207,93 @@ export const Navbar = () => {
             ) : (
               <Button
                 onClick={() => navigate('/auth')}
-                className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-black font-normal shadow-sm"
+                size="sm"
+                className="rounded-full font-medium"
               >
                 Sign In
               </Button>
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+          {/* Mobile/Tablet Navigation */}
+          <div className="md:hidden flex items-center gap-2">
+            {/* Show icons for key actions on mobile */}
+            <div className="flex items-center gap-1">
+              {navItems.slice(0, 2).map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    className={`p-2 rounded-full transition-colors ${
+                      isActivePath(item.path)
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Mobile menu trigger */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="rounded-full hover:bg-muted/80 transition-all duration-300"
+              className="rounded-full p-2"
             >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
+        {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border/40 bg-card/98 backdrop-blur-xl shadow-lg">
-            <div className="px-4 py-6 space-y-3">
-              {navItems.map((item) => (
-                <button
-                  key={item.name}
-                  onClick={() => {
-                    navigate(item.path);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center justify-between w-full text-left px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
-                    isActivePath(item.path)
-                      ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
-                  }`}
-                >
-                  <span className="text-base">{item.name}</span>
-                  {item.path === '/messages' && unreadCount > 0 && (
-                    <Badge variant="destructive" className="text-xs animate-pulse">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </Badge>
-                  )}
-                </button>
-              ))}
+          <div className="md:hidden border-t border-border/30 bg-background/95 backdrop-blur-sm">
+            <div className="px-4 py-4 space-y-2">
+              {/* Navigation items */}
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => {
+                      navigate(item.path);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left transition-colors ${
+                      isActivePath(item.path)
+                        ? 'bg-primary/10 text-primary font-medium'
+                        : 'text-foreground hover:bg-muted/50'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span>{item.name}</span>
+                    {item.path === '/messages' && unreadCount > 0 && (
+                      <Badge variant="destructive" className="ml-auto text-xs">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </Badge>
+                    )}
+                  </button>
+                );
+              })}
               
-              <div className="border-t border-border/40 mt-6 pt-6">
+              {/* User section */}
+              <div className="pt-4 mt-4 border-t border-border/30">
                 {user ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center px-4 py-4 bg-muted/30 rounded-xl">
-                      <Avatar className="w-12 h-12 ring-2 ring-primary/20">
-                        <AvatarImage src={profile?.avatar_url || undefined} alt={getDisplayName()} />
-                        <AvatarFallback className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white text-sm font-medium">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 px-3 py-2">
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage src={(profile as any)?.avatar_url || ''} alt={getDisplayName()} />
+                        <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                           {getDisplayInitials()}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="ml-3">
-                        <p className="text-base font-semibold text-foreground">{getDisplayName()}</p>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{getDisplayName()}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                       </div>
                     </div>
                     <button
@@ -286,32 +301,32 @@ export const Navbar = () => {
                         navigate('/profile');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="flex items-center w-full text-left px-4 py-3 rounded-xl font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-300"
+                      className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left hover:bg-muted/50"
                     >
-                      <User className="mr-3 h-5 w-5" />
-                      Profile Settings
+                      <User className="w-5 h-5" />
+                      <span>Profile</span>
                     </button>
                     <button
                       onClick={() => {
                         handleSignOut();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="block w-full text-left px-3 py-3 rounded-lg font-normal text-red-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                      className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left text-destructive hover:bg-destructive/10"
                     >
-                      <LogOut className="mr-3 h-5 w-5" />
-                      Sign Out
+                      <LogOut className="w-5 h-5" />
+                      <span>Sign Out</span>
                     </button>
                   </div>
                 ) : (
-                  <button
+                  <Button
                     onClick={() => {
                       navigate('/auth');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left px-3 py-3 rounded-lg font-normal bg-gradient-to-r from-[#f6d365] to-[#fda085] text-black hover:from-[#fda085] hover:to-[#f6d365] transition-all duration-200"
+                    className="w-full"
                   >
                     Sign In
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
