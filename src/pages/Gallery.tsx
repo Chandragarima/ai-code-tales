@@ -278,7 +278,7 @@ export default function Gallery() {
         {filteredProjects.length === 0 ? (
           <div className="text-center py-12 sm:py-16">
             <p className="text-foreground/60 text-base sm:text-lg">No projects found matching your criteria.</p>
-            <p className="text-foreground/40 mt-2 text-sm sm:text-base">Try adjusting your search or filters.</p>
+            {/* <p className="text-foreground/40 mt-2 text-sm sm:text-base">Try adjusting your search or filters.</p> */}
           </div>
         ) : (
           <div className="grid gap-4 sm:gap-6 md:gap-8 lg:gap-12">
