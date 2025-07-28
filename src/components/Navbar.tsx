@@ -31,8 +31,14 @@ export const Navbar = () => {
   ];
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    } finally {
+      // Always navigate to home regardless of any errors
+      navigate('/');
+    }
   };
 
   // Load unread message count
