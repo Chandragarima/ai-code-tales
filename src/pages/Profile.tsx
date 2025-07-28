@@ -94,6 +94,7 @@ export default function Profile() {
 
     setSaving(true);
     try {
+      console.log('Saving profile with data:', formData);
       const profileData = {
         user_id: user.id,
         username: formData.username || null,
@@ -107,22 +108,33 @@ export default function Profile() {
 
       if (profile) {
         // Update existing profile
+        console.log('Updating existing profile...');
         const { error } = await supabase
-          .from('profiles' as any)
+          .from('profiles')
           .update(profileData)
           .eq('user_id', user.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
+        console.log('Profile updated successfully');
       } else {
         // Create new profile
+        console.log('Creating new profile...');
         const { error } = await supabase
-          .from('profiles' as any)
+          .from('profiles')
           .insert(profileData);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Insert error:', error);
+          throw error;
+        }
+        console.log('Profile created successfully');
       }
 
       // Fetch the updated profile to get the latest data
+      console.log('Fetching updated profile...');
       await fetchProfile();
       
       toast({
@@ -130,9 +142,11 @@ export default function Profile() {
         description: "Your profile has been updated successfully."
       });
 
+      console.log('Refreshing auth profile...');
       await refreshProfile();
       
       // Trigger profile update event for other components  
+      console.log('Dispatching profile-updated event...');
       window.dispatchEvent(new CustomEvent('profile-updated'));
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -150,6 +164,7 @@ export default function Profile() {
     if (!user || !event.target.files || event.target.files.length === 0) return;
     
     const file = event.target.files[0];
+    console.log('Starting avatar upload for file:', file.name);
     setUploading(true);
 
     try {
@@ -157,27 +172,38 @@ export default function Profile() {
       const fileName = `${user.id}-${Math.random()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
+      console.log('Uploading to storage path:', filePath);
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw uploadError;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
+      console.log('Generated public URL:', publicUrl);
+
       // Update profile with new avatar URL
       if (profile) {
+        console.log('Updating existing profile with avatar...');
         const { error } = await supabase
-          .from('profiles' as any)
+          .from('profiles')
           .update({ avatar_url: publicUrl })
           .eq('user_id', user.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Profile update error:', error);
+          throw error;
+        }
       } else {
+        console.log('Creating new profile with avatar...');
         const { error } = await supabase
-          .from('profiles' as any)
+          .from('profiles')
           .insert({
             user_id: user.id,
             username: formData.username || null,
@@ -190,7 +216,10 @@ export default function Profile() {
             avatar_url: publicUrl
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Profile insert error:', error);
+          throw error;
+        }
       }
 
       // Update local profile state immediately
@@ -201,9 +230,11 @@ export default function Profile() {
         description: "Your profile picture has been updated successfully."
       });
 
+      console.log('Refreshing auth profile after avatar upload...');
       await refreshProfile();
       
       // Trigger profile update event for other components
+      console.log('Dispatching profile-updated event after avatar...');
       window.dispatchEvent(new CustomEvent('profile-updated'));
     } catch (error) {
       console.error('Error uploading avatar:', error);
