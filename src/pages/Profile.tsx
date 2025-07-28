@@ -97,11 +97,22 @@ export default function Profile() {
   };
 
   const handleSave = async () => {
-    if (!user) return;
+    if (!user) {
+      console.error('No user found, cannot save profile');
+      toast({
+        title: "Error",
+        description: "Please log in to save your profile.",
+        variant: "destructive"
+      });
+      return;
+    }
 
     setSaving(true);
     try {
       console.log('Saving profile with data:', formData);
+      console.log('Current user:', user);
+      console.log('Current profile state:', profile);
+      
       const profileData = {
         user_id: user.id,
         username: formData.username || null,
@@ -113,31 +124,41 @@ export default function Profile() {
         allow_contact: formData.allow_contact
       };
 
+      console.log('Profile data to save:', profileData);
+
       if (profile) {
         // Update existing profile
         console.log('Updating existing profile...');
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('profiles')
           .update(profileData)
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .select();
 
         if (error) {
           console.error('Update error:', error);
           throw error;
         }
-        console.log('Profile updated successfully');
+        console.log('Profile updated successfully, returned data:', data);
       } else {
         // Create new profile
         console.log('Creating new profile...');
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('profiles')
-          .insert(profileData);
+          .insert(profileData)
+          .select();
 
         if (error) {
           console.error('Insert error:', error);
+          console.error('Error details:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
           throw error;
         }
-        console.log('Profile created successfully');
+        console.log('Profile created successfully, returned data:', data);
       }
 
       // Fetch the updated profile to get the latest data
@@ -159,7 +180,7 @@ export default function Profile() {
       console.error('Error saving profile:', error);
       toast({
         title: "Error",
-        description: "Failed to save profile. Please try again.",
+        description: `Failed to save profile: ${error.message}`,
         variant: "destructive"
       });
     } finally {
