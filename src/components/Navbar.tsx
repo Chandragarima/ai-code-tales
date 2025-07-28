@@ -31,12 +31,15 @@ export const Navbar = () => {
   ];
 
   const handleSignOut = async () => {
+    console.log('Sign out button clicked');
     try {
+      console.log('Calling signOut from AuthContext...');
       await signOut();
+      console.log('SignOut completed successfully');
     } catch (error) {
       console.error('Error signing out:', error);
     } finally {
-      // Always navigate to home regardless of any errors
+      console.log('Navigating to home...');
       navigate('/');
     }
   };
