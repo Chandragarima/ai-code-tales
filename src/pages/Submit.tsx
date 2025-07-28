@@ -243,7 +243,12 @@ export default function Submit() {
           </CardHeader>
           <CardContent className="relative px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 md:space-y-8">
+              <form onSubmit={(e) => {
+                console.log('Form submit event triggered');
+                console.log('Form validation state:', form.formState.isValid);
+                console.log('Form errors:', form.formState.errors);
+                form.handleSubmit(onSubmit)(e);
+              }} className="space-y-4 sm:space-y-6 md:space-y-8">
                 
                 {/* Basic Info */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
