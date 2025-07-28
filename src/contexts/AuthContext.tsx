@@ -128,13 +128,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     console.log('AuthContext signOut called');
     try {
-      const { error } = await supabase.auth.signOut();
-      console.log('Supabase signOut result:', { error });
-      if (error) throw error;
+      // Clear local state immediately
+      setUser(null);
+      setProfile(null);
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 3000)
+      );
+      
+      const signOutPromise = supabase.auth.signOut();
+      
+      await Promise.race([signOutPromise, timeoutPromise]);
       console.log('SignOut successful');
     } catch (error) {
-      console.error('SignOut error:', error);
-      throw error;
+      console.log('SignOut completed (with timeout or error, but state cleared)');
+      // Don't throw error - we've already cleared the local state
     }
   };
 
