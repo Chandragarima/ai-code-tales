@@ -91,7 +91,13 @@ export default function Submit() {
   };
 
   const onSubmit = async (data: SubmitForm) => {
+    console.log('Submit function called with data:', data);
+    console.log('Current user:', user);
+    console.log('Selected tools:', selectedTools);
+    console.log('Screenshots:', screenshots);
+    
     if (!user) {
+      console.log('No user found, redirecting to auth');
       toast({
         title: "Authentication required",
         description: "Please sign in to submit a project",
