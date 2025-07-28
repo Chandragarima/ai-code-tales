@@ -163,7 +163,16 @@ export default function Profile() {
 
       // Fetch the updated profile to get the latest data
       console.log('Fetching updated profile...');
-      await fetchProfile();
+      const { data: updatedProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (updatedProfile) {
+        console.log('Setting updated profile data:', updatedProfile);
+        setProfile(updatedProfile as Profile);
+      }
       
       toast({
         title: "Profile saved",
