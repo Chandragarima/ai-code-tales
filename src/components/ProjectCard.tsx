@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Heart, Rocket, Lightbulb, MessageCircle, Eye, Smartphone } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ProjectCarousel } from "./ProjectCarousel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MessageDialog } from "./MessageDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Project {
   id: string;
@@ -46,6 +47,46 @@ interface ProjectForMessaging {
 export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardProps) => {
   const navigate = useNavigate();
   const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [updatedProject, setUpdatedProject] = useState(project);
+  
+  // Listen for profile updates to refresh creator data
+  useEffect(() => {
+    const handleProfileUpdate = async () => {
+      if (!project.user_id) return;
+      
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('username, avatar_url')
+          .eq('user_id', project.user_id)
+          .single();
+
+        if (data) {
+          setUpdatedProject(prev => ({
+            ...prev,
+            creator: {
+              ...prev.creator,
+              name: data.username || prev.creator.name,
+              avatar_url: data.avatar_url
+            }
+          }));
+        }
+      } catch (error) {
+        // Profile might not exist yet, use original data
+        console.log('Creator profile not found, using original data');
+      }
+    };
+
+    window.addEventListener('profile-updated', handleProfileUpdate);
+    return () => {
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+    };
+  }, [project.user_id]);
+
+  // Update local state when project prop changes
+  useEffect(() => {
+    setUpdatedProject(project);
+  }, [project]);
   
   const getReactionIcon = (type: string) => {
     switch (type) {
@@ -124,21 +165,21 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
             {/* Header Section - Creator and Title */}
             <div className="mb-3 sm:mb-4 pr-8 sm:pr-10 md:pr-12">
               <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
-                {project.creator.avatar_url ? (
+                {updatedProject.creator.avatar_url ? (
                   <img
-                    src={project.creator.avatar_url}
-                    alt={project.creator.name}
+                    src={updatedProject.creator.avatar_url}
+                    alt={updatedProject.creator.name}
                     className="w-7 h-7 sm:w-9 sm:h-9 rounded-full object-cover shadow-sm border-2 border-[#f6d365]/20 flex-shrink-0"
                   />
                 ) : (
                   <div 
                     className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-sm bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0"
                   >
-                    {project.creator.name.split(' ').map(n => n[0]).join('')}
+                    {updatedProject.creator.name.split(' ').map(n => n[0]).join('')}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm text-muted-foreground mb-1 font-normal">Built by {project.creator.name}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-1 font-normal">Built by {updatedProject.creator.name}</p>
                   <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground leading-[1.2] sm:leading-[1.3] group-hover:text-[#f6d365] transition-colors duration-300">
                     {project.name}
                   </h3>

@@ -19,7 +19,7 @@ export const Navbar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, refreshProfile } = useAuth();
 
   const navItems = [
     { name: 'Gallery', path: '/gallery', icon: Image, label: 'Gallery' },
@@ -75,6 +75,20 @@ export const Navbar = () => {
       window.removeEventListener('message-read', handleMessageRead);
     };
   }, [user]);
+
+  // Listen for profile updates to refresh navbar profile data
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      if (user) {
+        refreshProfile();
+      }
+    };
+
+    window.addEventListener('profile-updated', handleProfileUpdate);
+    return () => {
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+    };
+  }, [user, refreshProfile]);
 
   const loadUnreadCount = async () => {
     if (!user) return;
