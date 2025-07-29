@@ -155,7 +155,7 @@ export const Navbar = () => {
               className="flex items-center gap-2 sm:gap-3 group transition-transform group-hover:scale-105"
             >
               <img 
-                src="/lovable-uploads/7a462c26-d1a2-4da4-a948-fb6deb584066.png" 
+                src="/public/Logo.png" 
                 alt="AICode Story" 
                 className="h-8 sm:h-10 w-auto"
               />
