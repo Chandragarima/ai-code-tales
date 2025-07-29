@@ -152,14 +152,13 @@ export const Navbar = () => {
           <div className="flex-shrink-0">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 sm:gap-3 group"
+              className="flex items-center gap-2 sm:gap-3 group transition-transform group-hover:scale-105"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105">
-                <span className="text-primary-foreground font-mono text-sm sm:text-base font-bold">&lt;/&gt;</span>
-              </div>
-              <div className="hidden xs:block">
-                <span className="text-foreground font-bold text-lg sm:text-xl tracking-tight">AI Code Stories</span>
-              </div>
+              <img 
+                src="/lovable-uploads/7a462c26-d1a2-4da4-a948-fb6deb584066.png" 
+                alt="AICode Story" 
+                className="h-8 sm:h-10 w-auto"
+              />
             </button>
           </div>
 
