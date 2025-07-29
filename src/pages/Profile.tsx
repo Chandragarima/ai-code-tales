@@ -72,7 +72,15 @@ export default function Profile() {
         .eq('user_id', user.id);
 
       console.log('Profile fetch result (all matching rows):', { data, error });
+      console.log('Data length:', data?.length);
       console.log('Query was: SELECT * FROM profiles WHERE user_id =', user.id);
+      
+      // Also try to see all profiles to debug
+      const { data: allProfiles } = await supabase
+        .from('profiles')
+        .select('user_id, username')
+        .limit(5);
+      console.log('Sample of all profiles in database:', allProfiles);
 
       if (error) {
         console.error('Error fetching profile:', error);
