@@ -58,53 +58,29 @@ export default function Profile() {
     if (!user) return;
     
     try {
-      console.log('Fetching profile for user:', user.id);
-      console.log('User object:', user);
-      
-      // First check if we can get auth status
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      console.log('Current session when fetching profile:', { session, sessionError });
-      
-      // Try querying with explicit user_id instead of relying on RLS
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user.id);
-
-      console.log('Profile fetch result (all matching rows):', { data, error });
-      console.log('Data length:', data?.length);
-      console.log('Query was: SELECT * FROM profiles WHERE user_id =', user.id);
-      
-      // Also try to see all profiles to debug
-      const { data: allProfiles } = await supabase
-        .from('profiles')
-        .select('user_id, username')
-        .limit(5);
-      console.log('Sample of all profiles in database:', allProfiles);
+        .eq('user_id', user.id)
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching profile:', error);
         return;
       }
-      
-      // Take the first result if multiple exist
-      const profileData = data && data.length > 0 ? data[0] : null;
-      console.log('Selected profile data:', profileData);
 
-      if (profileData) {
-        console.log('Setting profile data:', profileData);
-        setProfile(profileData as Profile);
+      if (data) {
+        setProfile(data as Profile);
         setFormData({
-          username: profileData.username || '',
-          bio: profileData.bio || '',
-          website: profileData.website || '',
-          github: profileData.github || '',
-          twitter: profileData.twitter || '',
-          linkedin: profileData.linkedin || '',
-          allow_contact: profileData.allow_contact !== false
+          username: data.username || '',
+          bio: data.bio || '',
+          website: data.website || '',
+          github: data.github || '',
+          twitter: data.twitter || '',
+          linkedin: data.linkedin || '',
+          allow_contact: data.allow_contact !== false
         });
       } else {
-        console.log('No profile found for user, will create new one');
         setProfile(null);
       }
     } catch (error) {
