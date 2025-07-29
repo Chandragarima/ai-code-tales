@@ -31,9 +31,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Get initial session
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Getting initial session...');
+      const { data: { session }, error } = await supabase.auth.getSession();
+      console.log('Initial session result:', { session, error });
+      
       setUser(session?.user ?? null);
       if (session?.user) {
+        console.log('Setting user from initial session:', session.user.id);
         await fetchProfile(session.user.id, session.user.email);
       } else {
         setProfile(null);
