@@ -60,24 +60,32 @@ export default function Profile() {
     try {
       console.log('Fetching profile for user:', user.id);
       console.log('User object:', user);
+      
+      // First check if we can get auth status
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('Current session when fetching profile:', { session, sessionError });
+      
+      // Try querying with explicit user_id instead of relying on RLS
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        .eq('user_id', user.id);
 
-      console.log('Profile fetch result:', { data, error });
+      console.log('Profile fetch result (all matching rows):', { data, error });
       console.log('Query was: SELECT * FROM profiles WHERE user_id =', user.id);
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 = not found
+      if (error) {
         console.error('Error fetching profile:', error);
         return;
       }
+      
+      // Take the first result if multiple exist
+      const profileData = data && data.length > 0 ? data[0] : null;
+      console.log('Selected profile data:', profileData);
 
-      if (data) {
-        const profileData = data as Profile;
+      if (profileData) {
         console.log('Setting profile data:', profileData);
-        setProfile(profileData);
+        setProfile(profileData as Profile);
         setFormData({
           username: profileData.username || '',
           bio: profileData.bio || '',
