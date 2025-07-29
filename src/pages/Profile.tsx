@@ -59,6 +59,7 @@ export default function Profile() {
     
     try {
       console.log('Fetching profile for user:', user.id);
+      console.log('User object:', user);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -66,6 +67,7 @@ export default function Profile() {
         .maybeSingle();
 
       console.log('Profile fetch result:', { data, error });
+      console.log('Query was: SELECT * FROM profiles WHERE user_id =', user.id);
 
       if (error && error.code !== 'PGRST116') { // PGRST116 = not found
         console.error('Error fetching profile:', error);
