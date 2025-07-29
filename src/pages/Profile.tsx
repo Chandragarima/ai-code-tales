@@ -59,28 +59,29 @@ export default function Profile() {
     
     try {
       const { data, error } = await supabase
-        .from('profiles' as any)
+        .from('profiles')
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 = not found
+      if (error) {
         console.error('Error fetching profile:', error);
         return;
       }
 
       if (data) {
-        const profileData = data as any as Profile;
-        setProfile(profileData);
+        setProfile(data as Profile);
         setFormData({
-          username: profileData.username || '',
-          bio: profileData.bio || '',
-          website: profileData.website || '',
-          github: profileData.github || '',
-          twitter: profileData.twitter || '',
-          linkedin: profileData.linkedin || '',
-          allow_contact: profileData.allow_contact !== false
+          username: data.username || '',
+          bio: data.bio || '',
+          website: data.website || '',
+          github: data.github || '',
+          twitter: data.twitter || '',
+          linkedin: data.linkedin || '',
+          allow_contact: data.allow_contact !== false
         });
+      } else {
+        setProfile(null);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -90,10 +91,22 @@ export default function Profile() {
   };
 
   const handleSave = async () => {
-    if (!user) return;
+    if (!user) {
+      console.error('No user found, cannot save profile');
+      toast({
+        title: "Error",
+        description: "Please log in to save your profile.",
+        variant: "destructive"
+      });
+      return;
+    }
 
     setSaving(true);
     try {
+      console.log('Saving profile with data:', formData);
+      console.log('Current user:', user);
+      console.log('Current profile state:', profile);
+      
       const profileData = {
         user_id: user.id,
         username: formData.username || null,
@@ -105,40 +118,72 @@ export default function Profile() {
         allow_contact: formData.allow_contact
       };
 
+      console.log('Profile data to save:', profileData);
+
       if (profile) {
         // Update existing profile
-        const { error } = await supabase
-          .from('profiles' as any)
+        console.log('Updating existing profile...');
+        const { data, error } = await supabase
+          .from('profiles')
           .update(profileData)
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .select();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
+        console.log('Profile updated successfully, returned data:', data);
       } else {
         // Create new profile
-        const { error } = await supabase
-          .from('profiles' as any)
-          .insert(profileData);
+        console.log('Creating new profile...');
+        const { data, error } = await supabase
+          .from('profiles')
+          .insert(profileData)
+          .select();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Insert error:', error);
+          console.error('Error details:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
+          throw error;
+        }
+        console.log('Profile created successfully, returned data:', data);
       }
 
       // Fetch the updated profile to get the latest data
-      await fetchProfile();
+      console.log('Fetching updated profile...');
+      const { data: updatedProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (updatedProfile) {
+        console.log('Setting updated profile data:', updatedProfile);
+        setProfile(updatedProfile as Profile);
+      }
       
       toast({
         title: "Profile saved",
         description: "Your profile has been updated successfully."
       });
 
+      console.log('Refreshing auth profile...');
       await refreshProfile();
       
       // Trigger profile update event for other components  
+      console.log('Dispatching profile-updated event...');
       window.dispatchEvent(new CustomEvent('profile-updated'));
     } catch (error) {
       console.error('Error saving profile:', error);
       toast({
         title: "Error",
-        description: "Failed to save profile. Please try again.",
+        description: `Failed to save profile: ${error.message}`,
         variant: "destructive"
       });
     } finally {
@@ -150,34 +195,46 @@ export default function Profile() {
     if (!user || !event.target.files || event.target.files.length === 0) return;
     
     const file = event.target.files[0];
+    console.log('Starting avatar upload for file:', file.name);
     setUploading(true);
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      const filePath = fileName;
 
+      console.log('Uploading to storage path:', filePath);
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw uploadError;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
+      console.log('Generated public URL:', publicUrl);
+
       // Update profile with new avatar URL
       if (profile) {
+        console.log('Updating existing profile with avatar...');
         const { error } = await supabase
-          .from('profiles' as any)
+          .from('profiles')
           .update({ avatar_url: publicUrl })
           .eq('user_id', user.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Profile update error:', error);
+          throw error;
+        }
       } else {
+        console.log('Creating new profile with avatar...');
         const { error } = await supabase
-          .from('profiles' as any)
+          .from('profiles')
           .insert({
             user_id: user.id,
             username: formData.username || null,
@@ -190,7 +247,10 @@ export default function Profile() {
             avatar_url: publicUrl
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Profile insert error:', error);
+          throw error;
+        }
       }
 
       // Update local profile state immediately
@@ -201,9 +261,11 @@ export default function Profile() {
         description: "Your profile picture has been updated successfully."
       });
 
+      console.log('Refreshing auth profile after avatar upload...');
       await refreshProfile();
       
       // Trigger profile update event for other components
+      console.log('Dispatching profile-updated event after avatar...');
       window.dispatchEvent(new CustomEvent('profile-updated'));
     } catch (error) {
       console.error('Error uploading avatar:', error);

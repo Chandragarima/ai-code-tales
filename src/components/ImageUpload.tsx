@@ -66,23 +66,12 @@ export const ImageUpload = ({ screenshots, onScreenshotsChange, maxImages = 5 }:
     try {
       console.log('Starting file upload...');
       
-      // Add timeout to prevent hanging
-      const uploadPromise = supabase.storage
+      const { data, error } = await supabase.storage
         .from('project-screenshots')
         .upload(fileName, file, {
           cacheControl: '3600',
           upsert: false
         });
-
-      // Create a timeout promise
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Upload timeout after 10 seconds')), 10000);
-      });
-
-      console.log('Upload promise created, waiting for response...');
-      
-      // Race between upload and timeout
-      const { data, error } = await Promise.race([uploadPromise, timeoutPromise]) as any;
 
       console.log('Upload response received:', { data, error });
 

@@ -91,7 +91,13 @@ export default function Submit() {
   };
 
   const onSubmit = async (data: SubmitForm) => {
+    console.log('Submit function called with data:', data);
+    console.log('Current user:', user);
+    console.log('Selected tools:', selectedTools);
+    console.log('Screenshots:', screenshots);
+    
     if (!user) {
+      console.log('No user found, redirecting to auth');
       toast({
         title: "Authentication required",
         description: "Please sign in to submit a project",
@@ -102,22 +108,25 @@ export default function Submit() {
     }
 
     try {
-      // Get user profile data
+      // Get user profile data, but don't fail if it doesn't exist
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('username')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (profileError) {
-        console.error('Error fetching profile:', profileError);
-        toast({
-          title: "Error",
-          description: "Failed to fetch user profile. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
+      console.log('Profile fetch result:', { profileData, profileError });
+
+      // Use profile username if available, otherwise fall back to form data or email
+      const creatorName = profileData?.username || data.creatorName || user.email?.split('@')[0] || 'Anonymous';
+
+      console.log('Submitting project with data:', {
+        user_id: user.id,
+        name: data.name,
+        creator_name: creatorName,
+        tools: data.tools,
+        screenshots
+      });
 
       const { error } = await supabase
         .from('projects')
@@ -132,7 +141,7 @@ export default function Submit() {
             tools: data.tools,
             allows_contact: data.allowsContact,
             email: user.email || data.email || '',
-            creator_name: profileData.username || data.creatorName || '',
+            creator_name: creatorName,
             screenshots,
             status: 'pending'
           }
@@ -237,7 +246,12 @@ export default function Submit() {
           </CardHeader>
           <CardContent className="relative px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 md:pb-8">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 md:space-y-8">
+              <form onSubmit={(e) => {
+                console.log('Form submit event triggered');
+                console.log('Form validation state:', form.formState.isValid);
+                console.log('Form errors:', form.formState.errors);
+                form.handleSubmit(onSubmit)(e);
+              }} className="space-y-4 sm:space-y-6 md:space-y-8">
                 
                 {/* Basic Info */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
