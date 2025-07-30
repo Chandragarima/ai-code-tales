@@ -43,7 +43,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle(); // Use maybeSingle to handle no results gracefully
+
+      console.log('🔄 Profile query result:', { data, error, hasData: !!data });
 
       if (error) {
         console.error('❌ Profile fetch error:', error);
@@ -51,8 +53,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      console.log('✅ Profile fetched successfully:', data);
-      setProfile(data);
+      if (data) {
+        console.log('✅ Profile fetched successfully:', data);
+        setProfile(data);
+      } else {
+        console.log('⚠️ No profile found for user:', userId);
+        setProfile(null);
+      }
     } catch (error) {
       console.error('❌ Profile fetch exception:', error);
       setProfile(null);
