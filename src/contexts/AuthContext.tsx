@@ -108,8 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) return { error };
 
-      // Skip profile creation for now since profiles table doesn't exist
-
+      // Profile will be automatically created by database trigger
       return { error: null };
     } catch (error) {
       return { error };
