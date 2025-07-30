@@ -58,14 +58,8 @@ export default function Profile() {
     console.log('🔍 SAVE DEBUG - Profile:', !!profile, profile?.id);
     console.log('🔍 SAVE DEBUG - Form data:', formData);
     
-    if (!user || !profile) {
-      console.error('❌ SAVE FAILED - Missing auth data:', { 
-        hasUser: !!user, 
-        hasProfile: !!profile,
-        userId: user?.id,
-        profileId: profile?.id 
-      });
-      
+    if (!user) {
+      console.error('❌ SAVE FAILED - No user');
       toast({
         title: "Error",
         description: "Please log in to save your profile.",
@@ -74,6 +68,7 @@ export default function Profile() {
       return;
     }
 
+    // We'll save directly to the database using user.id, regardless of profile state
     setSaving(true);
     
     try {
