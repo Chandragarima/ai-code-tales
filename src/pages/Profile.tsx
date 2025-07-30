@@ -29,7 +29,7 @@ interface Profile {
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user, refreshProfile } = useAuth();
+  const { user, refreshProfile, profile: authProfile } = useAuth();
   const { toast } = useToast();
   
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -47,15 +47,20 @@ export default function Profile() {
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
+    console.log('🔍 Profile Component: AuthContext profile changed:', authProfile);
+    console.log('🔍 Profile Component: Current user:', user);
+    
     if (!user) {
       navigate('/auth');
       return;
     }
     fetchProfile();
-  }, [user, navigate]);
+  }, [user, navigate, authProfile]);
 
   const fetchProfile = async () => {
     if (!user) return;
+    
+    console.log('🔍 Profile Component: Fetching profile for user:', user.id);
     
     try {
       const { data, error } = await supabase
@@ -64,12 +69,15 @@ export default function Profile() {
         .eq('user_id', user.id)
         .maybeSingle();
 
+      console.log('🔍 Profile Component: Direct profile query result:', { data, error });
+
       if (error) {
-        console.error('Error fetching profile:', error);
+        console.error('❌ Profile Component: Error fetching profile:', error);
         return;
       }
 
       if (data) {
+        console.log('✅ Profile Component: Setting profile state with data:', data);
         setProfile(data as Profile);
         setFormData({
           username: data.username || '',
@@ -80,11 +88,17 @@ export default function Profile() {
           linkedin: data.linkedin || '',
           allow_contact: data.allow_contact !== false
         });
+        console.log('✅ Profile Component: Form data updated:', {
+          username: data.username || '',
+          bio: data.bio || '',
+          avatar_url: data.avatar_url
+        });
       } else {
+        console.log('⚠️ Profile Component: No profile found, setting to null');
         setProfile(null);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('❌ Profile Component: Exception:', error);
     } finally {
       setLoading(false);
     }

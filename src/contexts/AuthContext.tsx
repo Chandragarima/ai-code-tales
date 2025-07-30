@@ -65,20 +65,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string, userEmail?: string) => {
     try {
-      console.log('Fetching profile for user:', userId);
+      console.log('🔍 AuthContext: Fetching profile for user:', userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle(); // Use maybeSingle instead of single to handle no results
       
+      console.log('🔍 AuthContext: Profile query result:', { data, error });
+      
       if (error) {
-        console.error('Error fetching profile:', error);
+        console.error('❌ AuthContext: Error fetching profile:', error);
         return;
       }
       
       if (data) {
-        console.log('Profile found:', data);
+        console.log('✅ AuthContext: Profile found, setting profile state:', data);
         setProfile({
           id: data.id,
           username: data.username,
@@ -86,12 +88,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           avatar_url: data.avatar_url,
           created_at: data.created_at
         });
+        console.log('✅ AuthContext: Profile state updated');
       } else {
-        console.log('No profile found for user:', userId);
+        console.log('⚠️ AuthContext: No profile found for user:', userId);
         setProfile(null);
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('❌ AuthContext: Exception while fetching profile:', error);
       setProfile(null);
     }
   };
