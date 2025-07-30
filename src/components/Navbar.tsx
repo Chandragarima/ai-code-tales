@@ -157,7 +157,7 @@ export const Navbar = () => {
               <img 
                 src="/lovable-uploads/7bd6dc8c-932d-4c87-837c-0ac6032f2735.png" 
                 alt="AI Code Tales" 
-                className="h-8 sm:h-10 w-auto"
+                className="h-12 sm:h-12 md:h-18 lg:h-24 w-auto"
               />
             </button>
           </div>
