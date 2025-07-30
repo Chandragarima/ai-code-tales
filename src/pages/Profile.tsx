@@ -54,7 +54,18 @@ export default function Profile() {
   }, [user, navigate]);
 
   const handleSave = async () => {
+    console.log('🔍 SAVE DEBUG - User:', !!user, user?.id);
+    console.log('🔍 SAVE DEBUG - Profile:', !!profile, profile?.id);
+    console.log('🔍 SAVE DEBUG - Form data:', formData);
+    
     if (!user || !profile) {
+      console.error('❌ SAVE FAILED - Missing auth data:', { 
+        hasUser: !!user, 
+        hasProfile: !!profile,
+        userId: user?.id,
+        profileId: profile?.id 
+      });
+      
       toast({
         title: "Error",
         description: "Please log in to save your profile.",
