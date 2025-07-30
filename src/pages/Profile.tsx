@@ -7,34 +7,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, User, Upload, Save, Globe, Github, Twitter, Linkedin, Mail, Palette, Sparkles } from "lucide-react";
+import { ArrowLeft, User, Upload, Save, Globe, Github, Twitter, Linkedin, Palette } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-interface Profile {
-  id: string;
-  user_id: string;
-  username: string | null;
-  bio: string | null;
-  avatar_url: string | null;
-  website: string | null;
-  github: string | null;
-  twitter: string | null;
-  linkedin: string | null;
-  allow_contact: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
 export default function Profile() {
   const navigate = useNavigate();
-  const { user, refreshProfile, profile: authProfile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const { toast } = useToast();
   
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     bio: '',
@@ -44,69 +28,33 @@ export default function Profile() {
     linkedin: '',
     allow_contact: true
   });
-  const [uploading, setUploading] = useState(false);
 
+  // Update form when profile loads
   useEffect(() => {
-    console.log('🔍 Profile Component: AuthContext profile changed:', authProfile);
-    console.log('🔍 Profile Component: Current user:', user);
+    console.log('📝 Profile data changed:', profile);
     
+    if (profile) {
+      setFormData({
+        username: profile.username || '',
+        bio: profile.bio || '',
+        website: profile.website || '',
+        github: profile.github || '',
+        twitter: profile.twitter || '',
+        linkedin: profile.linkedin || '',
+        allow_contact: profile.allow_contact
+      });
+    }
+  }, [profile]);
+
+  // Redirect if not authenticated
+  useEffect(() => {
     if (!user) {
       navigate('/auth');
-      return;
     }
-    fetchProfile();
-  }, [user, navigate, authProfile]);
-
-  const fetchProfile = async () => {
-    if (!user) return;
-    
-    console.log('🔍 Profile Component: Fetching profile for user:', user.id);
-    
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      console.log('🔍 Profile Component: Direct profile query result:', { data, error });
-
-      if (error) {
-        console.error('❌ Profile Component: Error fetching profile:', error);
-        return;
-      }
-
-      if (data) {
-        console.log('✅ Profile Component: Setting profile state with data:', data);
-        setProfile(data as Profile);
-        setFormData({
-          username: data.username || '',
-          bio: data.bio || '',
-          website: data.website || '',
-          github: data.github || '',
-          twitter: data.twitter || '',
-          linkedin: data.linkedin || '',
-          allow_contact: data.allow_contact !== false
-        });
-        console.log('✅ Profile Component: Form data updated:', {
-          username: data.username || '',
-          bio: data.bio || '',
-          avatar_url: data.avatar_url
-        });
-      } else {
-        console.log('⚠️ Profile Component: No profile found, setting to null');
-        setProfile(null);
-      }
-    } catch (error) {
-      console.error('❌ Profile Component: Exception:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [user, navigate]);
 
   const handleSave = async () => {
-    if (!user) {
-      console.error('No user found, cannot save profile');
+    if (!user || !profile) {
       toast({
         title: "Error",
         description: "Please log in to save your profile.",
@@ -116,85 +64,39 @@ export default function Profile() {
     }
 
     setSaving(true);
+    
     try {
-      console.log('Saving profile with data:', formData);
-      console.log('Current user:', user);
-      console.log('Current profile state:', profile);
+      console.log('💾 Saving profile updates...');
       
-      const profileData = {
-        user_id: user.id,
-        username: formData.username || null,
-        bio: formData.bio || null,
-        website: formData.website || null,
-        github: formData.github || null,
-        twitter: formData.twitter || null,
-        linkedin: formData.linkedin || null,
-        allow_contact: formData.allow_contact
-      };
-
-      console.log('Profile data to save:', profileData);
-
-      if (profile) {
-        // Update existing profile
-        console.log('Updating existing profile...');
-        const { data, error } = await supabase
-          .from('profiles')
-          .update(profileData)
-          .eq('user_id', user.id)
-          .select();
-
-        if (error) {
-          console.error('Update error:', error);
-          throw error;
-        }
-        console.log('Profile updated successfully, returned data:', data);
-      } else {
-        // Create new profile
-        console.log('Creating new profile...');
-        const { data, error } = await supabase
-          .from('profiles')
-          .insert(profileData)
-          .select();
-
-        if (error) {
-          console.error('Insert error:', error);
-          console.error('Error details:', {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          });
-          throw error;
-        }
-        console.log('Profile created successfully, returned data:', data);
-      }
-
-      // Fetch the updated profile to get the latest data
-      console.log('Fetching updated profile...');
-      const { data: updatedProfile } = await supabase
+      const { error } = await supabase
         .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-      
-      if (updatedProfile) {
-        console.log('Setting updated profile data:', updatedProfile);
-        setProfile(updatedProfile as Profile);
+        .update({
+          username: formData.username || null,
+          bio: formData.bio || null,
+          website: formData.website || null,
+          github: formData.github || null,
+          twitter: formData.twitter || null,
+          linkedin: formData.linkedin || null,
+          allow_contact: formData.allow_contact
+        })
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('❌ Profile save error:', error);
+        throw error;
       }
+
+      console.log('✅ Profile saved successfully');
+      
+      // Refresh the profile data
+      await refreshProfile();
       
       toast({
         title: "Profile saved",
         description: "Your profile has been updated successfully."
       });
-
-      console.log('Refreshing auth profile...');
-      await refreshProfile();
-      
-      // Trigger profile update event for other components  
-      console.log('Dispatching profile-updated event...');
-      window.dispatchEvent(new CustomEvent('profile-updated'));
     } catch (error) {
-      console.error('Error saving profile:', error);
+      console.error('❌ Profile save failed:', error);
       toast({
         title: "Error",
         description: `Failed to save profile: ${error.message}`,
@@ -209,80 +111,50 @@ export default function Profile() {
     if (!user || !event.target.files || event.target.files.length === 0) return;
     
     const file = event.target.files[0];
-    console.log('Starting avatar upload for file:', file.name);
     setUploading(true);
 
     try {
+      console.log('📸 Uploading avatar...');
+      
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-      const filePath = fileName;
 
-      console.log('Uploading to storage path:', filePath);
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file, { upsert: true });
+        .upload(fileName, file, { upsert: true });
 
       if (uploadError) {
-        console.error('Storage upload error:', uploadError);
+        console.error('❌ Avatar upload error:', uploadError);
         throw uploadError;
       }
 
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
-      console.log('Generated public URL:', publicUrl);
+      console.log('📸 Avatar uploaded, updating profile...');
 
-      // Update profile with new avatar URL
-      if (profile) {
-        console.log('Updating existing profile with avatar...');
-        const { error } = await supabase
-          .from('profiles')
-          .update({ avatar_url: publicUrl })
-          .eq('user_id', user.id);
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('user_id', user.id);
 
-        if (error) {
-          console.error('Profile update error:', error);
-          throw error;
-        }
-      } else {
-        console.log('Creating new profile with avatar...');
-        const { error } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: user.id,
-            username: formData.username || null,
-            bio: formData.bio || null,
-            website: formData.website || null,
-            github: formData.github || null,
-            twitter: formData.twitter || null,
-            linkedin: formData.linkedin || null,
-            allow_contact: formData.allow_contact,
-            avatar_url: publicUrl
-          });
-
-        if (error) {
-          console.error('Profile insert error:', error);
-          throw error;
-        }
+      if (updateError) {
+        console.error('❌ Profile avatar update error:', updateError);
+        throw updateError;
       }
 
-      // Update local profile state immediately
-      setProfile(prev => prev ? { ...prev, avatar_url: publicUrl } : null);
+      console.log('✅ Avatar updated successfully');
+      
+      // Refresh the profile data
+      await refreshProfile();
       
       toast({
         title: "Avatar updated",
         description: "Your profile picture has been updated successfully."
       });
-
-      console.log('Refreshing auth profile after avatar upload...');
-      await refreshProfile();
-      
-      // Trigger profile update event for other components
-      console.log('Dispatching profile-updated event after avatar...');
-      window.dispatchEvent(new CustomEvent('profile-updated'));
     } catch (error) {
-      console.error('Error uploading avatar:', error);
+      console.error('❌ Avatar upload failed:', error);
       toast({
         title: "Error",
         description: "Failed to upload avatar. Please try again.",
@@ -299,24 +171,8 @@ export default function Profile() {
 
   if (!user) return null;
 
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
-  //       <div className="text-center">
-  //         <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-  //         <p className="text-foreground/70">Loading your profile...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
-      {/* Decorative background elements */}
-      {/* <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30 pointer-events-none"></div>
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
-       */}
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-5xl">
         {/* Header */}
         <div className="mb-8 sm:mb-12">
@@ -334,7 +190,6 @@ export default function Profile() {
               <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-normal leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
                 Profile
               </h1>
-              {/* Divider */}
               <div className="w-8 sm:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
               <p className="text-sm sm:text-base lg:text-lg text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px] px-4">
                 Craft your digital identity and connect with the community
@@ -477,7 +332,7 @@ export default function Profile() {
                     id="github"
                     value={formData.github}
                     onChange={(e) => handleInputChange('github', e.target.value)}
-                    placeholder="https://github.com/username"
+                    placeholder="github.com/username"
                     className="border-border/30 focus:border-[#fda085]/50 focus:ring-[#fda085]/20 mt-2"
                   />
                 </div>
@@ -491,7 +346,7 @@ export default function Profile() {
                     id="twitter"
                     value={formData.twitter}
                     onChange={(e) => handleInputChange('twitter', e.target.value)}
-                    placeholder="https://twitter.com/username"
+                    placeholder="@username"
                     className="border-border/30 focus:border-[#fda085]/50 focus:ring-[#fda085]/20 mt-2"
                   />
                 </div>
@@ -505,7 +360,7 @@ export default function Profile() {
                     id="linkedin"
                     value={formData.linkedin}
                     onChange={(e) => handleInputChange('linkedin', e.target.value)}
-                    placeholder="https://linkedin.com/in/username"
+                    placeholder="linkedin.com/in/username"
                     className="border-border/30 focus:border-[#fda085]/50 focus:ring-[#fda085]/20 mt-2"
                   />
                 </div>
@@ -518,48 +373,34 @@ export default function Profile() {
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-foreground font-light text-lg">
                 <div className="w-6 h-6 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-lg flex items-center justify-center">
-                  <Mail className="h-3 w-3 text-white" />
+                  <User className="h-3 w-3 text-white" />
                 </div>
                 Contact Settings
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between p-4 bg-muted/20 rounded-lg">
-                <div className="space-y-1">
-                  <Label className="text-foreground font-medium">Allow others to message me</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Let other users send you messages about your projects
-                  </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-foreground/80 text-sm font-medium">Allow Contact</Label>
+                  <p className="text-foreground/60 text-xs mt-1">Allow other users to contact you about your projects</p>
                 </div>
                 <Switch
                   checked={formData.allow_contact}
-                  onCheckedChange={(checked) => 
-                    handleInputChange('allow_contact', checked)
-                  }
-                  className="data-[state=checked]:bg-[#fda085]"
+                  onCheckedChange={(checked) => handleInputChange('allow_contact', checked)}
                 />
               </div>
             </CardContent>
           </Card>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
+          {/* Save Button */}
+          <div className="flex justify-center pt-4">
             <Button 
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 h-12 text-base"
+              className="bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#f6d365]/90 hover:to-[#fda085]/90 text-white font-medium px-8 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              <Save className="h-5 w-5 mr-2" />
+              <Save className="h-4 w-4 mr-2" />
               {saving ? 'Saving...' : 'Save Profile'}
-            </Button>
-            
-            <Button 
-              onClick={() => navigate('/my-projects')}
-              variant="outline"
-              className="flex-1 border-2 border-border hover:border-[#fda085] hover:bg-[#fda085]/10 text-foreground font-medium transition-all duration-200 h-12 text-base"
-            >
-              <Sparkles className="h-5 w-5 mr-2" />
-              View My Projects
             </Button>
           </div>
         </div>
