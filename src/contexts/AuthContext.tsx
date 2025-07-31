@@ -36,6 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Simple function to fetch profile
   const fetchProfile = async (userId: string) => {
+    const startTime = performance.now();
     try {
       console.log('🔄 Fetching profile for user:', userId);
       
@@ -45,6 +46,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('user_id', userId)
         .maybeSingle();
 
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      console.log(`⏱️ Profile fetch took ${duration.toFixed(2)}ms`);
       console.log('🔄 Profile query result:', { data, error, hasData: !!data });
 
       if (error) {
@@ -61,7 +65,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfile(null);
       }
     } catch (error) {
-      console.error('❌ Profile fetch exception:', error);
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      console.error(`❌ Profile fetch failed after ${duration.toFixed(2)}ms:`, error);
       setProfile(null);
     }
   };
