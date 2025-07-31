@@ -39,18 +39,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('🔄 Fetching profile for user:', userId);
       
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
-      );
-      
-      const fetchPromise = supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
-      
-      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
 
       console.log('🔄 Profile query result:', { data, error, hasData: !!data });
 
@@ -81,25 +74,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         console.log('🔄 Initializing auth...');
         
-        // Test Supabase connection first
-        try {
-          const connectionTest = await Promise.race([
-            supabase.from('profiles').select('count').limit(1),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timeout')), 3000))
-          ]);
-          console.log('✅ Supabase connection test passed');
-        } catch (error) {
-          console.error('❌ Supabase connection test failed:', error);
-          // Continue anyway, but user will know there's a connection issue
-        }
-
-        // Get current session with timeout
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session fetch timeout')), 5000)
-        );
-        
-        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]) as any;
+        // Get current session
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (mounted) {
           if (session?.user) {
