@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -34,8 +34,7 @@ const submitSchema = z.object({
   deeperStory: z.string().optional(),
   tools: z.array(z.string()).min(1, "Please select at least one AI tool"),
   allowsContact: z.boolean(),
-  email: z.string().email("Please enter a valid email").optional(),
-  creatorName: z.string().min(2, "Creator name must be at least 2 characters").optional()
+  creatorName: z.string().min(2, "Creator name must be at least 2 characters")
 });
 
 type SubmitForm = z.infer<typeof submitSchema>;
@@ -49,7 +48,7 @@ const aiTools = [
 export default function Submit() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [customTool, setCustomTool] = useState("");
   const [screenshots, setScreenshots] = useState<string[]>([]);
@@ -64,10 +63,20 @@ export default function Submit() {
       deeperStory: "",
       tools: [],
       allowsContact: true,
-      email: "",
       creatorName: ""
     }
   });
+
+  // Auto-populate creator name from profile
+  useEffect(() => {
+    if (profile?.username) {
+      form.setValue("creatorName", profile.username);
+    } else if (user?.email) {
+      // Fallback to email username part
+      const emailUsername = user.email.split('@')[0];
+      form.setValue("creatorName", emailUsername);
+    }
+  }, [profile, user, form]);
 
   const addTool = (tool: string) => {
     if (!selectedTools.includes(tool)) {
@@ -108,22 +117,10 @@ export default function Submit() {
     }
 
     try {
-      // Get user profile data, but don't fail if it doesn't exist
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      console.log('Profile fetch result:', { profileData, profileError });
-
-      // Use profile username if available, otherwise fall back to form data or email
-      const creatorName = profileData?.username || data.creatorName || user.email?.split('@')[0] || 'Anonymous';
-
       console.log('Submitting project with data:', {
         user_id: user.id,
         name: data.name,
-        creator_name: creatorName,
+        creator_name: data.creatorName,
         tools: data.tools,
         screenshots
       });
@@ -140,8 +137,8 @@ export default function Submit() {
             deeper_story: data.deeperStory || null,
             tools: data.tools,
             allows_contact: data.allowsContact,
-            email: user.email || data.email || '',
-            creator_name: creatorName,
+            email: user.email || '',
+            creator_name: data.creatorName,
             screenshots,
             status: 'pending'
           }
@@ -291,6 +288,28 @@ export default function Submit() {
                     )}
                   />
                 </div>
+
+                {/* Creator Name */}
+                <FormField
+                  control={form.control}
+                  name="creatorName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-light text-sm sm:text-base text-foreground/90">Creator Name</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Your name" 
+                          {...field} 
+                          className="border-white/20 focus:border-[#f6d365]/50 focus:ring-[#f6d365]/10 bg-background/60 backdrop-blur-sm font-light rounded-xl transition-all duration-300"
+                        />
+                      </FormControl>
+                      <FormDescription className="font-light text-muted-foreground text-sm">
+                        This will be displayed as the project creator
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
