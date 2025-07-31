@@ -14,10 +14,16 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     persistSession: true,
     autoRefreshToken: true,
   },
+  realtime: {
+    // Disable realtime to fix WebSocket connection issues
+    params: {
+      eventsPerSecond: -1
+    }
+  },
   global: {
     fetch: (url, options = {}) => {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // Reduced to 5 seconds
       
       return fetch(url, {
         ...options,
