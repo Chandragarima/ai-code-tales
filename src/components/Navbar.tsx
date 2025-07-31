@@ -19,7 +19,7 @@ export const Navbar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, profile, signOut, refreshProfile } = useAuth();
+  const { user, profile, loading, signOut, refreshProfile } = useAuth();
 
   const navItems = [
     { name: 'Gallery', path: '/gallery', icon: Image, label: 'Gallery' },
@@ -130,6 +130,9 @@ export const Navbar = () => {
   const isActivePath = (path: string) => location.pathname === path;
 
   const getDisplayName = () => {
+    if (loading) {
+      return 'Loading...';
+    }
     if (profile?.username) {
       return profile.username;
     }
