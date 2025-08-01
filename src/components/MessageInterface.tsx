@@ -66,12 +66,15 @@ export function MessageInterface({
     scrollToBottom();
   }, [messages]);
 
-  // Real-time message updates
+  // Real-time message updates with fallback
   useEffect(() => {
     if (!conversation?.id) return;
 
+    let isRealtimeConnected = false;
+    let pollInterval: NodeJS.Timeout;
+
     const channel = supabase
-      .channel('messages')
+      .channel(`messages-${conversation.id}`)
       .on(
         'postgres_changes',
         {
@@ -81,8 +84,18 @@ export function MessageInterface({
           filter: `conversation_id=eq.${conversation.id}`
         },
         (payload) => {
+          console.log('Real-time message received:', payload);
           const newMessage = payload.new as Message;
-          setMessages(prev => [...prev, newMessage]);
+          
+          // Only add if not a temporary optimistic message
+          setMessages(prev => {
+            const exists = prev.some(msg => msg.id === newMessage.id);
+            if (exists) return prev;
+            
+            // Remove any temporary message and add the real one
+            const filtered = prev.filter(msg => !msg.id.startsWith('temp-'));
+            return [...filtered, newMessage];
+          });
           
           if (newMessage.sender_id !== user?.id) {
             markMessageAsRead(newMessage.id);
@@ -90,9 +103,34 @@ export function MessageInterface({
           }
         }
       )
+      .on('system', {}, (payload) => {
+        console.log('Real-time system event:', payload);
+        if (payload.status === 'SUBSCRIBED') {
+          isRealtimeConnected = true;
+          console.log('Real-time connected successfully');
+        } else if (payload.status === 'CHANNEL_ERROR') {
+          console.log('Real-time connection failed, falling back to polling');
+          isRealtimeConnected = false;
+        }
+      })
       .subscribe();
 
+    // Fallback polling mechanism
+    const startPolling = () => {
+      pollInterval = setInterval(() => {
+        if (!isRealtimeConnected) {
+          console.log('Polling for new messages (real-time unavailable)');
+          loadMessages(conversation.id);
+        }
+      }, 3000); // Poll every 3 seconds when real-time is down
+    };
+
+    // Start polling after a delay to give real-time a chance
+    const pollTimeoutId = setTimeout(startPolling, 5000);
+
     return () => {
+      clearTimeout(pollTimeoutId);
+      if (pollInterval) clearInterval(pollInterval);
       supabase.removeChannel(channel);
     };
   }, [conversation?.id, user?.id]);
@@ -235,20 +273,58 @@ export function MessageInterface({
   const sendMessage = async () => {
     if (!newMessage.trim() || !conversation || !user) return;
 
+    const messageContent = newMessage.trim();
+    setNewMessage('');
     setLoading(true);
+
+    // Create optimistic message for immediate feedback
+    const optimisticMessage: Message = {
+      id: `temp-${Date.now()}`,
+      content: messageContent,
+      sender_id: user.id,
+      created_at: new Date().toISOString(),
+      is_read: false
+    };
+
+    // Add message immediately to UI
+    setMessages(prev => [...prev, optimisticMessage]);
+
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .insert({
           conversation_id: conversation.id,
           sender_id: user.id,
-          content: newMessage.trim()
-        });
+          content: messageContent
+        })
+        .select()
+        .single();
 
       if (error) throw error;
-      setNewMessage('');
+
+      // Replace optimistic message with real one
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === optimisticMessage.id 
+            ? { ...data, is_read: false } 
+            : msg
+        )
+      );
+
+      // Manually refresh messages after a short delay to ensure real-time updates
+      setTimeout(() => {
+        if (conversation.id) {
+          loadMessages(conversation.id);
+        }
+      }, 1000);
+
     } catch (error) {
       console.error('Error sending message:', error);
+      
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
+      setNewMessage(messageContent); // Restore message content
+      
       toast({
         title: "Error",
         description: "Failed to send message.",

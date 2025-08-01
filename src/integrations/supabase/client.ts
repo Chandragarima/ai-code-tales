@@ -15,9 +15,11 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     autoRefreshToken: true,
   },
   realtime: {
-    // Disable realtime to fix WebSocket connection issues
+    // Enable realtime with controlled parameters for messaging
     params: {
-      eventsPerSecond: -1
+      eventsPerSecond: 10, // Limit to reduce connection issues
+      heartbeatIntervalMs: 30000,
+      reconnectIntervalMs: 5000
     }
   },
   global: {
