@@ -69,12 +69,15 @@ export function MessageDialog({
     scrollToBottom();
   }, [messages]);
 
-  // Real-time message updates
+  // Real-time message updates with fallback
   useEffect(() => {
     if (!conversation?.id) return;
 
+    let isRealtimeConnected = false;
+    let pollInterval: NodeJS.Timeout;
+
     const channel = supabase
-      .channel('messages')
+      .channel(`messages-dialog-${conversation.id}`)
       .on(
         'postgres_changes',
         {
@@ -84,20 +87,48 @@ export function MessageDialog({
           filter: `conversation_id=eq.${conversation.id}`
         },
         (payload) => {
+          console.log('Real-time message received in dialog:', payload);
           const newMessage = payload.new as Message;
-          setMessages(prev => [...prev, newMessage]);
           
-          // Mark as read if user is the recipient and show notification
+          // Only add if not a temporary optimistic message
+          setMessages(prev => {
+            const exists = prev.some(msg => msg.id === newMessage.id);
+            if (exists) return prev;
+            
+            // Remove any temporary message and add the real one
+            const filtered = prev.filter(msg => !msg.id.startsWith('temp-'));
+            return [...filtered, newMessage];
+          });
+          
           if (newMessage.sender_id !== user?.id) {
             markMessageAsRead(newMessage.id);
-            // Trigger a custom event to update navbar unread count
             window.dispatchEvent(new CustomEvent('message-read'));
           }
         }
       )
+      .on('system', {}, (payload) => {
+        if (payload.status === 'SUBSCRIBED') {
+          isRealtimeConnected = true;
+        } else if (payload.status === 'CHANNEL_ERROR') {
+          isRealtimeConnected = false;
+        }
+      })
       .subscribe();
 
+    // Fallback polling mechanism
+    const startPolling = () => {
+      pollInterval = setInterval(() => {
+        if (!isRealtimeConnected) {
+          loadMessages(conversation.id);
+        }
+      }, 3000);
+    };
+
+    const pollTimeoutId = setTimeout(startPolling, 5000);
+
     return () => {
+      clearTimeout(pollTimeoutId);
+      if (pollInterval) clearInterval(pollInterval);
       supabase.removeChannel(channel);
     };
   }, [conversation?.id, user?.id]);
@@ -203,20 +234,58 @@ export function MessageDialog({
   const sendMessage = async () => {
     if (!newMessage.trim() || !conversation || !user) return;
 
+    const messageContent = newMessage.trim();
+    setNewMessage('');
     setLoading(true);
+
+    // Create optimistic message for immediate feedback
+    const optimisticMessage: Message = {
+      id: `temp-${Date.now()}`,
+      content: messageContent,
+      sender_id: user.id,
+      created_at: new Date().toISOString(),
+      is_read: false
+    };
+
+    // Add message immediately to UI
+    setMessages(prev => [...prev, optimisticMessage]);
+
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .insert({
           conversation_id: conversation.id,
           sender_id: user.id,
-          content: newMessage.trim()
-        });
+          content: messageContent
+        })
+        .select()
+        .single();
 
       if (error) throw error;
-      setNewMessage('');
+
+      // Replace optimistic message with real one
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === optimisticMessage.id 
+            ? { ...data, is_read: false } 
+            : msg
+        )
+      );
+
+      // Manually refresh messages after a short delay
+      setTimeout(() => {
+        if (conversation.id) {
+          loadMessages(conversation.id);
+        }
+      }, 1000);
+
     } catch (error) {
       console.error('Error sending message:', error);
+      
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
+      setNewMessage(messageContent); // Restore message content
+      
       toast({
         title: "Error",
         description: "Failed to send message.",

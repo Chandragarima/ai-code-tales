@@ -51,9 +51,12 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
     }
   }, [user]);
 
-  // Real-time updates for conversations
+  // Real-time updates for conversations with fallback
   useEffect(() => {
     if (!user) return;
+
+    let isRealtimeConnected = false;
+    let pollInterval: NodeJS.Timeout;
 
     const channel = supabase
       .channel('conversation-updates')
@@ -65,12 +68,34 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
           table: 'messages'
         },
         () => {
+          console.log('Real-time conversation update detected');
           loadConversations();
         }
       )
+      .on('system', {}, (payload) => {
+        if (payload.status === 'SUBSCRIBED') {
+          isRealtimeConnected = true;
+        } else if (payload.status === 'CHANNEL_ERROR') {
+          isRealtimeConnected = false;
+        }
+      })
       .subscribe();
 
+    // Fallback polling for conversation updates
+    const startPolling = () => {
+      pollInterval = setInterval(() => {
+        if (!isRealtimeConnected) {
+          console.log('Polling for conversation updates (real-time unavailable)');
+          loadConversations();
+        }
+      }, 5000); // Poll every 5 seconds for conversation list
+    };
+
+    const pollTimeoutId = setTimeout(startPolling, 5000);
+
     return () => {
+      clearTimeout(pollTimeoutId);
+      if (pollInterval) clearInterval(pollInterval);
       supabase.removeChannel(channel);
     };
   }, [user]);

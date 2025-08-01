@@ -25,22 +25,87 @@ export const GalleryHeader = ({
   const { user } = useAuth();
 
   return (
-    <div className="mb-6 sm:mb-8 lg:mb-12">
+    <div className="mb-4 sm:mb-6 lg:mb-12">
       {/* Mobile Header Bar */}
-      <div className="md:hidden flex items-center justify-between mb-5 sm:mb-6">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate(-1)}
-          className="text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light text-sm p-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        
-        <h1 className="font-['Playfair_Display'] text-xl sm:text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
-          Gallery
-        </h1>
-        
-        <div className="w-10"></div> {/* Spacer for centering */}
+      <div className="md:hidden mb-4">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center gap-3 mb-6">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate(-1)}
+              className="text-muted-foreground hover:text-[#fda085] transition-colors duration-200 p-2 -ml-2"
+              size="sm"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            
+            <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+              Gallery
+            </h1>
+          </div>
+
+          {/* Mobile Search and Filters */}
+          <div className="space-y-3">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search projects..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="w-full pl-10 pr-4 h-12 bg-card/60 backdrop-blur-sm border-white/10 focus:border-[#f6d365]/30 focus:ring-[#f6d365]/10 text-sm rounded-xl transition-all duration-300"
+              />
+            </div>
+
+            {/* Filter and Submit Row */}
+            <div className="flex gap-3">
+              <Select value={selectedTool} onValueChange={onToolChange}>
+                <SelectTrigger className="flex-1 bg-card/60 backdrop-blur-sm border-white/10 focus:border-[#f6d365]/30 focus:ring-[#f6d365]/10 rounded-xl h-12 text-sm transition-all duration-300">
+                  <Filter className="h-4 w-4 text-muted-foreground mr-2" />
+                  <SelectValue placeholder="All tools" />
+                </SelectTrigger>
+                <SelectContent className="bg-card/95 backdrop-blur-sm border-white/20 rounded-xl">
+                  {availableTools.map((tool) => (
+                    <SelectItem 
+                      key={tool} 
+                      value={tool}
+                      className="hover:bg-[#f6d365]/10 focus:bg-[#f6d365]/10 rounded-lg"
+                    >
+                      {tool}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Button 
+                onClick={() => navigate('/submit')}
+                className="bg-gradient-to-r from-white via-[#f6d365] to-[#fda085] hover:from-[#f6d365] hover:via-[#fda085] hover:to-white text-gray-900 px-4 py-3 text-sm font-semibold shadow-xl hover:shadow-2xl hover:shadow-[#fda085]/20 transition-all duration-300 group rounded-xl hover:scale-105 h-12"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+            </div>
+
+            {/* Active Filters */}
+            {(searchQuery || selectedTool !== 'All') && (
+              <div className="flex items-center gap-2 pt-2">
+                <span className="text-xs text-muted-foreground">Active:</span>
+                <div className="flex flex-wrap gap-2">
+                  {searchQuery && (
+                    <div className="px-2 py-1 bg-[#f6d365]/20 text-[#f6d365] rounded-full text-xs border border-[#f6d365]/30">
+                      "{searchQuery}"
+                    </div>
+                  )}
+                  {selectedTool !== 'All' && (
+                    <div className="px-2 py-1 bg-[#fda085]/20 text-[#fda085] rounded-full text-xs border border-[#fda085]/30">
+                      {selectedTool}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       
       {/* Desktop Header */}
@@ -58,8 +123,8 @@ export const GalleryHeader = ({
         </div>
       </div>
 
-      {/* Search and Filter Section */}
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 mb-4 sm:mb-6">
+      {/* Desktop Search and Filter Section */}
+      <div className="hidden md:block container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 mb-4 sm:mb-6">
         <div className="flex flex-col md:flex-row gap-2 sm:gap-3 md:gap-4 lg:gap-6 items-center justify-between">
           {/* Search and Filter - Left Side */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 w-full md:w-auto">

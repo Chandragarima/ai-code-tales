@@ -1,18 +1,25 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Profile {
   id: string;
-  username: string;
-  email: string;
-  avatar_url?: string;
+  user_id: string;
+  username: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+  website: string | null;
+  github: string | null;
+  twitter: string | null;
+  linkedin: string | null;
+  allow_contact: boolean;
   created_at: string;
+  updated_at: string;
 }
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   profile: Profile | null;
   loading: boolean;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
@@ -25,93 +32,134 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Get initial session
-    const getSession = async () => {
-      console.log('Getting initial session...');
-      const { data: { session }, error } = await supabase.auth.getSession();
-      console.log('Initial session result:', { session, error });
-      
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        console.log('Setting user from initial session:', session.user.id);
-        await fetchProfile(session.user.id, session.user.email);
-      } else {
-        setProfile(null);
-      }
-      setLoading(false);
-    };
-
-    getSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await fetchProfile(session.user.id, session.user.email);
-        } else {
-          setProfile(null);
-        }
-        setLoading(false);
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const fetchProfile = async (userId: string, userEmail?: string) => {
+  // Simple function to fetch profile
+  const fetchProfile = async (userId: string) => {
     try {
+      console.log('🔄 Fetching profile for user:', userId);
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
-        .single();
-      
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching profile:', error);
+        .maybeSingle();
+
+      console.log('🔄 Profile query result:', { data, error, hasData: !!data });
+
+      if (error) {
+        console.error('❌ Profile fetch error:', error);
+        setProfile(null);
         return;
       }
-      
+
       if (data) {
-        setProfile({
-          id: data.id,
-          username: data.username,
-          email: userEmail || user?.email || '', // Use passed email or fallback to user email
-          avatar_url: data.avatar_url,
-          created_at: data.created_at
-        });
+        console.log('✅ Profile fetched successfully:', data);
+        setProfile(data);
       } else {
+        console.log('⚠️ No profile found for user:', userId);
         setProfile(null);
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error(`❌ Profile fetch failed:`, error);
       setProfile(null);
     }
   };
 
+  // Initialize auth state
+  useEffect(() => {
+    let mounted = true;
+
+    // Listen for auth changes FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔄 Auth state changed:', event);
+      
+      if (!mounted) return;
+      
+      // Update session and user synchronously
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      // Defer profile fetching to avoid blocking auth state updates
+      if (session?.user) {
+        console.log('✅ User logged in:', session.user.id);
+        setTimeout(() => {
+          if (mounted) {
+            fetchProfile(session.user.id);
+          }
+        }, 0);
+      } else {
+        console.log('ℹ️ User logged out');
+        setProfile(null);
+      }
+      
+      setLoading(false);
+    });
+
+    // THEN check for existing session
+    const initializeAuth = async () => {
+      try {
+        console.log('🔄 Initializing auth...');
+        
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            console.log('✅ Found existing session for user:', session.user.id);
+            setTimeout(() => {
+              if (mounted) {
+                fetchProfile(session.user.id);
+              }
+            }, 0);
+          } else {
+            console.log('ℹ️ No existing session found');
+            setProfile(null);
+          }
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('❌ Auth initialization error:', error);
+        if (mounted) {
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const signUp = async (email: string, password: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      console.log('🔄 Attempting sign up...');
       
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: redirectUrl
-        }
+        // Remove emailRedirectTo to avoid redirect issues
       });
 
-      if (error) return { error };
-
-      // Skip profile creation for now since profiles table doesn't exist
-
+      console.log('🔄 Sign up result:', { data, error, hasUser: !!data?.user });
+      
+      if (error) {
+        console.error('❌ Sign up error:', error);
+        return { error };
+      }
       return { error: null };
     } catch (error) {
+      console.error('❌ Sign up exception:', error);
       return { error };
     }
   };
@@ -122,7 +170,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email,
         password,
       });
-
       return { error };
     } catch (error) {
       return { error };
@@ -130,37 +177,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    console.log('AuthContext signOut called');
+    console.log('🔄 Signing out...');
     try {
-      // Clear local state immediately
+      // Clear state immediately
       setUser(null);
       setProfile(null);
       
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 3000)
-      );
-      
-      const signOutPromise = supabase.auth.signOut();
-      
-      await Promise.race([signOutPromise, timeoutPromise]);
-      console.log('SignOut successful');
+      // Sign out from Supabase
+      await supabase.auth.signOut();
+      console.log('✅ Sign out successful');
     } catch (error) {
-      console.log('SignOut completed (with timeout or error, but state cleared)');
-      // Don't throw error - we've already cleared the local state
+      console.log('ℹ️ Sign out completed (with potential timeout)');
+      // State is already cleared, so we're good
     }
   };
 
   const refreshProfile = async () => {
     if (user) {
-      await fetchProfile(user.id, user.email);
-      // Trigger a custom event to notify other components about profile updates
-      window.dispatchEvent(new CustomEvent('profile-updated'));
+      console.log('🔄 Refreshing profile...');
+      await fetchProfile(user.id);
     }
   };
 
   const value = {
     user,
+    session,
     profile,
     loading,
     signUp,
