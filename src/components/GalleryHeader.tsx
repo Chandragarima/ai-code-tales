@@ -27,20 +27,21 @@ export const GalleryHeader = ({
   return (
     <div className="mb-6 sm:mb-8 lg:mb-12">
       {/* Mobile Header Bar */}
-      <div className="md:hidden flex items-center justify-between mb-5 sm:mb-6">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate(-1)}
-          className="text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light text-sm p-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        
-        <h1 className="font-['Playfair_Display'] text-xl sm:text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
-          Gallery
-        </h1>
-        
-        <div className="w-10"></div> {/* Spacer for centering */}
+      <div className="md:hidden mb-6 sm:mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate(-1)}
+            className="text-muted-foreground hover:text-[#fda085] transition-colors duration-200 p-1.5 -ml-1.5"
+            size="sm"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          
+          <h1 className="font-['Playfair_Display'] text-2xl sm:text-3xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+            Gallery
+          </h1>
+        </div>
       </div>
       
       {/* Desktop Header */}
