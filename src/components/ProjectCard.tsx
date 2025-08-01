@@ -240,8 +240,8 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
             </div>
 
             {/* Bottom Section - Reactions and Actions */}
-            <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 xs:gap-0 pt-2 border-t border-white/10 mt-auto">
-              <div className="flex items-center gap-1">
+            <div className="flex items-center justify-between pt-3 mt-auto">
+              <div className="flex items-center gap-0.5">
                 {Object.entries(project.reactions).map(([type, count]) => {
                   const Icon = getReactionIcon(type);
                   const isActive = userReactions[project.id] === type;
@@ -251,7 +251,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                       key={type}
                       variant="ghost"
                       size="sm"
-                      className={`flex items-center gap-1 text-xs transition-all duration-300 h-6 sm:h-7 md:h-8 px-1 sm:px-1.5 md:px-2 text-muted-foreground hover:text-foreground ${
+                      className={`flex items-center gap-1 text-xs transition-all duration-300 h-7 px-2 text-muted-foreground hover:text-foreground ${
                         isActive 
                           ? 'text-[#fda085] bg-gradient-to-r from-[#f6d365]/10 to-[#fda085]/10' 
                           : 'hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5'
@@ -261,14 +261,14 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                         onReaction(project.id, type);
                       }}
                     >
-                      <Icon className={`h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 ${isActive ? 'fill-current' : ''}`} />
-                      <span className="font-medium text-xs">{count}</span>
+                      <Icon className={`h-3.5 w-3.5 ${isActive ? 'fill-current' : ''}`} />
+                      <span className="font-medium">{count}</span>
                     </Button>
                   );
                 })}
               </div>
               
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 {/* Desktop View Button */}
                 <Button 
                   variant="outline"
@@ -277,26 +277,25 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                     e.stopPropagation();
                     navigate(`/project/${project.id}`);
                   }}
-                  className="hidden md:flex text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 bg-gradient-to-r from-[#f6d365]/20 to-[#fda085]/20 hover:from-[#f6d365]/30 hover:to-[#fda085]/30 text-foreground hover:text-[#fda085] transition-all duration-300 border-[#f6d365]/30 hover:border-[#f6d365]/50"
+                  className="hidden md:flex text-xs h-7 px-3 bg-gradient-to-r from-[#f6d365]/10 to-[#fda085]/10 hover:from-[#f6d365]/20 hover:to-[#fda085]/20 text-foreground hover:text-[#fda085] transition-all duration-300 border-[#f6d365]/20 hover:border-[#f6d365]/40"
                 >
-                  <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
-                  <span className="hidden xs:inline">Details</span>
-                  <span className="xs:hidden">View</span>
+                  <Eye className="h-3.5 w-3.5 mr-1.5" />
+                  Details
                 </Button>
               
                 {project.creator.allowsContact && project.user_id && (
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="text-xs h-6 sm:h-7 md:h-8 px-1.5 sm:px-2 md:px-3 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300 border-white/20 hover:border-[#f6d365]/40"
+                    className="text-xs h-7 px-3 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300 border-white/20 hover:border-[#f6d365]/40"
                     onClick={(e) => {
                       e.stopPropagation();
                       setShowMessageDialog(true);
                     }}
                   >
-                    <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
-                    <span className="hidden xs:inline">Connect</span>
-                    <span className="xs:hidden">Chat</span>
+                    <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
+                    <span className="hidden sm:inline">Connect</span>
+                    <span className="sm:hidden">Chat</span>
                   </Button>
                 )}
               </div>
