@@ -109,11 +109,11 @@ export const MyProjects = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-3 w-3 text-green-500" />;
       case 'rejected':
-        return <XCircle className="h-4 w-4 text-red-500" />;
+        return <XCircle className="h-3 w-3 text-red-500" />;
       default:
-        return <Clock className="h-4 w-4 text-yellow-500" />;
+        return <Clock className="h-3 w-3 text-yellow-500" />;
     }
   };
 
@@ -128,54 +128,103 @@ export const MyProjects = () => {
     }
   };
 
-  
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {projects.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#f6d365]/20 to-[#fda085]/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <FolderOpen className="h-8 w-8 text-muted-foreground/70" />
+        <div className="text-center py-8 md:py-12">
+          <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-[#f6d365]/20 to-[#fda085]/20 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+            <FolderOpen className="h-6 w-6 md:h-8 md:w-8 text-muted-foreground/70" />
           </div>
-          <h3 className="text-lg font-medium text-foreground mb-2">No projects yet</h3>
-          <p className="text-sm text-muted-foreground max-w-lg mx-auto">
+          <h3 className="text-base md:text-lg font-medium text-foreground mb-2">No projects yet</h3>
+          <p className="text-xs md:text-sm text-muted-foreground max-w-lg mx-auto px-4">
             You haven't submitted any projects yet. Use the button above to get started.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {projects.map((project) => (
             <Card key={project.id} className="border-border/30 bg-card/80 backdrop-blur-sm hover:bg-card/90 transition-all duration-300">
-              <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
-                  <CardTitle className="text-lg font-medium text-foreground">{project.name}</CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Badge className={`font-light ${getStatusColor(project.status)}`}>
-                      <span className="flex items-center gap-1">
-                        {getStatusIcon(project.status)}
-                        {project.status}
-                      </span>
-                    </Badge>
-                  </div>
+              <CardHeader className="pb-3 md:pb-4">
+                <div className="flex items-start justify-between gap-2">
+                  <CardTitle className="text-base md:text-lg font-medium text-foreground line-clamp-2">{project.name}</CardTitle>
+                  <Badge className={`font-light text-xs ${getStatusColor(project.status)} flex-shrink-0`}>
+                    <span className="flex items-center gap-1">
+                      {getStatusIcon(project.status)}
+                      <span className="hidden sm:inline">{project.status}</span>
+                      <span className="sm:hidden">{project.status.charAt(0).toUpperCase()}</span>
+                    </span>
+                  </Badge>
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 md:space-y-4">
                 {project.screenshots && project.screenshots.length > 0 && (
-                  <ProjectCarousel screenshots={project.screenshots} projectName={project.name} />
+                  <div className="md:hidden">
+                    <ProjectCarousel screenshots={project.screenshots} projectName={project.name} />
+                  </div>
                 )}
 
-                <p className="text-sm text-foreground/70 leading-relaxed">{project.description}</p>
+                <p className="text-xs md:text-sm text-foreground/70 leading-relaxed line-clamp-2">{project.description}</p>
 
-                <div className="flex flex-wrap gap-2">
-                  {project.tools.map((tool, index) => (
+                <div className="flex flex-wrap gap-1 md:gap-2">
+                  {project.tools.slice(0, 3).map((tool, index) => (
                     <Badge key={index} variant="secondary" className="text-xs font-light">
                       {tool}
                     </Badge>
                   ))}
+                  {project.tools.length > 3 && (
+                    <Badge variant="secondary" className="text-xs font-light">
+                      +{project.tools.length - 3}
+                    </Badge>
+                  )}
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-border/30">
+                {/* Mobile Action Buttons */}
+                <div className="md:hidden space-y-2">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/project/${project.id}`)}
+                      className="flex-1 border-border/30 hover:border-[#fda085]/50 hover:bg-[#fda085]/10 font-light text-xs"
+                    >
+                      <Eye className="h-3 w-3 mr-1" />
+                      View
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(project.link, '_blank')}
+                      className="flex-1 border-border/30 hover:border-[#fda085]/50 hover:bg-[#fda085]/10 font-light text-xs"
+                    >
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      Visit
+                    </Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/edit-project/${project.id}`)}
+                      className="flex-1 border-border/30 hover:border-[#fda085]/50 hover:bg-[#fda085]/10 font-light text-xs"
+                    >
+                      <Edit className="h-3 w-3 mr-1" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => deleteProject(project.id)}
+                      className="flex-1 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-light text-xs"
+                    >
+                      <Trash2 className="h-3 w-3 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Desktop Action Buttons */}
+                <div className="hidden md:flex items-center justify-between pt-3 border-t border-border/30">
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
