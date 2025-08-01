@@ -139,29 +139,29 @@ export default function MyProjectsPage() {
         <div className="mb-6 sm:mb-8">
           {/* Mobile: Horizontal scrollable cards */}
           <div className="sm:hidden">
-            <div className="flex gap-3 overflow-x-auto pb-2 px-1 scrollbar-hide">
-              <div className="bg-card/60 backdrop-blur-sm border border-border/30 rounded-lg p-3 min-w-[120px] text-center hover:bg-card/80 transition-all duration-300 flex-shrink-0">
-                <div className="w-6 h-6 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-md flex items-center justify-center mx-auto mb-2">
-                  <FolderOpen className="h-3 w-3 text-white" />
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth-x px-1 py-1">
+              <div className="bg-card/60 backdrop-blur-sm border border-border/30 rounded-xl p-4 min-w-[110px] text-center hover:bg-card/80 transition-all duration-300 flex-shrink-0 shadow-sm">
+                <div className="w-7 h-7 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <FolderOpen className="h-3.5 w-3.5 text-white" />
                 </div>
-                <p className="text-lg font-semibold text-foreground">{stats.totalProjects}</p>
-                <p className="text-xs text-muted-foreground">Projects</p>
+                <p className="text-xl font-semibold text-foreground mb-1">{stats.totalProjects}</p>
+                <p className="text-xs text-muted-foreground font-medium">Projects</p>
               </div>
               
-              <div className="bg-card/60 backdrop-blur-sm border border-border/30 rounded-lg p-3 min-w-[120px] text-center hover:bg-card/80 transition-all duration-300 flex-shrink-0">
-                <div className="w-6 h-6 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-md flex items-center justify-center mx-auto mb-2">
-                  <Eye className="h-3 w-3 text-white" />
+              <div className="bg-card/60 backdrop-blur-sm border border-border/30 rounded-xl p-4 min-w-[110px] text-center hover:bg-card/80 transition-all duration-300 flex-shrink-0 shadow-sm">
+                <div className="w-7 h-7 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Eye className="h-3.5 w-3.5 text-white" />
                 </div>
-                <p className="text-lg font-semibold text-foreground">{stats.totalViews}</p>
-                <p className="text-xs text-muted-foreground">Views</p>
+                <p className="text-xl font-semibold text-foreground mb-1">{stats.totalViews}</p>
+                <p className="text-xs text-muted-foreground font-medium">Views</p>
               </div>
               
-              <div className="bg-card/60 backdrop-blur-sm border border-border/30 rounded-lg p-3 min-w-[120px] text-center hover:bg-card/80 transition-all duration-300 flex-shrink-0">
-                <div className="w-6 h-6 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-md flex items-center justify-center mx-auto mb-2">
-                  <Heart className="h-3 w-3 text-white" />
+              <div className="bg-card/60 backdrop-blur-sm border border-border/30 rounded-xl p-4 min-w-[110px] text-center hover:bg-card/80 transition-all duration-300 flex-shrink-0 shadow-sm">
+                <div className="w-7 h-7 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Heart className="h-3.5 w-3.5 text-white" />
                 </div>
-                <p className="text-lg font-semibold text-foreground">{stats.totalReactions}</p>
-                <p className="text-xs text-muted-foreground">Reactions</p>
+                <p className="text-xl font-semibold text-foreground mb-1">{stats.totalReactions}</p>
+                <p className="text-xs text-muted-foreground font-medium">Reactions</p>
               </div>
             </div>
           </div>
