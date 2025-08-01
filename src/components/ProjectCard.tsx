@@ -125,11 +125,11 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                     </div>
                   )}
                   
-                  {/* Floating action button */}
+                  {/* Floating action button - Hidden on mobile */}
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="absolute top-2 right-2 h-7 w-7 bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white shadow-lg opacity-0 group-hover/screenshot:opacity-100 transition-all duration-300"
+                    className="hidden md:flex absolute top-2 right-2 h-7 w-7 bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white shadow-lg opacity-0 group-hover/screenshot:opacity-100 transition-all duration-300"
                     onClick={() => navigate(`/project/${project.id}`)}
                   >
                     <Eye className="h-3.5 w-3.5" />
@@ -150,64 +150,79 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
             )}
           </div>
 
-          {/* Right Pane - Project Information */}
-          <div className="w-full md:w-3/5 p-4 sm:p-5 flex flex-col relative">
+          {/* Right Pane - Project Information - Mobile: clickable, Desktop: not clickable */}
+          <div 
+            className="w-full md:w-3/5 p-3 sm:p-4 md:p-5 flex flex-col relative md:cursor-default cursor-pointer" 
+            onClick={(e) => {
+              // Only handle click on mobile (not desktop)
+              if (window.innerWidth < 768) {
+                // Prevent click if clicking on buttons or interactive elements
+                const target = e.target as HTMLElement;
+                if (target.closest('button') || target.closest('a')) {
+                  return;
+                }
+                navigate(`/project/${project.id}`);
+              }
+            }}
+          >
             {/* External Link Button - Top Right */}
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute top-4 right-4 h-7 w-7 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300"
-              onClick={() => window.open(project.link, '_blank')}
+              className="absolute top-3 right-3 md:top-4 md:right-4 h-6 w-6 md:h-7 md:w-7 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(project.link, '_blank');
+              }}
             >
-              <ExternalLink className="h-3.5 w-3.5" />
+              <ExternalLink className="h-3 w-3 md:h-3.5 md:w-3.5" />
             </Button>
 
             {/* Header Section - Creator and Title */}
-            <div className="mb-3 sm:mb-4 pr-8 sm:pr-10 md:pr-12">
-              <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
+            <div className="mb-2 sm:mb-3 md:mb-4 pr-6 sm:pr-8 md:pr-10">
+              <div className="flex items-start gap-2 mb-1.5 sm:mb-2 md:mb-3">
                 {updatedProject.creator.avatar_url ? (
                   <img
                     src={updatedProject.creator.avatar_url}
                     alt={updatedProject.creator.name}
-                    className="w-7 h-7 sm:w-9 sm:h-9 rounded-full object-cover shadow-sm border-2 border-[#f6d365]/20 flex-shrink-0"
+                    className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 rounded-full object-cover shadow-sm border-2 border-[#f6d365]/20 flex-shrink-0"
                   />
                 ) : (
                   <div 
-                    className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-sm bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0"
+                    className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0"
                   >
                     {updatedProject.creator.name.split(' ').map(n => n[0]).join('')}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm text-muted-foreground mb-1 font-normal">Built by {updatedProject.creator.name}</p>
-                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground leading-[1.2] sm:leading-[1.3] group-hover:text-[#f6d365] transition-colors duration-300">
+                  <p className="text-xs text-muted-foreground mb-0.5 font-normal">Built by {updatedProject.creator.name}</p>
+                  <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground leading-[1.2] group-hover:text-[#f6d365] transition-colors duration-300">
                     {project.name}
                   </h3>
                 </div>
               </div>
             </div>
 
-            {/* Story Section - Prominent but compact */}
-            <div className="mb-3 sm:mb-4 flex-1">
+            {/* Story Section - More compact on mobile */}
+            <div className="mb-2 sm:mb-3 md:mb-4 flex-1">
               <div className="relative">
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#f6d365] to-[#fda085] rounded-full"></div>
-                <div className="pl-3 sm:pl-4">
-                  {/* <h4 className="text-sm font-semibold text-[#fda085] mb-1 sm:mb-2 uppercase tracking-wide">The Story</h4> */}
-                  <blockquote className="text-sm sm:text-base font-medium text-foreground/90 leading-[1.5] italic line-clamp-3 sm:line-clamp-4 mb-2 sm:mb-3">
+                <div className="pl-2.5 sm:pl-3 md:pl-4">
+                  <blockquote className="text-xs sm:text-sm md:text-base font-medium text-foreground/90 leading-[1.4] italic line-clamp-2 sm:line-clamp-3 md:line-clamp-4">
                     "{project.story}"
                   </blockquote>
                 </div>
               </div>
             </div>
 
-            {/* Tools Section - Compact */}
-            <div className="mb-4">
-              <div className="flex flex-wrap gap-1 sm:gap-1.5">
+            {/* Tools Section - More compact on mobile */}
+            <div className="mb-3 md:mb-4">
+              <div className="flex flex-wrap gap-1">
                 {project.tools.slice(0, 2).map((tool, index) => (
                   <Badge 
                     key={tool} 
                     variant="secondary"
-                    className={`text-xs px-2.5 py-1 border transition-all duration-300 ${
+                    className={`text-xs px-2 py-0.5 md:px-2.5 md:py-1 border transition-all duration-300 ${
                       index % 2 === 0 
                         ? 'bg-gradient-to-r from-[#f6d365]/10 to-[#fda085]/10 hover:from-[#f6d365]/20 hover:to-[#fda085]/20 text-foreground/90 border-[#f6d365]/20 hover:border-[#f6d365]/40' 
                         : 'bg-gradient-to-r from-[#fda085]/10 to-[#f6d365]/10 hover:from-[#fda085]/20 hover:to-[#f6d365]/20 text-foreground/90 border-[#fda085]/20 hover:border-[#fda085]/40'
@@ -217,7 +232,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                   </Badge>
                 ))}
                 {project.tools.length > 2 && (
-                  <Badge variant="outline" className="text-xs px-2.5 py-1 text-muted-foreground border-white/20">
+                  <Badge variant="outline" className="text-xs px-2 py-0.5 md:px-2.5 md:py-1 text-muted-foreground border-white/20">
                     +{project.tools.length - 2}
                   </Badge>
                 )}
@@ -225,8 +240,8 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
             </div>
 
             {/* Bottom Section - Reactions and Actions */}
-            <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3 xs:gap-0 pt-2 sm:pt-3 border-t border-white/10 mt-auto">
-              <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 xs:gap-0 pt-2 border-t border-white/10 mt-auto">
+              <div className="flex items-center gap-1">
                 {Object.entries(project.reactions).map(([type, count]) => {
                   const Icon = getReactionIcon(type);
                   const isActive = userReactions[project.id] === type;
@@ -236,43 +251,53 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                       key={type}
                       variant="ghost"
                       size="sm"
-                      className={`flex items-center gap-1 text-xs sm:text-sm transition-all duration-300 h-7 sm:h-8 px-1.5 sm:px-2 text-muted-foreground hover:text-foreground ${
+                      className={`flex items-center gap-1 text-xs transition-all duration-300 h-6 sm:h-7 md:h-8 px-1 sm:px-1.5 md:px-2 text-muted-foreground hover:text-foreground ${
                         isActive 
                           ? 'text-[#fda085] bg-gradient-to-r from-[#f6d365]/10 to-[#fda085]/10' 
                           : 'hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5'
                       }`}
-                      onClick={() => onReaction(project.id, type)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onReaction(project.id, type);
+                      }}
                     >
-                      <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isActive ? 'fill-current' : ''}`} />
-                      <span className="font-medium text-xs sm:text-sm">{count}</span>
+                      <Icon className={`h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 ${isActive ? 'fill-current' : ''}`} />
+                      <span className="font-medium text-xs">{count}</span>
                     </Button>
                   );
                 })}
               </div>
               
-              <div className="flex items-center gap-1 sm:gap-1.5">
-                  <Button 
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate(`/project/${project.id}`)}
-                    className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 bg-gradient-to-r from-[#f6d365]/20 to-[#fda085]/20 hover:from-[#f6d365]/30 hover:to-[#fda085]/30 text-foreground hover:text-[#fda085] transition-all duration-300 border-[#f6d365]/30 hover:border-[#f6d365]/50"
-                  >
-                    <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
-                    <span className="hidden xs:inline">Details</span>
-                    <span className="xs:hidden">View</span>
-                  </Button>
-                
+              <div className="flex items-center gap-1">
+                {/* Desktop View Button */}
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/project/${project.id}`);
+                  }}
+                  className="hidden md:flex text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 bg-gradient-to-r from-[#f6d365]/20 to-[#fda085]/20 hover:from-[#f6d365]/30 hover:to-[#fda085]/30 text-foreground hover:text-[#fda085] transition-all duration-300 border-[#f6d365]/30 hover:border-[#f6d365]/50"
+                >
+                  <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+                  <span className="hidden xs:inline">Details</span>
+                  <span className="xs:hidden">View</span>
+                </Button>
+              
                 {project.creator.allowsContact && project.user_id && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300 border-white/20 hover:border-[#f6d365]/40"
-                      onClick={() => setShowMessageDialog(true)}
-                    >
-                      <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
-                      <span className="hidden xs:inline">Connect</span>
-                      <span className="xs:hidden">Chat</span>
-                    </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-6 sm:h-7 md:h-8 px-1.5 sm:px-2 md:px-3 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300 border-white/20 hover:border-[#f6d365]/40"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMessageDialog(true);
+                    }}
+                  >
+                    <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+                    <span className="hidden xs:inline">Connect</span>
+                    <span className="xs:hidden">Chat</span>
+                  </Button>
                 )}
               </div>
             </div>
