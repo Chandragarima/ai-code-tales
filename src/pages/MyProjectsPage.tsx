@@ -135,9 +135,39 @@ export default function MyProjectsPage() {
           </Button>
         </div>
 
-        {/* Stats Section */}
-        <div className="mb-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+        {/* Stats Section - Mobile Optimized */}
+        <div className="mb-6 sm:mb-8">
+          {/* Mobile: Horizontal scrollable cards */}
+          <div className="sm:hidden">
+            <div className="flex gap-3 overflow-x-auto pb-2 px-1 scrollbar-hide">
+              <div className="bg-card/60 backdrop-blur-sm border border-border/30 rounded-lg p-3 min-w-[120px] text-center hover:bg-card/80 transition-all duration-300 flex-shrink-0">
+                <div className="w-6 h-6 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-md flex items-center justify-center mx-auto mb-2">
+                  <FolderOpen className="h-3 w-3 text-white" />
+                </div>
+                <p className="text-lg font-semibold text-foreground">{stats.totalProjects}</p>
+                <p className="text-xs text-muted-foreground">Projects</p>
+              </div>
+              
+              <div className="bg-card/60 backdrop-blur-sm border border-border/30 rounded-lg p-3 min-w-[120px] text-center hover:bg-card/80 transition-all duration-300 flex-shrink-0">
+                <div className="w-6 h-6 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-md flex items-center justify-center mx-auto mb-2">
+                  <Eye className="h-3 w-3 text-white" />
+                </div>
+                <p className="text-lg font-semibold text-foreground">{stats.totalViews}</p>
+                <p className="text-xs text-muted-foreground">Views</p>
+              </div>
+              
+              <div className="bg-card/60 backdrop-blur-sm border border-border/30 rounded-lg p-3 min-w-[120px] text-center hover:bg-card/80 transition-all duration-300 flex-shrink-0">
+                <div className="w-6 h-6 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-md flex items-center justify-center mx-auto mb-2">
+                  <Heart className="h-3 w-3 text-white" />
+                </div>
+                <p className="text-lg font-semibold text-foreground">{stats.totalReactions}</p>
+                <p className="text-xs text-muted-foreground">Reactions</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: Original grid layout */}
+          <div className="hidden sm:grid grid-cols-3 gap-4 max-w-2xl mx-auto">
             <div className="bg-card/60 backdrop-blur-sm border border-border/30 rounded-xl p-4 text-center hover:bg-card/80 transition-all duration-300">
               <div className="w-8 h-8 bg-gradient-to-br from-[#f6d365] to-[#fda085] rounded-lg flex items-center justify-center mx-auto mb-2">
                 <FolderOpen className="h-4 w-4 text-white" />
