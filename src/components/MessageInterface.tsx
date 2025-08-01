@@ -170,12 +170,13 @@ export function MessageInterface({
     console.log('Loading conversation for user:', user.id, 'project:', projectId, 'creator:', creatorId);
 
     try {
-      // Find existing conversation where current user is involved
+      // Find existing conversation between current user and creator for this project
+      // Check both directions: current user as creator/sender with other as sender/creator
       const { data: existingConversations, error: convError } = await supabase
         .from('conversations')
         .select('*')
         .eq('project_id', projectId)
-        .or(`creator_id.eq.${user.id},sender_id.eq.${user.id}`);
+        .or(`and(creator_id.eq.${user.id},sender_id.eq.${creatorId}),and(creator_id.eq.${creatorId},sender_id.eq.${user.id})`);
 
       console.log('Existing conversation query result:', existingConversations, 'Error:', convError);
 
@@ -184,40 +185,27 @@ export function MessageInterface({
       }
 
       if (existingConversations && existingConversations.length > 0) {
-        const conversation = existingConversations[0];
+        // Use the most recent conversation if multiple exist
+        const conversation = existingConversations.sort((a, b) => 
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        )[0];
+        
         setConversation(conversation);
         loadMessages(conversation.id);
       } else {
-        // Check if conversation already exists with current user as sender
-        const { data: existingBySender, error: senderError } = await supabase
+        // Create new conversation only if none exists between these users for this project
+        const { data: newConversation, error: createError } = await supabase
           .from('conversations')
-          .select('*')
-          .eq('project_id', projectId)
-          .eq('sender_id', user.id)
-          .maybeSingle();
+          .insert({
+            project_id: projectId,
+            creator_id: creatorId,
+            sender_id: user.id
+          })
+          .select()
+          .single();
 
-        if (senderError && senderError.code !== 'PGRST116') {
-          throw senderError;
-        }
-
-        if (existingBySender) {
-          setConversation(existingBySender);
-          loadMessages(existingBySender.id);
-        } else {
-          // Only create if none exists
-          const { data: newConversation, error: createError } = await supabase
-            .from('conversations')
-            .insert({
-              project_id: projectId,
-              creator_id: creatorId,
-              sender_id: user.id
-            })
-            .select()
-            .single();
-
-          if (createError) throw createError;
-          setConversation(newConversation);
-        }
+        if (createError) throw createError;
+        setConversation(newConversation);
       }
     } catch (error) {
       console.error('Error loading conversation:', error);

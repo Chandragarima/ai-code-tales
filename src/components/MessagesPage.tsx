@@ -113,9 +113,24 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
 
       if (error) throw error;
 
-      // Load additional data for each conversation
+      // Deduplicate conversations by project_id and user pair
+      const uniqueConversations = new Map<string, any>();
+      
+      (conversationsData || []).forEach(conv => {
+        // Create a unique key for the conversation based on project and the other user
+        const otherUserId = conv.creator_id === user.id ? conv.sender_id : conv.creator_id;
+        const conversationKey = `${conv.project_id}_${otherUserId}`;
+        
+        // Keep the most recent conversation for each unique project-user pair
+        if (!uniqueConversations.has(conversationKey) || 
+            new Date(conv.updated_at) > new Date(uniqueConversations.get(conversationKey)!.updated_at)) {
+          uniqueConversations.set(conversationKey, conv);
+        }
+      });
+
+      // Load additional data for each unique conversation
       const conversationsWithDetails = await Promise.all(
-        (conversationsData || []).map(async (conv) => {
+        Array.from(uniqueConversations.values()).map(async (conv) => {
           // Get project, creator and sender profiles
           const [projectData, creatorProfile, senderProfile, messagesResult] = await Promise.all([
             supabase
@@ -154,6 +169,11 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
             last_message: messages[0] || null
           };
         })
+      );
+
+      // Sort by most recent activity
+      conversationsWithDetails.sort((a, b) => 
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
       );
 
       setConversations(conversationsWithDetails);
