@@ -58,8 +58,31 @@ export default function ProjectDetail() {
       if (user) {
         fetchUserReaction();
       }
+      // Track view
+      trackProjectView();
     }
   }, [id, user]);
+
+  const trackProjectView = async () => {
+    if (!id) return;
+    
+    try {
+      // Record view in project_views table (you'll need to create this table)
+      const { error } = await supabase
+        .from('project_views')
+        .insert({
+          project_id: id,
+          viewer_id: user?.id || null, // null for anonymous views
+          viewed_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('Error tracking view:', error);
+      }
+    } catch (error) {
+      console.error('Error tracking view:', error);
+    }
+  };
 
   const fetchProject = async () => {
     try {

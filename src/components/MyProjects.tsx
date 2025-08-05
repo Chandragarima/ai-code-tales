@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Edit, Trash2, ExternalLink, Clock, CheckCircle, XCircle, Eye, FolderOpen } from "lucide-react";
+import { Edit, Trash2, ExternalLink, Clock, CheckCircle, XCircle, Eye, FolderOpen, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProjectCarousel } from "./ProjectCarousel";
@@ -25,6 +25,8 @@ interface Project {
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
   updated_at: string;
+  views?: number;
+  reactions?: number;
 }
 
 export const MyProjects = () => {
@@ -60,13 +62,40 @@ export const MyProjects = () => {
         return;
       }
 
-      // Type assertion to ensure status is properly typed
-      const typedProjects = (data || []).map(project => ({
-        ...project,
-        status: project.status as 'pending' | 'approved' | 'rejected'
-      }));
+      // Get analytics data for each project
+      const projectIds = (data || []).map(p => p.id);
+      const projectsWithAnalytics = await Promise.all(
+        (data || []).map(async (project) => {
+          let views = 0;
+          let reactions = 0;
 
-      setProjects(typedProjects);
+          if (projectIds.length > 0) {
+            // Get views
+            const { data: viewsData } = await supabase
+              .from('project_views')
+              .select('id')
+              .eq('project_id', project.id);
+
+            // Get reactions
+            const { data: reactionsData } = await supabase
+              .from('project_reactions')
+              .select('id')
+              .eq('project_id', project.id);
+
+            views = viewsData?.length || 0;
+            reactions = reactionsData?.length || 0;
+          }
+
+          return {
+            ...project,
+            status: project.status as 'pending' | 'approved' | 'rejected',
+            views,
+            reactions
+          };
+        })
+      );
+
+      setProjects(projectsWithAnalytics);
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -178,6 +207,20 @@ export const MyProjects = () => {
                     </Badge>
                   )}
                 </div>
+
+                {/* Analytics */}
+                {project.status === 'approved' && (
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Eye className="h-3 w-3" />
+                      <span>{project.views || 0} views</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Heart className="h-3 w-3" />
+                      <span>{project.reactions || 0} reactions</span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Mobile Action Buttons */}
                 <div className="md:hidden space-y-2">

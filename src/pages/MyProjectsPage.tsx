@@ -59,8 +59,10 @@ export default function MyProjectsPage() {
       // Get reactions for user's projects
       const projectIds = projects?.map(p => p.id) || [];
       let totalReactions = 0;
+      let totalViews = 0;
       
       if (projectIds.length > 0) {
+        // Get reactions
         const { data: reactions, error: reactionsError } = await supabase
           .from('project_reactions')
           .select('reaction_type')
@@ -69,10 +71,17 @@ export default function MyProjectsPage() {
         if (!reactionsError && reactions) {
           totalReactions = reactions.length;
         }
-      }
 
-      // For now, we'll use a simple calculation for views (could be enhanced with actual view tracking)
-      const totalViews = projects?.length * 10 || 0; // Placeholder calculation
+        // Get real views from project_views table
+        const { data: views, error: viewsError } = await supabase
+          .from('project_views')
+          .select('id')
+          .in('project_id', projectIds);
+
+        if (!viewsError && views) {
+          totalViews = views.length;
+        }
+      }
 
       setStats({
         totalProjects: projects?.length || 0,
@@ -90,7 +99,7 @@ export default function MyProjectsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
-      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10 max-w-6xl">
+      <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10">
         {/* Header Section */}
         <div className="mb-4 sm:mb-6 lg:mb-8">
           {/* Mobile Header Bar */}
@@ -105,7 +114,7 @@ export default function MyProjectsPage() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               
-              <h1 className="font-['Playfair_Display'] text-xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+              <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
                 My Projects
               </h1>
             </div>
