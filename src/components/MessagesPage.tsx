@@ -83,6 +83,14 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
       })
       .subscribe();
 
+    // Listen for conversation merges
+    const handleConversationMerged = () => {
+      console.log('Conversation merged, refreshing list');
+      loadConversations();
+    };
+
+    window.addEventListener('conversation-merged', handleConversationMerged);
+
     // Fallback polling for conversation updates
     const startPolling = () => {
       pollInterval = setInterval(() => {
@@ -98,6 +106,7 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
     return () => {
       clearTimeout(pollTimeoutId);
       if (pollInterval) clearInterval(pollInterval);
+      window.removeEventListener('conversation-merged', handleConversationMerged);
       supabase.removeChannel(channel);
     };
   }, [user]);
