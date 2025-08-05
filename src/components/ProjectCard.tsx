@@ -8,6 +8,7 @@ import { ProjectCarousel } from "./ProjectCarousel";
 import { useState, useEffect } from "react";
 import { MessageDialog } from "./MessageDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
 interface Project {
   id: string;
@@ -98,7 +99,17 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
   };
 
   return (
-    <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1 w-full max-w-5xl mx-auto">
+    <Card 
+      className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1 w-full max-w-5xl mx-auto cursor-pointer"
+      onClick={(e) => {
+        // Prevent click if clicking on buttons or interactive elements
+        const target = e.target as HTMLElement;
+        if (target.closest('button') || target.closest('a')) {
+          return;
+        }
+        navigate(`/project/${project.id}`);
+      }}
+    >
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       
@@ -126,16 +137,6 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                       alt={`${project.name} preview`}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover/screenshot:scale-105"
                     />
-                    
-                    {/* Floating action button - Hidden on mobile */}
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="hidden md:flex absolute top-2 right-2 h-7 w-7 bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white shadow-lg opacity-0 group-hover/screenshot:opacity-100 transition-all duration-300"
-                      onClick={() => navigate(`/project/${project.id}`)}
-                    >
-                      <Eye className="h-3.5 w-3.5" />
-                    </Button>
                   </div>
                 )}
                 
@@ -153,21 +154,8 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
             )}
           </div>
 
-          {/* Right Pane - Project Information - Mobile: clickable, Desktop: not clickable */}
-          <div 
-            className="w-full md:w-3/5 p-3 sm:p-4 md:p-5 flex flex-col relative md:cursor-default cursor-pointer min-w-0" 
-            onClick={(e) => {
-              // Only handle click on mobile (not desktop)
-              if (window.innerWidth < 768) {
-                // Prevent click if clicking on buttons or interactive elements
-                const target = e.target as HTMLElement;
-                if (target.closest('button') || target.closest('a')) {
-                  return;
-                }
-                navigate(`/project/${project.id}`);
-              }
-            }}
-          >
+          {/* Right Pane - Project Information */}
+          <div className="w-full md:w-3/5 p-3 sm:p-4 md:p-5 flex flex-col relative min-w-0">
             {/* External Link Button - Top Right */}
             <Button 
               variant="ghost" 
@@ -272,20 +260,6 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
               </div>
               
               <div className="flex items-center gap-1.5">
-                {/* Desktop View Button */}
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/project/${project.id}`);
-                  }}
-                  className="hidden md:flex text-xs h-7 px-3 bg-gradient-to-r from-[#f6d365]/10 to-[#fda085]/10 hover:from-[#f6d365]/20 hover:to-[#fda085]/20 text-foreground hover:text-[#fda085] transition-all duration-300 border-[#f6d365]/20 hover:border-[#f6d365]/40"
-                >
-                  <Eye className="h-3.5 w-3.5 mr-1.5" />
-                  Details
-                </Button>
-              
                 {project.creator.allowsContact && project.user_id && (
                   <Button 
                     variant="outline" 

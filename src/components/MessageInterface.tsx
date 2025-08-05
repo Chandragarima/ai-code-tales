@@ -170,7 +170,7 @@ export function MessageInterface({
     console.log('Loading conversation for user:', user.id, 'project:', projectId, 'creator:', creatorId);
 
     try {
-      // Find existing conversation between current user and creator for this project
+     // Find existing conversation between current user and creator for this project
       // Check both directions: current user as creator/sender with other as sender/creator
       const { data: existingConversations, error: convError } = await supabase
         .from('conversations')
@@ -193,8 +193,8 @@ export function MessageInterface({
         setConversation(conversation);
         loadMessages(conversation.id);
       } else {
-        // Create new conversation only if none exists between these users for this project
-        const { data: newConversation, error: createError } = await supabase
+         // Create new conversation only if none exists between these users for this project
+         const { data: newConversation, error: createError } = await supabase
           .from('conversations')
           .insert({
             project_id: projectId,
