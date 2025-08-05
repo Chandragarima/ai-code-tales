@@ -312,7 +312,7 @@ export default function ProjectDetail() {
               <div className="flex items-center gap-3 mb-6">
                 <Button 
                   variant="ghost" 
-                  onClick={() => navigate('/gallery')}
+                  onClick={() => navigate(-1)}
                   className="text-muted-foreground hover:text-[#fda085] transition-colors duration-200 p-2 -ml-2"
                   size="sm"
                 >
@@ -330,11 +330,11 @@ export default function ProjectDetail() {
           <div className="hidden md:block">
             <Button 
               variant="ghost" 
-              onClick={() => navigate('/gallery')}
+              onClick={() => navigate(-1)}
               className="mb-6 text-foreground/70 hover:text-[#fda085] text-sm sm:text-base transition-all duration-300"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Gallery
+              Back
             </Button>
           </div>
         </div>
