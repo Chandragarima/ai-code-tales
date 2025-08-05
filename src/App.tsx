@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 import ProjectDetail from "./pages/ProjectDetail";
 import NotFound from "./pages/NotFound";
 import { MessagesPage } from "./components/MessagesPage";
+import { GoogleAnalytics } from "./components/GoogleAnalytics";
 
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <AuthProvider>
+          <GoogleAnalytics />
           <Toaster />
           <Sonner />
           <Navbar />
