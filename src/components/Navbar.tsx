@@ -151,9 +151,9 @@ export const Navbar = () => {
               className="flex items-center group transition-transform group-hover:scale-105"
             >
               <img 
-                src="/lovable-uploads/d6649e89-225c-4271-aebc-4acbf0cdf6b9.png" 
+                src="/lovable-uploads/2ef29b8f-61a5-4f94-8fc2-537aaa380ec1.png" 
                 alt="AI Code Tales" 
-                className="h-10 sm:h-12 md:h-14 lg:h-15 w-auto"
+                className="h-8 sm:h-8 md:h-10 lg:h-11 w-auto"
               />
             </button>
           </div>
