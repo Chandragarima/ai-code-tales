@@ -179,17 +179,18 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
-      <Button 
-        variant="ghost"
-        size="sm"
-        onClick={() => navigate("/")}
-        className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
-      >
-        <ArrowLeft className="h-4 w-4 text-muted-foreground" />
-      </Button>
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-5xl">
         {/* Header */}
-        <div className="mb-8 sm:mb-12">          
+        <div className="mb-8 sm:mb-12">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("/")}
+            className="md:hidden mb-6 sm:mb-8 text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
+          
           <div className="text-center">
             <div className="flex flex-col items-center space-y-6 sm:space-y-8">
               <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-normal leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
