@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +41,7 @@ interface MessagesPageProps {
 }
 
 export function MessagesPage({ onClose }: MessagesPageProps) {
+  const navigate = useNavigate();
   const [conversations, setConversations] = useState<ConversationWithDetails[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<ConversationWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -257,7 +259,7 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
       <Button 
         variant="ghost"
         size="sm"
-        onClick={onClose || (() => window.history.back())}
+        onClick={onClose || (() => navigate(-1))}
         className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
       >
         <ArrowLeft className="h-4 w-4 text-muted-foreground" />
