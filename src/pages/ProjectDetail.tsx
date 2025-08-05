@@ -303,7 +303,7 @@ export default function ProjectDetail() {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
       
-      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-[1920px]">
         {/* Header */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           {/* Mobile Header Bar */}
@@ -423,7 +423,7 @@ export default function ProjectDetail() {
                   <div className="relative">
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#f6d365] to-[#fda085] rounded-full"></div>
                     <div className="pl-6">
-                      <blockquote className="text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed italic text-foreground/90 font-medium">
+                      <blockquote className="text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed italic text-foreground/90 font-normal">
                         "{project.story}"
                       </blockquote>
                     </div>

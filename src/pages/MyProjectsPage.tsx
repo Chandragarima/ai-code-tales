@@ -99,7 +99,7 @@ export default function MyProjectsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
-      <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10">
+      <div className="relative w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10">
         {/* Header Section */}
         <div className="mb-4 sm:mb-6 lg:mb-8">
           {/* Mobile Header Bar */}

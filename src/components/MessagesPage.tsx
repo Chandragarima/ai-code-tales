@@ -279,7 +279,7 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-[#f6d365]/5 to-[#fda085]/5 rounded-full blur-3xl pointer-events-none"></div>
        */}
-      <div className="relative w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10 max-w-5xl mx-auto">
+      <div className="relative w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10 max-w-[1920px] mx-auto">
         {/* Compact Header Bar - Mobile Optimized */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           {/* Mobile Header Bar */}
