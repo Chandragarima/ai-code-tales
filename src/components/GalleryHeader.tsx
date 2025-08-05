@@ -45,72 +45,59 @@ export const GalleryHeader = ({
           </div>
 
           {/* Mobile Search and Filters */}
-          <div className="space-y-4">
-            {/* Search Bar */}
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 rounded-2xl blur-xl group-focus-within:blur-2xl transition-all duration-500"></div>
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-primary transition-colors duration-300" />
-                <Input
-                  placeholder="Search exceptional projects..."
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  className="w-full pl-12 pr-5 h-14 bg-card/40 backdrop-blur-xl border border-border/30 focus:border-primary/40 focus:ring-primary/20 focus:ring-2 text-sm rounded-2xl transition-all duration-300 placeholder:text-muted-foreground/50 shadow-lg hover:shadow-xl focus:shadow-2xl"
-                />
-              </div>
+          <div className="space-y-3">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search projects..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="w-full pl-10 pr-4 h-12 bg-card/60 backdrop-blur-sm border-white/10 focus:border-[#f6d365]/30 focus:ring-[#f6d365]/10 text-sm rounded-xl transition-all duration-300"
+              />
             </div>
 
-            {/* Controls Row */}
-            <div className="flex gap-3 items-stretch">
-              {/* Filter Dropdown */}
-              <div className="flex-1 relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 via-accent/5 to-secondary/5 rounded-2xl blur-xl group-focus-within:blur-2xl transition-all duration-500"></div>
-                <Select value={selectedTool} onValueChange={onToolChange}>
-                  <SelectTrigger className="relative w-full h-14 bg-card/40 backdrop-blur-xl border border-border/30 focus:border-secondary/40 focus:ring-secondary/20 focus:ring-2 rounded-2xl text-sm transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <div className="flex items-center">
-                      <Filter className="h-4 w-4 text-muted-foreground/60 mr-3" />
-                      <SelectValue placeholder="All tools" className="text-foreground/80" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="bg-card/95 backdrop-blur-2xl border border-border/40 rounded-2xl shadow-2xl">
-                    {availableTools.map((tool) => (
-                      <SelectItem 
-                        key={tool} 
-                        value={tool}
-                        className="hover:bg-secondary/10 focus:bg-secondary/10 rounded-xl text-sm py-3 transition-colors duration-200"
-                      >
-                        {tool}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Filter and Submit Row */}
+            <div className="flex gap-3">
+              <Select value={selectedTool} onValueChange={onToolChange}>
+                <SelectTrigger className="flex-1 bg-card/60 backdrop-blur-sm border-white/10 focus:border-[#f6d365]/30 focus:ring-[#f6d365]/10 rounded-xl h-12 text-sm transition-all duration-300">
+                  <Filter className="h-4 w-4 text-muted-foreground mr-2" />
+                  <SelectValue placeholder="All tools" />
+                </SelectTrigger>
+                <SelectContent className="bg-card/95 backdrop-blur-sm border-white/20 rounded-xl">
+                  {availableTools.map((tool) => (
+                    <SelectItem 
+                      key={tool} 
+                      value={tool}
+                      className="hover:bg-[#f6d365]/10 focus:bg-[#f6d365]/10 rounded-lg"
+                    >
+                      {tool}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-              {/* Share Button */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                <Button 
-                  onClick={() => navigate('/submit')}
-                  className="relative h-14 px-6 bg-gradient-to-r from-primary via-accent to-primary hover:from-accent hover:via-primary hover:to-accent text-primary-foreground font-medium shadow-2xl hover:shadow-3xl hover:shadow-primary/25 transition-all duration-300 rounded-2xl hover:scale-[1.02] active:scale-[0.98] border border-primary/20"
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
-              </div>
+              <Button 
+                onClick={() => navigate('/submit')}
+                className="bg-gradient-to-r from-white via-[#f6d365] to-[#fda085] hover:from-[#f6d365] hover:via-[#fda085] hover:to-white text-gray-900 px-4 py-3 text-sm font-semibold shadow-xl hover:shadow-2xl hover:shadow-[#fda085]/20 transition-all duration-300 group rounded-xl hover:scale-105 h-12"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Share
+              </Button>
             </div>
 
-            {/* Active Filters Chips */}
+            {/* Active Filters */}
             {(searchQuery || selectedTool !== 'All') && (
-              <div className="flex items-center gap-3 pt-1">
-                <span className="text-xs font-medium text-muted-foreground/70 tracking-wider uppercase">Active</span>
+              <div className="flex items-center gap-2 pt-2">
+                <span className="text-xs text-muted-foreground">Active:</span>
                 <div className="flex flex-wrap gap-2">
                   {searchQuery && (
-                    <div className="px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs border border-primary/20 shadow-sm backdrop-blur-sm font-medium">
+                    <div className="px-2 py-1 bg-[#f6d365]/20 text-[#f6d365] rounded-full text-xs border border-[#f6d365]/30">
                       "{searchQuery}"
                     </div>
                   )}
                   {selectedTool !== 'All' && (
-                    <div className="px-3 py-1.5 bg-accent/10 text-accent rounded-full text-xs border border-accent/20 shadow-sm backdrop-blur-sm font-medium">
+                    <div className="px-2 py-1 bg-[#fda085]/20 text-[#fda085] rounded-full text-xs border border-[#fda085]/30">
                       {selectedTool}
                     </div>
                   )}
