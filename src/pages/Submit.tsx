@@ -205,14 +205,10 @@ export default function Submit() {
         {/* Compact Header Bar - Mobile Optimized */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           {/* Mobile Header Bar */}
-          <div className="md:hidden flex items-center justify-between mb-5 sm:mb-6">
-            <div className="w-10"></div> {/* Spacer for centering */}
-            
+          <div className="md:hidden text-center mb-5 sm:mb-6">            
             <h1 className="font-['Playfair_Display'] text-xl sm:text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
               Share Story
             </h1>
-            
-            <div className="w-10"></div> {/* Spacer for centering */}
           </div>
           
           {/* Desktop Header */}
