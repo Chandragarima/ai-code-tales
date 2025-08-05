@@ -102,12 +102,12 @@ export default function MyProjectsPage() {
         {/* Header Section */}
         <div className="mb-8 sm:mb-12">
           <Button 
-            variant="ghost" 
+            variant="ghost"
+            size="sm"
             onClick={() => navigate("/")}
-            className="md:hidden mb-6 sm:mb-8 text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light"
+            className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Gallery
+            <ArrowLeft className="h-4 w-4 text-muted-foreground" />
           </Button>
           
           <div className="text-center">

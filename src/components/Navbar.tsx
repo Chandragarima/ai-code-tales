@@ -147,20 +147,20 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/98 backdrop-blur-2xl border-b border-border/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-14 sm:h-16">
+    <nav className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-12 sm:h-14">
           
           {/* Logo - Compact */}
           <div className="flex-shrink-0">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 sm:gap-3 group transition-transform group-hover:scale-105"
+              className="flex items-center group transition-transform group-hover:scale-105"
             >
               <img 
                 src="/lovable-uploads/7bd6dc8c-932d-4c87-837c-0ac6032f2735.png" 
                 alt="AI Code Tales" 
-                className="h-12 sm:h-12 md:h-18 lg:h-24 w-auto"
+                className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
               />
             </button>
           </div>
