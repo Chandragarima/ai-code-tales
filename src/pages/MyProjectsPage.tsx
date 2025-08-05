@@ -105,7 +105,7 @@ export default function MyProjectsPage() {
             variant="ghost"
             size="sm"
             onClick={() => navigate("/")}
-            className="md:hidden fixed top-4 left-4 z-50 h-9 w-9 p-0 bg-background/80 backdrop-blur-sm border border-border/30 rounded-xl shadow-lg hover:shadow-xl hover:bg-accent/10 transition-all duration-300"
+            className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
           >
             <ArrowLeft className="h-4 w-4 text-muted-foreground" />
           </Button>
