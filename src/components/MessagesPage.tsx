@@ -274,14 +274,23 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
         {/* Compact Header Bar - Mobile Optimized */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           {/* Mobile Header Bar */}
-          <div className="md:hidden flex items-center justify-between mb-4">
-            <div className="w-10"></div> {/* Spacer for centering */}
-            
-            <h1 className="font-['Playfair_Display'] text-xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
-              Messages
-            </h1>
-            
-            <div className="w-10"></div> {/* Spacer for centering */}
+          <div className="md:hidden mb-4">
+            <div className="container mx-auto px-4">
+              <div className="flex items-center gap-3 mb-6">
+                <Button 
+                  variant="ghost" 
+                  onClick={onClose || (() => window.history.back())}
+                  className="text-muted-foreground hover:text-[#fda085] transition-colors duration-200 p-2 -ml-2"
+                  size="sm"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+                
+                <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+                  Messages
+                </h1>
+              </div>
+            </div>
           </div>
           
           {/* Desktop Header */}
