@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +41,7 @@ interface MessagesPageProps {
 }
 
 export function MessagesPage({ onClose }: MessagesPageProps) {
+  const navigate = useNavigate();
   const [conversations, setConversations] = useState<ConversationWithDetails[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<ConversationWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -113,9 +115,24 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
 
       if (error) throw error;
 
-      // Load additional data for each conversation
+      // Deduplicate conversations by project_id and user pair
+      const uniqueConversations = new Map<string, any>();
+      
+      (conversationsData || []).forEach(conv => {
+        // Create a unique key for the conversation based on project and the other user
+        const otherUserId = conv.creator_id === user.id ? conv.sender_id : conv.creator_id;
+        const conversationKey = `${conv.project_id}_${otherUserId}`;
+        
+        // Keep the most recent conversation for each unique project-user pair
+        if (!uniqueConversations.has(conversationKey) || 
+            new Date(conv.updated_at) > new Date(uniqueConversations.get(conversationKey)!.updated_at)) {
+          uniqueConversations.set(conversationKey, conv);
+        }
+      });
+
+      // Load additional data for each unique conversation
       const conversationsWithDetails = await Promise.all(
-        (conversationsData || []).map(async (conv) => {
+        Array.from(uniqueConversations.values()).map(async (conv) => {
           // Get project, creator and sender profiles
           const [projectData, creatorProfile, senderProfile, messagesResult] = await Promise.all([
             supabase
@@ -154,6 +171,11 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
             last_message: messages[0] || null
           };
         })
+      );
+
+      // Sort by most recent activity
+      conversationsWithDetails.sort((a, b) => 
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
       );
 
       setConversations(conversationsWithDetails);
@@ -234,6 +256,14 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
+      <Button 
+        variant="ghost"
+        size="sm"
+        onClick={onClose || (() => navigate(-1))}
+        className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
+      >
+        <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+      </Button>
       {/* Decorative background elements */}
       {/* <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30 pointer-events-none"></div>
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>

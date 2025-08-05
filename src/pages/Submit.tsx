@@ -171,6 +171,14 @@ export default function Submit() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
+      <Button 
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate(-1)}
+        className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
+      >
+        <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+      </Button>
       {/* Decorative background elements */}
       <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
