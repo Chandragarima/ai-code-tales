@@ -171,7 +171,7 @@ export function MessageInterface({
 
     try {
       // Find existing conversation between current user and creator for this project
-      // Check both directions: current user as creator/sender with other as sender/creator
+      // Check both directions and get all conversations between these users for this project
       const { data: existingConversations, error: convError } = await supabase
         .from('conversations')
         .select('*')
@@ -185,13 +185,30 @@ export function MessageInterface({
       }
 
       if (existingConversations && existingConversations.length > 0) {
-        // Use the most recent conversation if multiple exist
-        const conversation = existingConversations.sort((a, b) => 
+        // Use the most recent conversation and clean up any duplicates
+        const sortedConversations = existingConversations.sort((a, b) => 
           new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-        )[0];
+        );
         
-        setConversation(conversation);
-        loadMessages(conversation.id);
+        const primaryConversation = sortedConversations[0];
+        
+        // If there are multiple conversations, merge messages into the primary one
+        if (sortedConversations.length > 1) {
+          const conversationsToDelete = sortedConversations.slice(1);
+          for (const conv of conversationsToDelete) {
+            // Move messages from duplicate conversations to the primary one
+            await supabase
+              .from('messages')
+              .update({ conversation_id: primaryConversation.id })
+              .eq('conversation_id', conv.id);
+          }
+          
+          // Trigger a refresh in the messages page to update the conversation list
+          window.dispatchEvent(new CustomEvent('conversation-merged'));
+        }
+        
+        setConversation(primaryConversation);
+        loadMessages(primaryConversation.id);
       } else {
         // Create new conversation only if none exists between these users for this project
         const { data: newConversation, error: createError } = await supabase
