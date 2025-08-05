@@ -1,5 +1,8 @@
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 import { ProjectCard } from '@/components/ProjectCard';
 import { GalleryHeader } from '@/components/GalleryHeader';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,6 +31,7 @@ interface Project {
 }
 
 export default function Gallery() {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -264,6 +268,14 @@ export default function Gallery() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
+      <Button 
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/")}
+        className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
+      >
+        <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+      </Button>
       <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
       
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 overflow-x-hidden">

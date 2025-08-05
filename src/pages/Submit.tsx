@@ -171,6 +171,14 @@ export default function Submit() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
+      <Button 
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate("/")}
+        className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
+      >
+        <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+      </Button>
       {/* Decorative background elements */}
       <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
@@ -198,13 +206,7 @@ export default function Submit() {
         <div className="mb-6 sm:mb-8 lg:mb-12">
           {/* Mobile Header Bar */}
           <div className="md:hidden flex items-center justify-between mb-5 sm:mb-6">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate("/")}
-              className="text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light text-sm p-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
+            <div className="w-10"></div> {/* Spacer for centering */}
             
             <h1 className="font-['Playfair_Display'] text-xl sm:text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
               Share Story
