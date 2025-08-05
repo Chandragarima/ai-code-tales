@@ -39,7 +39,7 @@ export const GalleryHeader = ({
               <ArrowLeft className="h-5 w-5" />
             </Button>
             
-            <h1 className="font-['Playfair_Display'] text-xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+            <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
               Gallery
             </h1>
           </div>
