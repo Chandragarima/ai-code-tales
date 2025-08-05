@@ -156,38 +156,6 @@ export type Database = {
           },
         ]
       }
-      project_views: {
-        Row: {
-          id: string
-          project_id: string
-          viewer_id: string | null
-          viewed_at: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          project_id: string
-          viewer_id?: string | null
-          viewed_at?: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          project_id?: string
-          viewer_id?: string | null
-          viewed_at?: string
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "project_views_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       projects: {
         Row: {
           allows_contact: boolean

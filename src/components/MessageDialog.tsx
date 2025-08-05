@@ -305,7 +305,7 @@ export function MessageDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md w-[95vw] h-[90vh] max-h-[700px] flex flex-col p-0 bg-gradient-to-br from-background via-background to-muted/20 border-border/50 z-[100]">
+      <DialogContent className="max-w-md h-[600px] flex flex-col p-0 bg-gradient-to-br from-background via-background to-muted/20 border-border/50">
         <DialogHeader className="sr-only">
           <DialogTitle>Message with {creatorProfile?.username || creatorName}</DialogTitle>
         </DialogHeader>

@@ -32,16 +32,16 @@ const Index = () => {
         ></div>
       </div>
       
-      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
         {/* Hero Section */}
-        <div className="mt-6 sm:mt-8 lg:mt-12 xl:mt-20 py-4 text-center">
+        <div className="mt-6 sm:mt-8 lg:mt-12 xl:mt-20 px-4 sm:px-8 lg:px-12 py-4 text-center max-w-[1200px] mx-auto">
           <div className="flex flex-col items-center space-y-6 sm:space-y-8">
             <h1 className="font-['Playfair_Display'] text-[1.75rem] sm:text-[2.25rem] lg:text-[2.75rem] xl:text-[3.25rem] 2xl:text-[3.75rem] font-bold leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
             Every AI build has a story.
             </h1>
             {/* Divider */}
             <div className="w-8 sm:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
-            <p className="text-sm sm:text-base lg:text-lg text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px]">
+            <p className="text-sm sm:text-base lg:text-lg text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px] px-4">
             Join a community that celebrates not just what was built, but who built it and why. Share your story, discover others, and connect with fellow AI builders.
             </p>
           </div>
@@ -73,7 +73,7 @@ const Index = () => {
         </div>
 
         {/* Features Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 mt-12 sm:mt-16 lg:mt-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 mt-12 sm:mt-16">
           {/* 1. Behind-the-Code Stories */}
           <div className="group relative overflow-hidden rounded-[20px] sm:rounded-[24px] bg-card/80 backdrop-blur-[20px] border border-white/10 p-6 sm:p-8 lg:p-12 transition-all duration-300 hover:-translate-y-[10px] hover:border-white/20 hover:shadow-[0_30px_60px_rgba(0,0,0,0.3)]">
             {/* Elegant gradient overlay */}

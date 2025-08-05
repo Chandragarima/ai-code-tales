@@ -58,31 +58,8 @@ export default function ProjectDetail() {
       if (user) {
         fetchUserReaction();
       }
-      // Track view
-      trackProjectView();
     }
   }, [id, user]);
-
-  const trackProjectView = async () => {
-    if (!id) return;
-    
-    try {
-      // Record view in project_views table (you'll need to create this table)
-      const { error } = await supabase
-        .from('project_views')
-        .insert({
-          project_id: id,
-          viewer_id: user?.id || null, // null for anonymous views
-          viewed_at: new Date().toISOString()
-        });
-
-      if (error) {
-        console.error('Error tracking view:', error);
-      }
-    } catch (error) {
-      console.error('Error tracking view:', error);
-    }
-  };
 
   const fetchProject = async () => {
     try {
@@ -305,38 +282,15 @@ export default function ProjectDetail() {
       
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
         {/* Header */}
-        <div className="mb-6 sm:mb-8 lg:mb-12">
-          {/* Mobile Header Bar */}
-          <div className="md:hidden mb-4">
-            <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 mb-6">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => navigate('/gallery')}
-                  className="text-muted-foreground hover:text-[#fda085] transition-colors duration-200 p-2 -ml-2"
-                  size="sm"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                
-                <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
-                  Project Details
-                </h1>
-              </div>
-            </div>
-          </div>
-          
-          {/* Desktop Header */}
-          <div className="hidden md:block">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/gallery')}
-              className="mb-6 text-foreground/70 hover:text-[#fda085] text-sm sm:text-base transition-all duration-300"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Gallery
-            </Button>
-          </div>
+        <div className="mb-8">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/gallery')}
+            className="mb-6 text-foreground/70 hover:text-[#fda085] text-sm sm:text-base transition-all duration-300"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Gallery
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">

@@ -195,40 +195,28 @@ export default function EditProject() {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
       
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-4xl">
-        <div className="mb-6 sm:mb-8 lg:mb-12">
-          {/* Mobile Header Bar */}
-          <div className="md:hidden mb-4">
-            <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 mb-6">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => navigate("/my-projects")}
-                  className="text-muted-foreground hover:text-[#fda085] transition-colors duration-200 p-2 -ml-2"
-                  size="sm"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                
-                <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
-                  Edit Project
-                </h1>
-              </div>
-            </div>
-          </div>
+        <div className="mb-12">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("/my-projects")}
+            className="mb-8 text-foreground/70 hover:text-foreground font-light group md:hidden"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            Back to My Projects
+          </Button>
           
-          {/* Desktop Header */}
-          <div className="hidden md:block text-center">
-            <div className="flex flex-col items-center space-y-6 lg:space-y-8">
-              <h1 className="font-['Playfair_Display'] text-[2.5rem] xl:text-[3rem] 2xl:text-[3.5rem] font-normal leading-[1.2] bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] rounded-2xl flex items-center justify-center shadow-lg">
+                <Sparkles className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-4xl sm:text-5xl font-light bg-elegant-gradient bg-clip-text text-transparent">
                 Edit Project
               </h1>
-              {/* Divider */}
-              <div className="w-8 lg:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
-              {/* Subtitle */}
-              <p className="text-sm lg:text-base text-foreground/70 max-w-[650px] font-extralight leading-[1.8] tracking-[0.3px]">
-                Update your project details and story
-              </p>
             </div>
+            <p className="text-foreground/70 text-lg font-light leading-relaxed max-w-2xl mx-auto">
+              Update your project details and story
+            </p>
           </div>
         </div>
 

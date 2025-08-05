@@ -98,7 +98,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
   };
 
   return (
-    <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1 w-full max-w-5xl mx-auto">
+    <Card className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1 max-w-5xl mx-auto">
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       
@@ -108,36 +108,33 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
           <div className="w-full md:w-2/5 bg-gradient-to-b from-[#f6d365]/5 via-[#fda085]/3 to-muted/10 p-3 sm:p-4 flex items-center justify-center relative">
             {project.screenshots && project.screenshots.length > 0 ? (
               <div className="relative group/screenshot w-full h-40 sm:h-48 md:h-52">
-                {project.screenshots.length > 1 ? (
-                  // Use carousel for multiple screenshots
-                  <div className="relative w-full h-full">
-                    <ProjectCarousel screenshots={project.screenshots} projectName={project.name} />
-                    
-                    {/* Multiple images indicator */}
-                    {/* <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1 text-xs text-white font-medium">
-                      {project.screenshots.length} images
-                    </div> */}
-                  </div>
-                ) : (
-                  // Single image display
-                  <div className="relative w-full h-full overflow-hidden rounded-lg border border-white/20 shadow-md">
-                    <img 
-                      src={project.screenshots[0]} 
-                      alt={`${project.name} preview`}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover/screenshot:scale-105"
-                    />
-                    
-                    {/* Floating action button - Hidden on mobile */}
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="hidden md:flex absolute top-2 right-2 h-7 w-7 bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white shadow-lg opacity-0 group-hover/screenshot:opacity-100 transition-all duration-300"
-                      onClick={() => navigate(`/project/${project.id}`)}
-                    >
-                      <Eye className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                )}
+                {/* Screenshot Display */}
+                <div className="relative w-full h-full overflow-hidden rounded-lg border border-white/20 shadow-md">
+                  <img 
+                    src={project.screenshots[0]} 
+                    alt={`${project.name} preview`}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover/screenshot:scale-105"
+                  />
+                  
+                  {/* Overlay for multiple screenshots */}
+                  {project.screenshots.length > 1 && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover/screenshot:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-2">
+                      <div className="bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium text-gray-800 shadow-lg">
+                        +{project.screenshots.length - 1} more
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Floating action button - Hidden on mobile */}
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="hidden md:flex absolute top-2 right-2 h-7 w-7 bg-gradient-to-r from-[#f6d365] to-[#fda085] hover:from-[#fda085] hover:to-[#f6d365] text-white shadow-lg opacity-0 group-hover/screenshot:opacity-100 transition-all duration-300"
+                    onClick={() => navigate(`/project/${project.id}`)}
+                  >
+                    <Eye className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
                 
                 {/* Subtle decorative elements */}
                 <div className="absolute -top-1 -left-1 w-3 h-3 bg-gradient-to-br from-[#f6d365]/20 to-[#fda085]/20 rounded-full opacity-0 group-hover/screenshot:opacity-100 transition-opacity duration-300"></div>
@@ -155,7 +152,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
 
           {/* Right Pane - Project Information - Mobile: clickable, Desktop: not clickable */}
           <div 
-            className="w-full md:w-3/5 p-3 sm:p-4 md:p-5 flex flex-col relative md:cursor-default cursor-pointer min-w-0" 
+            className="w-full md:w-3/5 p-3 sm:p-4 md:p-5 flex flex-col relative md:cursor-default cursor-pointer" 
             onClick={(e) => {
               // Only handle click on mobile (not desktop)
               if (window.innerWidth < 768) {
@@ -219,7 +216,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
             </div>
 
             {/* Tools Section - More compact on mobile */}
-            <div className="mb-3 md:mb-4 pt-1 sm:pt-4">
+            <div className="mb-3 md:mb-4">
               <div className="flex flex-wrap gap-1">
                 {project.tools.slice(0, 2).map((tool, index) => (
                   <Badge 
@@ -264,8 +261,8 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
                         onReaction(project.id, type);
                       }}
                     >
-                      <Icon className={`h-3.5 w-3.5 transition-all duration-300 ${isActive ? 'fill-white scale-110' : ''}`} />
-                      <span className={`font-medium transition-all duration-300 ${isActive ? 'text-white' : ''}`}>{count}</span>
+                      <Icon className={`h-3.5 w-3.5 ${isActive ? 'fill-current' : ''}`} />
+                      <span className="font-medium">{count}</span>
                     </Button>
                   );
                 })}

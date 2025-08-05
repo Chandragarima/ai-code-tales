@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -41,7 +40,6 @@ interface MessagesPageProps {
 }
 
 export function MessagesPage({ onClose }: MessagesPageProps) {
-  const navigate = useNavigate();
   const [conversations, setConversations] = useState<ConversationWithDetails[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<ConversationWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -256,14 +254,6 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
-      <Button 
-        variant="ghost"
-        size="sm"
-        onClick={onClose || (() => navigate(-1))}
-        className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
-      >
-        <ArrowLeft className="h-4 w-4 text-muted-foreground" />
-      </Button>
       {/* Decorative background elements */}
       {/* <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30 pointer-events-none"></div>
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -274,23 +264,20 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
         {/* Compact Header Bar - Mobile Optimized */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           {/* Mobile Header Bar */}
-          <div className="md:hidden mb-4">
-            <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 mb-6">
-                <Button 
-                  variant="ghost" 
-                  onClick={onClose || (() => window.history.back())}
-                  className="text-muted-foreground hover:text-[#fda085] transition-colors duration-200 p-2 -ml-2"
-                  size="sm"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                
-                <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
-                  Messages
-                </h1>
-              </div>
-            </div>
+          <div className="md:hidden flex items-center justify-between mb-4">
+            <Button 
+              variant="ghost" 
+              onClick={onClose || (() => window.history.back())}
+              className="text-muted-foreground hover:text-[#fda085] hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5 transition-all duration-300 font-light text-sm p-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            
+            <h1 className="font-['Playfair_Display'] text-xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+              Messages
+            </h1>
+            
+            <div className="w-10"></div> {/* Spacer for centering */}
           </div>
           
           {/* Desktop Header */}
