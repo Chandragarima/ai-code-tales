@@ -100,7 +100,7 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
 
   return (
     <Card 
-      className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover:shadow-[#fda085]/10 bg-card/95 backdrop-blur-sm hover:-translate-y-2 w-full max-w-4xl mx-auto cursor-pointer rounded-xl"
+      className="group relative overflow-hidden border-border/50 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#fda085]/5 bg-card/90 backdrop-blur-sm hover:-translate-y-1 w-full max-w-5xl mx-auto cursor-pointer"
       onClick={(e) => {
         // Prevent click if clicking on buttons or interactive elements
         const target = e.target as HTMLElement;
@@ -110,166 +110,171 @@ export const ProjectCard = ({ project, userReactions, onReaction }: ProjectCardP
         navigate(`/project/${project.id}`);
       }}
     >
-      {/* Enhanced gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/5 via-transparent to-[#fda085]/5 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#f6d365]/3 via-transparent to-[#fda085]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       
       <CardContent className="relative p-0">
-        <div className="flex flex-col lg:flex-row h-full">
-          {/* Left Pane - Screenshot Display - More compact */}
-          <div className="w-full lg:w-2/5 bg-gradient-to-br from-[#f6d365]/8 via-[#fda085]/5 to-transparent p-4 flex items-center justify-center relative border-r border-border/30">
+        <div className="flex flex-col md:flex-row h-full">
+          {/* Left Pane - Screenshot Display */}
+          <div className="w-full md:w-2/5 bg-gradient-to-b from-[#f6d365]/5 via-[#fda085]/3 to-muted/10 p-3 sm:p-4 flex items-center justify-center relative">
             {project.screenshots && project.screenshots.length > 0 ? (
-              <div className="relative group/screenshot w-full h-48 lg:h-56">
+              <div className="relative group/screenshot w-full h-40 sm:h-48 md:h-52">
                 {project.screenshots.length > 1 ? (
+                  // Use carousel for multiple screenshots
                   <div className="relative w-full h-full">
                     <ProjectCarousel screenshots={project.screenshots} projectName={project.name} />
+                    
+                    {/* Multiple images indicator */}
+                    {/* <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1 text-xs text-white font-medium">
+                      {project.screenshots.length} images
+                    </div> */}
                   </div>
                 ) : (
-                  <div className="relative w-full h-full overflow-hidden rounded-xl border border-white/10 shadow-lg bg-gradient-to-br from-white/5 to-transparent">
+                  // Single image display
+                  <div className="relative w-full h-full overflow-hidden rounded-lg border border-white/20 shadow-md">
                     <img 
                       src={project.screenshots[0]} 
                       alt={`${project.name} preview`}
-                      className="w-full h-full object-cover transition-all duration-500 group-hover/screenshot:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover/screenshot:scale-105"
                     />
-                    {/* Elegant overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover/screenshot:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 )}
                 
-                {/* Modern accent dots */}
-                <div className="absolute top-2 right-2 flex gap-1">
-                  <div className="w-1.5 h-1.5 bg-[#f6d365]/60 rounded-full opacity-0 group-hover/screenshot:opacity-100 transition-all duration-300 delay-100"></div>
-                  <div className="w-1.5 h-1.5 bg-[#fda085]/60 rounded-full opacity-0 group-hover/screenshot:opacity-100 transition-all duration-300 delay-200"></div>
-                </div>
+                {/* Subtle decorative elements */}
+                <div className="absolute -top-1 -left-1 w-3 h-3 bg-gradient-to-br from-[#f6d365]/20 to-[#fda085]/20 rounded-full opacity-0 group-hover/screenshot:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-gradient-to-br from-[#fda085]/20 to-[#f6d365]/20 rounded-full opacity-0 group-hover/screenshot:opacity-100 transition-opacity duration-300 delay-100"></div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center text-center w-full h-48 lg:h-56">
-                <div className="w-full h-full bg-gradient-to-br from-muted/10 to-muted/5 rounded-xl border-2 border-dashed border-muted-foreground/15 flex items-center justify-center">
-                  <Smartphone className="h-8 w-8 text-muted-foreground/30" />
+              <div className="flex flex-col items-center justify-center text-center w-full h-40 sm:h-48 md:h-52">
+                <div className="w-full h-full bg-gradient-to-b from-muted/20 to-muted/10 rounded-lg border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">
+                  <Smartphone className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground/40" />
                 </div>
-                <p className="text-xs text-muted-foreground mt-3">No screenshots</p>
+                <p className="text-xs text-muted-foreground mt-2">No screenshots</p>
               </div>
             )}
           </div>
 
-          {/* Right Pane - Project Information - Optimized layout */}
-          <div className="w-full lg:w-3/5 p-6 flex flex-col relative min-w-0">
-            {/* External Link Button - Redesigned */}
+          {/* Right Pane - Project Information */}
+          <div className="w-full md:w-3/5 p-3 sm:p-4 md:p-5 flex flex-col relative min-w-0">
+            {/* External Link Button - Top Right */}
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute top-4 right-4 h-8 w-8 rounded-full hover:bg-gradient-to-r hover:from-[#f6d365]/15 hover:to-[#fda085]/15 hover:text-[#fda085] transition-all duration-300 border border-transparent hover:border-[#f6d365]/20"
+              className="absolute top-3 right-3 md:top-4 md:right-4 h-6 w-6 md:h-7 md:w-7 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300"
               onClick={(e) => {
                 e.stopPropagation();
                 window.open(project.link, '_blank');
               }}
             >
-              <ExternalLink className="h-4 w-4" />
+              <ExternalLink className="h-3 w-3 md:h-3.5 md:w-3.5" />
             </Button>
 
-            {/* Header Section - Streamlined */}
-            <div className="mb-4 pr-12">
-              <div className="flex items-center gap-3 mb-3">
+            {/* Header Section - Creator and Title */}
+            <div className="mb-2 sm:mb-3 md:mb-4 pr-6 sm:pr-8 md:pr-10">
+              <div className="flex items-start gap-2 mb-1.5 sm:mb-2 md:mb-3">
                 {updatedProject.creator.avatar_url ? (
                   <img
                     src={updatedProject.creator.avatar_url}
                     alt={updatedProject.creator.name}
-                    className="w-10 h-10 rounded-full object-cover shadow-md border-2 border-[#f6d365]/30 flex-shrink-0"
+                    className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 rounded-full object-cover shadow-sm border-2 border-[#f6d365]/20 flex-shrink-0"
                   />
                 ) : (
                   <div 
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0"
+                    className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0"
                   >
                     {updatedProject.creator.name.split(' ').map(n => n[0]).join('')}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-muted-foreground/80 mb-1 font-medium">Built by {updatedProject.creator.name}</p>
-                  <h3 className="text-xl lg:text-2xl font-bold text-foreground leading-tight group-hover:text-[#f6d365] transition-colors duration-300 truncate">
+                  <p className="text-xs text-muted-foreground mb-0.5 font-normal">Built by {updatedProject.creator.name}</p>
+                  <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground leading-[1.2] group-hover:text-[#f6d365] transition-colors duration-300">
                     {project.name}
                   </h3>
                 </div>
               </div>
             </div>
 
-            {/* Story Section - Enhanced with better typography */}
-            <div className="mb-5 flex-1">
-              <div className="relative pl-4">
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#f6d365] via-[#fda085] to-[#f6d365] rounded-full"></div>
-                <blockquote className="text-sm lg:text-base font-medium text-foreground/85 leading-relaxed line-clamp-3 lg:line-clamp-4">
-                  "{project.story}"
-                </blockquote>
+            {/* Story Section - More compact on mobile */}
+            <div className="mb-2 sm:mb-3 md:mb-4 flex-1">
+              <div className="relative">
+                <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#f6d365] to-[#fda085] rounded-full"></div>
+                <div className="pl-2.5 sm:pl-3 md:pl-4">
+                  <blockquote className="text-xs sm:text-sm md:text-base font-medium text-foreground/90 leading-[1.4] italic line-clamp-2 sm:line-clamp-3 md:line-clamp-4">
+                    "{project.story}"
+                  </blockquote>
+                </div>
               </div>
             </div>
 
-            {/* Tools and Actions Section - Unified bottom area */}
-            <div className="flex flex-col gap-4">
-              {/* Tools Section */}
-              <div className="flex flex-wrap gap-2">
-                {project.tools.slice(0, 3).map((tool, index) => (
+            {/* Tools Section - More compact on mobile */}
+            <div className="mb-3 md:mb-4 pt-1 sm:pt-4">
+              <div className="flex flex-wrap gap-1">
+                {project.tools.slice(0, 2).map((tool, index) => (
                   <Badge 
                     key={tool} 
                     variant="secondary"
-                    className={`text-xs px-3 py-1.5 border transition-all duration-300 rounded-lg font-medium ${
+                    className={`text-xs px-2 py-0.5 md:px-2.5 md:py-1 border transition-all duration-300 ${
                       index % 2 === 0 
-                        ? 'bg-gradient-to-r from-[#f6d365]/12 to-[#fda085]/12 hover:from-[#f6d365]/25 hover:to-[#fda085]/25 text-foreground border-[#f6d365]/25 hover:border-[#f6d365]/50' 
-                        : 'bg-gradient-to-r from-[#fda085]/12 to-[#f6d365]/12 hover:from-[#fda085]/25 hover:to-[#f6d365]/25 text-foreground border-[#fda085]/25 hover:border-[#fda085]/50'
+                        ? 'bg-gradient-to-r from-[#f6d365]/10 to-[#fda085]/10 hover:from-[#f6d365]/20 hover:to-[#fda085]/20 text-foreground/90 border-[#f6d365]/20 hover:border-[#f6d365]/40' 
+                        : 'bg-gradient-to-r from-[#fda085]/10 to-[#f6d365]/10 hover:from-[#fda085]/20 hover:to-[#f6d365]/20 text-foreground/90 border-[#fda085]/20 hover:border-[#fda085]/40'
                     }`}
                   >
                     {tool}
                   </Badge>
                 ))}
-                {project.tools.length > 3 && (
-                  <Badge variant="outline" className="text-xs px-3 py-1.5 text-muted-foreground border-white/25 rounded-lg">
-                    +{project.tools.length - 3}
+                {project.tools.length > 2 && (
+                  <Badge variant="outline" className="text-xs px-2 py-0.5 md:px-2.5 md:py-1 text-muted-foreground border-white/20">
+                    +{project.tools.length - 2}
                   </Badge>
                 )}
               </div>
+            </div>
 
-              {/* Bottom Actions - Clean layout */}
-              <div className="flex items-center justify-between pt-2 border-t border-border/20">
-                <div className="flex items-center gap-1">
-                  {Object.entries(project.reactions).map(([type, count]) => {
-                    const Icon = getReactionIcon(type);
-                    const isActive = userReactions[project.id] === type;
-                    
-                    return (
-                      <Button
-                        key={type}
-                        variant="ghost"
-                        size="sm"
-                        className={`flex items-center gap-1.5 text-sm transition-all duration-300 h-9 px-3 rounded-lg ${
-                          isActive 
-                            ? 'text-[#fda085] bg-gradient-to-r from-[#f6d365]/15 to-[#fda085]/15 shadow-sm' 
-                            : 'text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-[#f6d365]/8 hover:to-[#fda085]/8'
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onReaction(project.id, type);
-                        }}
-                      >
-                        <Icon className={`h-4 w-4 transition-all duration-300 ${isActive ? 'fill-current scale-110' : ''}`} />
-                        <span className="font-semibold">{count}</span>
-                      </Button>
-                    );
-                  })}
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  {project.creator.allowsContact && project.user_id && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-sm h-9 px-4 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300 border-white/25 hover:border-[#f6d365]/50 rounded-lg font-medium"
+            {/* Bottom Section - Reactions and Actions */}
+            <div className="flex items-center justify-between pt-3 mt-auto">
+              <div className="flex items-center gap-0.5">
+                {Object.entries(project.reactions).map(([type, count]) => {
+                  const Icon = getReactionIcon(type);
+                  const isActive = userReactions[project.id] === type;
+                  
+                  return (
+                    <Button
+                      key={type}
+                      variant="ghost"
+                      size="sm"
+                      className={`flex items-center gap-1 text-xs transition-all duration-300 h-7 px-2 text-muted-foreground hover:text-foreground ${
+                        isActive 
+                          ? 'text-[#fda085] bg-gradient-to-r from-[#f6d365]/10 to-[#fda085]/10' 
+                          : 'hover:bg-gradient-to-r hover:from-[#f6d365]/5 hover:to-[#fda085]/5'
+                      }`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setShowMessageDialog(true);
+                        onReaction(project.id, type);
                       }}
                     >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Connect
+                      <Icon className={`h-3.5 w-3.5 transition-all duration-300 ${isActive ? 'fill-white scale-110' : ''}`} />
+                      <span className={`font-medium transition-all duration-300 ${isActive ? 'text-white' : ''}`}>{count}</span>
                     </Button>
-                  )}
-                </div>
+                  );
+                })}
+              </div>
+              
+              <div className="flex items-center gap-1.5">
+                {project.creator.allowsContact && project.user_id && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs h-7 px-3 hover:bg-gradient-to-r hover:from-[#f6d365]/10 hover:to-[#fda085]/10 hover:text-[#fda085] transition-all duration-300 border-white/20 hover:border-[#f6d365]/40"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMessageDialog(true);
+                    }}
+                  >
+                    <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
+                    <span className="hidden sm:inline">Connect</span>
+                    <span className="sm:hidden">Chat</span>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
