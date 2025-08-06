@@ -72,6 +72,23 @@ export default function Gallery() {
         return;
       }
 
+      // Fetch all profiles for creators to get avatar URLs
+      const userIds = projectsData?.map(p => p.user_id) || [];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, avatar_url')
+        .in('user_id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+      }
+
+      // Create a map of user_id to avatar_url
+      const avatarMap: Record<string, string | undefined> = {};
+      profilesData?.forEach(profile => {
+        avatarMap[profile.user_id] = profile.avatar_url;
+      });
+
       // Fetch reactions for real projects
       const { data: reactionsData, error: reactionsError } = await supabase
         .from('project_reactions')
@@ -106,7 +123,7 @@ export default function Gallery() {
         creator: {
           name: project.creator_name,
           allowsContact: project.allows_contact,
-          avatar_url: undefined // We'll handle avatar separately if needed
+          avatar_url: avatarMap[project.user_id]
         },
         reactions: {
           heart: reactionCounts[project.id]?.heart || 0,

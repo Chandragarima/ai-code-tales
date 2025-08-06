@@ -37,6 +37,7 @@ interface CreatorProfile {
   github?: string;
   twitter?: string;
   linkedin?: string;
+  avatar_url?: string;
 }
 
 export default function ProjectDetail() {
@@ -147,7 +148,7 @@ export default function ProjectDetail() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('allow_contact, bio, website, github, twitter, linkedin')
+        .select('allow_contact, bio, website, github, twitter, linkedin, avatar_url')
         .eq('user_id', creatorId)
         .single();
 
@@ -354,9 +355,17 @@ export default function ProjectDetail() {
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 mb-6">
                   <div className="flex-1">
                     <div className="flex items-start gap-4 mb-4">
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0">
-                        {project.creator_name.split(' ').map(n => n[0]).join('')}
-                      </div>
+                      {creatorProfile?.avatar_url ? (
+                        <img
+                          src={creatorProfile.avatar_url}
+                          alt={project.creator_name}
+                          className="w-12 h-12 rounded-full object-cover shadow-lg border-2 border-[#f6d365]/20 flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg bg-gradient-to-br from-[#f6d365] via-[#fda085] to-[#f6d365] flex-shrink-0">
+                          {project.creator_name.split(' ').map(n => n[0]).join('')}
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
                         <p className="text-xs sm:text-sm text-muted-foreground mb-2 font-medium">Built by {project.creator_name}</p>
                         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground leading-tight group-hover:text-[#f6d365] transition-colors duration-300">
