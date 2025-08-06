@@ -179,21 +179,21 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
-      <Button 
+      {/* <Button 
         variant="ghost"
         size="sm"
         onClick={() => navigate(-1)}
         className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
       >
         <ArrowLeft className="h-4 w-4 text-muted-foreground" />
-      </Button>
-      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 max-w-5xl">
+      </Button> */}
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-12 max-w-5xl">
         {/* Header */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           {/* Mobile Header Bar */}
           <div className="md:hidden mb-4">
             <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 mb-6">
+              {/* <div className="flex items-center gap-3 mb-6">
                 <Button 
                   variant="ghost" 
                   onClick={() => navigate("/")}
@@ -201,14 +201,18 @@ export default function Profile() {
                   size="sm"
                 >
                   <ArrowLeft className="h-5 w-5" />
-                </Button>
+                </Button> */}
                 
-                <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+                <h1 className="font-['Playfair_Display'] text-2xl text-center font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
                   Profile
                 </h1>
+                <div className="flex flex-col items-center mt-4 mb-4">
+              <div className="w-8 lg:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
+            {/* </div> */}
+          </div>
               </div>
             </div>
-          </div>
+          {/* </div> */}
           
           {/* Desktop Header */}
           <div className="hidden md:block text-center">

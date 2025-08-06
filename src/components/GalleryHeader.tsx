@@ -29,7 +29,7 @@ export const GalleryHeader = ({
       {/* Mobile Header Bar */}
       <div className="md:hidden mb-4">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-3 mb-4">
+          {/* <div className="flex items-center gap-3 mb-4">
             <Button 
               variant="ghost" 
               onClick={() => navigate(-1)}
@@ -37,12 +37,16 @@ export const GalleryHeader = ({
               size="sm"
             >
               <ArrowLeft className="h-5 w-5" />
-            </Button>
+            </Button> */}
             
-            <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+            <h1 className="font-['Playfair_Display'] text-2xl font-normal text-center bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
               Gallery
             </h1>
+            <div className="flex flex-col items-center mt-4 mb-8">
+              <div className="w-8 lg:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
+            {/* </div> */}
           </div>
+          {/* </div> */}
 
           {/* Mobile Compact Search and Filter */}
           <div className="flex gap-2">

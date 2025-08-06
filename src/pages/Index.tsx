@@ -32,7 +32,7 @@ const Index = () => {
         ></div>
       </div>
       
-      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="mt-6 sm:mt-8 lg:mt-12 xl:mt-20 py-4 text-center">
           <div className="flex flex-col items-center space-y-6 sm:space-y-8">

@@ -1,0 +1,129 @@
+[33mcommit 1cb92afd888b916a96c79fabfc8353a5f6b2c490[m
+Author: gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com>
+Date:   Fri Aug 1 01:48:33 2025 +0000
+
+    Fix duplicate conversations
+    
+    Implemented a plan to address duplicate conversation entries in the messaging interface. This involved deduplicating conversations in `MessagesPage.tsx`, improving conversation loading logic in `MessageInterface.tsx` to prevent future duplicates, and adding a database cleanup query to remove existing duplicate records. The changes ensure proper conversation matching by considering both directions of user interaction.
+
+[1mdiff --git a/src/components/MessageInterface.tsx b/src/components/MessageInterface.tsx[m
+[1mindex b915d24..57a6f00 100644[m
+[1m--- a/src/components/MessageInterface.tsx[m
+[1m+++ b/src/components/MessageInterface.tsx[m
+[36m@@ -170,12 +170,13 @@[m [mexport function MessageInterface({[m
+     console.log('Loading conversation for user:', user.id, 'project:', projectId, 'creator:', creatorId);[m
+ [m
+     try {[m
+[31m-      // Find existing conversation where current user is involved[m
+[32m+[m[32m      // Find existing conversation between current user and creator for this project[m
+[32m+[m[32m      // Check both directions: current user as creator/sender with other as sender/creator[m
+       const { data: existingConversations, error: convError } = await supabase[m
+         .from('conversations')[m
+         .select('*')[m
+         .eq('project_id', projectId)[m
+[31m-        .or(`creator_id.eq.${user.id},sender_id.eq.${user.id}`);[m
+[32m+[m[32m        .or(`and(creator_id.eq.${user.id},sender_id.eq.${creatorId}),and(creator_id.eq.${creatorId},sender_id.eq.${user.id})`);[m
+ [m
+       console.log('Existing conversation query result:', existingConversations, 'Error:', convError);[m
+ [m
+[36m@@ -184,40 +185,27 @@[m [mexport function MessageInterface({[m
+       }[m
+ [m
+       if (existingConversations && existingConversations.length > 0) {[m
+[31m-        const conversation = existingConversations[0];[m
+[32m+[m[32m        // Use the most recent conversation if multiple exist[m
+[32m+[m[32m        const conversation = existingConversations.sort((a, b) =>[m[41m [m
+[32m+[m[32m          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()[m
+[32m+[m[32m        )[0];[m
+[32m+[m[41m        [m
+         setConversation(conversation);[m
+         loadMessages(conversation.id);[m
+       } else {[m
+[31m-        // Check if conversation already exists with current user as sender[m
+[31m-        const { data: existingBySender, error: senderError } = await supabase[m
+[32m+[m[32m        // Create new conversation only if none exists between these users for this project[m
+[32m+[m[32m        const { data: newConversation, error: createError } = await supabase[m
+           .from('conversations')[m
+[31m-          .select('*')[m
+[31m-          .eq('project_id', projectId)[m
+[31m-          .eq('sender_id', user.id)[m
+[31m-          .maybeSingle();[m
+[31m-[m
+[31m-        if (senderError && senderError.code !== 'PGRST116') {[m
+[31m-          throw senderError;[m
+[31m-        }[m
+[31m-[m
+[31m-        if (existingBySender) {[m
+[31m-          setConversation(existingBySender);[m
+[31m-          loadMessages(existingBySender.id);[m
+[31m-        } else {[m
+[31m-          // Only create if none exists[m
+[31m-          const { data: newConversation, error: createError } = await supabase[m
+[31m-            .from('conversations')[m
+[31m-            .insert({[m
+[31m-              project_id: projectId,[m
+[31m-              creator_id: creatorId,[m
+[31m-              sender_id: user.id[m
+[31m-            })[m
+[31m-            .select()[m
+[31m-            .single();[m
+[31m-[m
+[31m-          if (createError) throw createError;[m
+[31m-          setConversation(newConversation);[m
+[31m-        }[m
+[32m+[m[32m          .insert({[m
+[32m+[m[32m            project_id: projectId,[m
+[32m+[m[32m            creator_id: creatorId,[m
+[32m+[m[32m            sender_id: user.id[m
+[32m+[m[32m          })[m
+[32m+[m[32m          .select()[m
+[32m+[m[32m          .single();[m
+[32m+[m
+[32m+[m[32m        if (createError) throw createError;[m
+[32m+[m[32m        setConversation(newConversation);[m
+       }[m
+     } catch (error) {[m
+       console.error('Error loading conversation:', error);[m
+[1mdiff --git a/src/components/MessagesPage.tsx b/src/components/MessagesPage.tsx[m
+[1mindex 329730c..9bfe67e 100644[m
+[1m--- a/src/components/MessagesPage.tsx[m
+[1m+++ b/src/components/MessagesPage.tsx[m
+[36m@@ -113,9 +113,24 @@[m [mexport function MessagesPage({ onClose }: MessagesPageProps) {[m
+ [m
+       if (error) throw error;[m
+ [m
+[31m-      // Load additional data for each conversation[m
+[32m+[m[32m      // Deduplicate conversations by project_id and user pair[m
+[32m+[m[32m      const uniqueConversations = new Map<string, any>();[m
+[32m+[m[41m      [m
+[32m+[m[32m      (conversationsData || []).forEach(conv => {[m
+[32m+[m[32m        // Create a unique key for the conversation based on project and the other user[m
+[32m+[m[32m        const otherUserId = conv.creator_id === user.id ? conv.sender_id : conv.creator_id;[m
+[32m+[m[32m        const conversationKey = `${conv.project_id}_${otherUserId}`;[m
+[32m+[m[41m        [m
+[32m+[m[32m        // Keep the most recent conversation for each unique project-user pair[m
+[32m+[m[32m        if (!uniqueConversations.has(conversationKey) ||[m[41m [m
+[32m+[m[32m            new Date(conv.updated_at) > new Date(uniqueConversations.get(conversationKey)!.updated_at)) {[m
+[32m+[m[32m          uniqueConversations.set(conversationKey, conv);[m
+[32m+[m[32m        }[m
+[32m+[m[32m      });[m
+[32m+[m
+[32m+[m[32m      // Load additional data for each unique conversation[m
+       const conversationsWithDetails = await Promise.all([m
+[31m-        (conversationsData || []).map(async (conv) => {[m
+[32m+[m[32m        Array.from(uniqueConversations.values()).map(async (conv) => {[m
+           // Get project, creator and sender profiles[m
+           const [projectData, creatorProfile, senderProfile, messagesResult] = await Promise.all([[m
+             supabase[m
+[36m@@ -156,6 +171,11 @@[m [mexport function MessagesPage({ onClose }: MessagesPageProps) {[m
+         })[m
+       );[m
+ [m
+[32m+[m[32m      // Sort by most recent activity[m
+[32m+[m[32m      conversationsWithDetails.sort((a, b) =>[m[41m [m
+[32m+[m[32m        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()[m
+[32m+[m[32m      );[m
+[32m+[m
+       setConversations(conversationsWithDetails);[m
+     } catch (error) {[m
+       console.error('Error loading conversations:', error);[m

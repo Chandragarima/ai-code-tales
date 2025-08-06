@@ -83,6 +83,14 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
       })
       .subscribe();
 
+    // Listen for conversation merges
+    const handleConversationMerged = () => {
+      console.log('Conversation merged, refreshing list');
+      loadConversations();
+    };
+
+    window.addEventListener('conversation-merged', handleConversationMerged);
+
     // Fallback polling for conversation updates
     const startPolling = () => {
       pollInterval = setInterval(() => {
@@ -98,6 +106,7 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
     return () => {
       clearTimeout(pollTimeoutId);
       if (pollInterval) clearInterval(pollInterval);
+      window.removeEventListener('conversation-merged', handleConversationMerged);
       supabase.removeChannel(channel);
     };
   }, [user]);
@@ -119,9 +128,9 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
       const uniqueConversations = new Map<string, any>();
       
       (conversationsData || []).forEach(conv => {
-        // Create a unique key for the conversation based on project and the other user
-        const otherUserId = conv.creator_id === user.id ? conv.sender_id : conv.creator_id;
-        const conversationKey = `${conv.project_id}_${otherUserId}`;
+        // Create a unique key for the conversation based on project and both users (sorted to ensure consistency)
+        const userPair = [conv.creator_id, conv.sender_id].sort().join('_');
+        const conversationKey = `${conv.project_id}_${userPair}`;
         
         // Keep the most recent conversation for each unique project-user pair
         if (!uniqueConversations.has(conversationKey) || 
@@ -256,27 +265,27 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
-      <Button 
+      {/* <Button 
         variant="ghost"
         size="sm"
         onClick={onClose || (() => navigate(-1))}
         className="md:hidden fixed top-14 left-3 z-50 h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border border-border/30 rounded-lg shadow-md hover:shadow-lg hover:bg-accent/20 transition-all duration-300"
       >
         <ArrowLeft className="h-4 w-4 text-muted-foreground" />
-      </Button>
+      </Button> */}
       {/* Decorative background elements */}
       {/* <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30 pointer-events-none"></div>
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-[#f6d365]/5 to-[#fda085]/5 rounded-full blur-3xl pointer-events-none"></div>
        */}
-      <div className="relative w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10 max-w-5xl mx-auto">
+      <div className="relative w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-10 max-w-[1920px] mx-auto">
         {/* Compact Header Bar - Mobile Optimized */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           {/* Mobile Header Bar */}
           <div className="md:hidden mb-4">
             <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 mb-6">
+              {/* <div className="flex items-center gap-3 mb-6">
                 <Button 
                   variant="ghost" 
                   onClick={onClose || (() => window.history.back())}
@@ -284,12 +293,16 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
                   size="sm"
                 >
                   <ArrowLeft className="h-5 w-5" />
-                </Button>
+                </Button> */}
                 
-                <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+                <h1 className="font-['Playfair_Display'] text-2xl text-center font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
                   Messages
                 </h1>
-              </div>
+                <div className="flex flex-col items-center mt-4 mb-4">
+              <div className="w-8 lg:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
+            {/* </div> */}
+          </div>
+              {/* </div> */}
             </div>
           </div>
           

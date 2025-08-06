@@ -303,13 +303,13 @@ export default function ProjectDetail() {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
       
-      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
+      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-[1920px]">
         {/* Header */}
         <div className="mb-6 sm:mb-8 lg:mb-12">
           {/* Mobile Header Bar */}
           <div className="md:hidden mb-4">
             <div className="container mx-auto px-4">
-              <div className="flex items-center gap-3 mb-6">
+              {/* <div className="flex items-center gap-3 mb-6">
                 <Button 
                   variant="ghost" 
                   onClick={() => navigate('/gallery')}
@@ -317,14 +317,18 @@ export default function ProjectDetail() {
                   size="sm"
                 >
                   <ArrowLeft className="h-5 w-5" />
-                </Button>
+                </Button> */}
                 
-                <h1 className="font-['Playfair_Display'] text-2xl font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
+                <h1 className="font-['Playfair_Display'] text-2xl text-center font-normal bg-gradient-to-br from-white via-[#f6d365] to-[#fda085] bg-clip-text text-transparent tracking-[0.01em]">
                   Project Details
                 </h1>
+                <div className="flex flex-col items-center mt-4 mb-4">
+              <div className="w-8 lg:w-10 h-px bg-gradient-to-r from-[#f6d365] via-[#fda085] to-[#f6d365]"></div>
+            {/* </div> */}
+          </div>
               </div>
             </div>
-          </div>
+          {/* </div> */}
           
           {/* Desktop Header */}
           <div className="hidden md:block">
@@ -419,7 +423,7 @@ export default function ProjectDetail() {
                   <div className="relative">
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#f6d365] to-[#fda085] rounded-full"></div>
                     <div className="pl-6">
-                      <blockquote className="text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed italic text-foreground/90 font-medium">
+                      <blockquote className="text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed italic text-foreground/90 font-normal">
                         "{project.story}"
                       </blockquote>
                     </div>

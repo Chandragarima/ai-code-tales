@@ -270,7 +270,7 @@ export default function Gallery() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 overflow-x-hidden">
       <div className="absolute inset-0 bg-subtle-grid bg-grid opacity-30"></div>
       
-      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="relative w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <GalleryHeader 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}

@@ -2,17 +2,10 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Menu, X, User, LogOut, Image, Plus, FolderOpen, MessageSquare } from 'lucide-react';
+import { Menu, X, LogOut, Image, Plus, FolderOpen, MessageSquare } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -148,7 +141,7 @@ export const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/20">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div className="max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-12 sm:h-14">
           
           {/* Logo - Compact */}
@@ -197,38 +190,29 @@ export const Navbar = () => {
           {/* Auth Section */}
           <div className="hidden md:flex items-center">
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    className="flex items-center gap-2 px-2 py-2 rounded-full hover:bg-muted/50 h-auto"
-                  >
-                    <Avatar className="w-8 h-8 ring-1 ring-border">
-                      <AvatarImage src={(profile as any)?.avatar_url || ''} alt={getDisplayName()} />
-                      <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                        {getDisplayInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium text-sm hidden lg:block max-w-24 truncate">{getDisplayName()}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="px-3 py-2">
-                    <p className="text-sm font-medium">{getDisplayName()}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/profile')}>
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center gap-3">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => navigate('/profile')}
+                  className="flex items-center gap-2 px-2 py-2 rounded-full hover:bg-muted/50 h-auto transition-colors"
+                >
+                  <Avatar className="w-8 h-8 ring-1 ring-border">
+                    <AvatarImage src={(profile as any)?.avatar_url || ''} alt={getDisplayName()} />
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                      {getDisplayInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium text-sm hidden lg:block max-w-24 truncate">{getDisplayName()}</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </div>
             ) : (
               <Button
                 onClick={() => navigate('/auth')}
@@ -309,7 +293,13 @@ export const Navbar = () => {
               <div className="pt-4 mt-4 border-t border-border/30">
                 {user ? (
                   <div className="space-y-2">
-                    <div className="flex items-center gap-3 px-3 py-2">
+                    <button
+                      onClick={() => {
+                        navigate('/profile');
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left hover:bg-muted/50"
+                    >
                       <Avatar className="w-10 h-10">
                         <AvatarImage src={(profile as any)?.avatar_url || ''} alt={getDisplayName()} />
                         <AvatarFallback className="bg-primary text-primary-foreground text-sm">
@@ -320,16 +310,6 @@ export const Navbar = () => {
                         <p className="text-sm font-medium truncate">{getDisplayName()}</p>
                         <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                       </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        navigate('/profile');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left hover:bg-muted/50"
-                    >
-                      <User className="w-5 h-5" />
-                      <span>Profile</span>
                     </button>
                     <button
                       onClick={() => {
