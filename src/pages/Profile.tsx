@@ -94,12 +94,27 @@ export default function Profile() {
 
       console.log('✅ Profile saved successfully');
       
+      // Update existing projects to match the new contact preference
+      if (formData.allow_contact !== profile?.allow_contact) {
+        console.log('📝 Updating existing projects contact settings...');
+        const { error: projectsError } = await supabase
+          .from('projects')
+          .update({ allows_contact: formData.allow_contact })
+          .eq('user_id', user.id);
+          
+        if (projectsError) {
+          console.error('⚠️ Failed to update projects contact settings:', projectsError);
+        } else {
+          console.log('✅ Projects contact settings updated');
+        }
+      }
+      
       // Refresh the profile data
       await refreshProfile();
       
       toast({
         title: "Profile saved",
-        description: "Your profile has been updated successfully."
+        description: "Your profile has been updated successfully. All your projects now reflect this contact preference."
       });
     } catch (error) {
       console.error('❌ Profile save failed:', error);

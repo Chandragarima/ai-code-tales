@@ -67,7 +67,7 @@ export default function Submit() {
     }
   });
 
-  // Auto-populate creator name from profile
+  // Auto-populate creator name and contact setting from profile
   useEffect(() => {
     if (profile?.username) {
       form.setValue("creatorName", profile.username);
@@ -75,6 +75,11 @@ export default function Submit() {
       // Fallback to email username part
       const emailUsername = user.email.split('@')[0];
       form.setValue("creatorName", emailUsername);
+    }
+    
+    // Sync contact setting with profile preference
+    if (profile) {
+      form.setValue("allowsContact", profile.allow_contact);
     }
   }, [profile, user, form]);
 
@@ -496,7 +501,13 @@ export default function Submit() {
                           Allow others to connect with me
                         </FormLabel>
                         <FormDescription className="font-light text-muted-foreground leading-relaxed text-sm">
-                          Show a "Connect with Creator" button on your project. Others can reach out for collaboration, questions, or hiring opportunities.
+                          This setting is synced with your profile preferences. 
+                          <span 
+                            className="text-[#f6d365] cursor-pointer hover:underline ml-1" 
+                            onClick={() => navigate('/profile')}
+                          >
+                            Update in Profile →
+                          </span>
                         </FormDescription>
                       </div>
                     </FormItem>
