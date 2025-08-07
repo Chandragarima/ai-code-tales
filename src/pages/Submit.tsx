@@ -41,7 +41,7 @@ type SubmitForm = z.infer<typeof submitSchema>;
 
 const aiTools = [
   "Claude", "GPT-4", "Gemini",
-  "Midjourney",
+  "Midjourney", "Bolt", "Bubble",
   "Cursor", "Replit", "v0", "Lovable"
 ];
 
