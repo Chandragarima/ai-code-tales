@@ -152,35 +152,26 @@ export function MessageDialog({
     if (!user) return;
 
     try {
-      // Check if conversation exists
-      const { data: existingConversation, error: convError } = await supabase
+      // Find existing conversation between current user and creator for this project (both directions)
+      const { data: existingConversations, error: convError } = await supabase
         .from('conversations')
         .select('*')
         .eq('project_id', projectId)
-        .eq('sender_id', user.id)
-        .single();
+        .or(`and(creator_id.eq.${user.id},sender_id.eq.${creatorId}),and(creator_id.eq.${creatorId},sender_id.eq.${user.id})`)
+        .order('updated_at', { ascending: false });
 
-      if (convError && convError.code !== 'PGRST116') {
+      if (convError) {
         throw convError;
       }
 
-      if (existingConversation) {
-        setConversation(existingConversation);
-        loadMessages(existingConversation.id);
+      if (existingConversations && existingConversations.length > 0) {
+        const primaryConversation = existingConversations[0];
+        setConversation(primaryConversation);
+        loadMessages(primaryConversation.id);
       } else {
-        // Create new conversation
-        const { data: newConversation, error: createError } = await supabase
-          .from('conversations')
-          .insert({
-            project_id: projectId,
-            creator_id: creatorId,
-            sender_id: user.id
-          })
-          .select()
-          .single();
-
-        if (createError) throw createError;
-        setConversation(newConversation);
+        // Do NOT auto-create a conversation on open; wait until the first message is sent
+        setConversation(null);
+        setMessages([]);
       }
     } catch (error) {
       console.error('Error loading conversation:', error);
@@ -232,31 +223,46 @@ export function MessageDialog({
   };
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !conversation || !user) return;
+    if (!newMessage.trim() || !user) return;
 
     const messageContent = newMessage.trim();
     setNewMessage('');
     setLoading(true);
 
-    // Create optimistic message for immediate feedback
-    const optimisticMessage: Message = {
-      id: `temp-${Date.now()}`,
-      content: messageContent,
-      sender_id: user.id,
-      created_at: new Date().toISOString(),
-      is_read: false
-    };
-
-    // Add message immediately to UI
-    setMessages(prev => [...prev, optimisticMessage]);
-
+    // Ensure conversation exists (create on first send)
+    let conversationId = conversation?.id;
     try {
+      if (!conversationId) {
+        const { data: newConv, error: createError } = await supabase
+          .from('conversations')
+          .insert({
+            project_id: projectId,
+            creator_id: creatorId,
+            sender_id: user.id,
+          })
+          .select()
+          .single();
+        if (createError) throw createError;
+        conversationId = newConv.id;
+        setConversation(newConv);
+      }
+
+      // Create optimistic message for immediate feedback
+      const optimisticMessage: Message = {
+        id: `temp-${Date.now()}`,
+        content: messageContent,
+        sender_id: user.id,
+        created_at: new Date().toISOString(),
+        is_read: false,
+      };
+      setMessages((prev) => [...prev, optimisticMessage]);
+
       const { data, error } = await supabase
         .from('messages')
         .insert({
-          conversation_id: conversation.id,
+          conversation_id: conversationId,
           sender_id: user.id,
-          content: messageContent
+          content: messageContent,
         })
         .select()
         .single();
@@ -264,33 +270,22 @@ export function MessageDialog({
       if (error) throw error;
 
       // Replace optimistic message with real one
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === optimisticMessage.id 
-            ? { ...data, is_read: false } 
-            : msg
-        )
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === optimisticMessage.id ? { ...data, is_read: false } : msg))
       );
 
       // Manually refresh messages after a short delay
       setTimeout(() => {
-        if (conversation.id) {
-          loadMessages(conversation.id);
+        if (conversationId) {
+          loadMessages(conversationId);
         }
-      }, 1000);
-
+      }, 800);
     } catch (error) {
       console.error('Error sending message:', error);
-      
-      // Remove optimistic message on error
-      setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
-      setNewMessage(messageContent); // Restore message content
-      
-      toast({
-        title: "Error",
-        description: "Failed to send message.",
-        variant: "destructive"
-      });
+      // Remove optimistic message on error and restore input
+      setMessages((prev) => prev.filter((msg) => !msg.id.startsWith('temp-')));
+      setNewMessage(messageContent);
+      toast({ title: 'Error', description: 'Failed to send message.', variant: 'destructive' });
     } finally {
       setLoading(false);
     }

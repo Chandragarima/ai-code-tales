@@ -182,12 +182,15 @@ export function MessagesPage({ onClose }: MessagesPageProps) {
         })
       );
 
+      // Filter out empty conversations (no messages)
+      const nonEmptyConversations = conversationsWithDetails.filter(c => c.last_message !== null);
+
       // Sort by most recent activity
-      conversationsWithDetails.sort((a, b) => 
+      nonEmptyConversations.sort((a, b) => 
         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
       );
 
-      setConversations(conversationsWithDetails);
+      setConversations(nonEmptyConversations);
     } catch (error) {
       console.error('Error loading conversations:', error);
     } finally {
