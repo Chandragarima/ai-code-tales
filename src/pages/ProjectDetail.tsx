@@ -19,7 +19,6 @@ interface Project {
   tools: string[];
   screenshots: string[];
   creator_name: string;
-  email: string;
   allows_contact: boolean;
   created_at: string;
   user_id: string;
@@ -88,7 +87,7 @@ export default function ProjectDetail() {
   const fetchProject = async () => {
     try {
       const { data: projectData, error: projectError } = await supabase
-        .from('projects')
+        .from('projects_public')
         .select('*')
         .eq('id', id)
         .single();

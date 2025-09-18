@@ -60,11 +60,10 @@ export default function Gallery() {
 
   const fetchProjects = async () => {
     try {
-      // Fetch projects with creator profiles for up-to-date username/avatar
+      // Fetch projects from public view (excludes sensitive email data)
       const { data: projectsData, error: projectsError } = await supabase
-        .from('projects')
+        .from('projects_public')
         .select('*')
-        .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
       if (projectsError) {

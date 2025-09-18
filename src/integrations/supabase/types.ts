@@ -154,6 +154,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "project_reactions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       project_views: {
@@ -236,7 +243,57 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      projects_public: {
+        Row: {
+          allows_contact: boolean | null
+          created_at: string | null
+          creator_name: string | null
+          deeper_story: string | null
+          description: string | null
+          id: string | null
+          link: string | null
+          name: string | null
+          screenshots: string[] | null
+          status: string | null
+          story: string | null
+          tools: string[] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          allows_contact?: boolean | null
+          created_at?: string | null
+          creator_name?: string | null
+          deeper_story?: string | null
+          description?: string | null
+          id?: string | null
+          link?: string | null
+          name?: string | null
+          screenshots?: string[] | null
+          status?: string | null
+          story?: string | null
+          tools?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          allows_contact?: boolean | null
+          created_at?: string | null
+          creator_name?: string | null
+          deeper_story?: string | null
+          description?: string | null
+          id?: string | null
+          link?: string | null
+          name?: string | null
+          screenshots?: string[] | null
+          status?: string | null
+          story?: string | null
+          tools?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
